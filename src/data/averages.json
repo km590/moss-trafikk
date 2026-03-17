@@ -1,0 +1,3078 @@
+{
+  "40641V971605": {
+    "2": {
+      "0": {
+        "mean": 67,
+        "median": 62,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 41,
+        "median": 37,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 22,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 21,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 38,
+        "median": 38,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 197,
+        "median": 208,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 675,
+        "median": 721,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1221,
+        "median": 1323,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1102,
+        "median": 1204,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 981,
+        "median": 1029,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1078,
+        "median": 1059,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1271,
+        "median": 1279,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1263,
+        "median": 1239,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1327,
+        "median": 1314,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1505,
+        "median": 1495,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1581,
+        "median": 1601,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1585,
+        "median": 1625,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1462,
+        "median": 1498,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1251,
+        "median": 1268,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1070,
+        "median": 1102,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 892,
+        "median": 901,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 657,
+        "median": 664,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 397,
+        "median": 395,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 184,
+        "median": 172,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 72,
+        "median": 72,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 40,
+        "median": 33,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 24,
+        "median": 23,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 18,
+        "median": 18,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 37,
+        "median": 38,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 180,
+        "median": 196,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 637,
+        "median": 704,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1233,
+        "median": 1380,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1048,
+        "median": 1161,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 960,
+        "median": 1019,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1019,
+        "median": 1040,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1212,
+        "median": 1213,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1242,
+        "median": 1228,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1374,
+        "median": 1368,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1493,
+        "median": 1488,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1588,
+        "median": 1594,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1521,
+        "median": 1588,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1404,
+        "median": 1442,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1272,
+        "median": 1318,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1043,
+        "median": 1108,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 834,
+        "median": 869,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 674,
+        "median": 710,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 414,
+        "median": 412,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 230,
+        "median": 203,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 141,
+        "median": 69,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 106,
+        "median": 41,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 56,
+        "median": 21,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 35,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 46,
+        "median": 41,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 185,
+        "median": 194,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 643,
+        "median": 716,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1183,
+        "median": 1309,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1030,
+        "median": 1146,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 945,
+        "median": 1026,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 986,
+        "median": 1089,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1150,
+        "median": 1242,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1194,
+        "median": 1265,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1312,
+        "median": 1320,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1457,
+        "median": 1490,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1542,
+        "median": 1577,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1519,
+        "median": 1582,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1393,
+        "median": 1465,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1264,
+        "median": 1339,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1066,
+        "median": 1105,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 839,
+        "median": 887,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 677,
+        "median": 684,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 421,
+        "median": 423,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 194,
+        "median": 195,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 75,
+        "median": 75,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 38,
+        "median": 38,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 22,
+        "median": 22,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 22,
+        "median": 20,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 37,
+        "median": 35,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 170,
+        "median": 174,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 599,
+        "median": 631,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1221,
+        "median": 1339,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1070,
+        "median": 1158,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 977,
+        "median": 1006,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1088,
+        "median": 1104,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1368,
+        "median": 1393,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1411,
+        "median": 1417,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1526,
+        "median": 1508,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1546,
+        "median": 1528,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1653,
+        "median": 1696,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1530,
+        "median": 1542,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1353,
+        "median": 1406,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1129,
+        "median": 1144,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 861,
+        "median": 860,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 645,
+        "median": 648,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 560,
+        "median": 569,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 473,
+        "median": 478,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 321,
+        "median": 326,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 209,
+        "median": 210,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 123,
+        "median": 117,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 63,
+        "median": 64,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 47,
+        "median": 46,
+        "sampleCount": 10
+      }
+    }
+  },
+  "39666V971386": {},
+  "72867V971385": {
+    "2": {
+      "0": {
+        "mean": 85,
+        "median": 79,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 45,
+        "median": 42,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 28,
+        "median": 28,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 27,
+        "median": 25,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 65,
+        "median": 67,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 290,
+        "median": 309,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 882,
+        "median": 928,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1543,
+        "median": 1681,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1460,
+        "median": 1569,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1312,
+        "median": 1352,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1398,
+        "median": 1364,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1617,
+        "median": 1621,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1591,
+        "median": 1544,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1667,
+        "median": 1639,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1887,
+        "median": 1870,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1817,
+        "median": 1809,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1663,
+        "median": 1676,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1759,
+        "median": 1785,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1522,
+        "median": 1497,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1262,
+        "median": 1264,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1051,
+        "median": 1050,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 794,
+        "median": 787,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 472,
+        "median": 458,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 226,
+        "median": 214,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 96,
+        "median": 87,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 45,
+        "median": 39,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 30,
+        "median": 25,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 25,
+        "median": 24,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 63,
+        "median": 62,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 282,
+        "median": 301,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 826,
+        "median": 903,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1530,
+        "median": 1701,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1390,
+        "median": 1508,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1269,
+        "median": 1358,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1303,
+        "median": 1339,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1524,
+        "median": 1526,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1564,
+        "median": 1564,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1684,
+        "median": 1665,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1857,
+        "median": 1878,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1848,
+        "median": 1875,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1696,
+        "median": 1800,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1704,
+        "median": 1758,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1502,
+        "median": 1550,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1215,
+        "median": 1282,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 985,
+        "median": 1028,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 800,
+        "median": 834,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 484,
+        "median": 486,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 268,
+        "median": 251,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 157,
+        "median": 86,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 114,
+        "median": 40,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 58,
+        "median": 24,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 39,
+        "median": 24,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 81,
+        "median": 77,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 293,
+        "median": 314,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 815,
+        "median": 906,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1478,
+        "median": 1660,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1381,
+        "median": 1541,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1266,
+        "median": 1400,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1277,
+        "median": 1405,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1476,
+        "median": 1608,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1551,
+        "median": 1624,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1674,
+        "median": 1703,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1876,
+        "median": 1901,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1855,
+        "median": 1812,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1739,
+        "median": 1773,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1744,
+        "median": 1789,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1530,
+        "median": 1600,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1265,
+        "median": 1291,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1027,
+        "median": 1064,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 816,
+        "median": 831,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 501,
+        "median": 497,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 232,
+        "median": 227,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 91,
+        "median": 94,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 44,
+        "median": 42,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 27,
+        "median": 26,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 27,
+        "median": 26,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 62,
+        "median": 60,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 274,
+        "median": 290,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 752,
+        "median": 795,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 1477,
+        "median": 1618,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 1351,
+        "median": 1474,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1260,
+        "median": 1288,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1407,
+        "median": 1429,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1715,
+        "median": 1726,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1781,
+        "median": 1787,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1903,
+        "median": 1880,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 2000,
+        "median": 2018,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 2030,
+        "median": 2048,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1910,
+        "median": 1952,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1762,
+        "median": 1807,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1411,
+        "median": 1437,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1071,
+        "median": 1042,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 821,
+        "median": 819,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 706,
+        "median": 720,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 561,
+        "median": 564,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 367,
+        "median": 381,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 225,
+        "median": 228,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 122,
+        "median": 115,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 63,
+        "median": 64,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 51,
+        "median": 48,
+        "sampleCount": 10
+      }
+    }
+  },
+  "69994V971384": {
+    "2": {
+      "0": {
+        "mean": 62,
+        "median": 64,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 37,
+        "median": 35,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 23,
+        "median": 24,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 23,
+        "median": 22,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 59,
+        "median": 60,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 233,
+        "median": 248,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 646,
+        "median": 679,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 965,
+        "median": 1041,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 951,
+        "median": 1001,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 854,
+        "median": 868,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 849,
+        "median": 852,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 937,
+        "median": 944,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 927,
+        "median": 902,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 978,
+        "median": 977,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1117,
+        "median": 1119,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1044,
+        "median": 1045,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 857,
+        "median": 839,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1043,
+        "median": 1055,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 928,
+        "median": 914,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 746,
+        "median": 738,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 652,
+        "median": 646,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 522,
+        "median": 519,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 322,
+        "median": 326,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 153,
+        "median": 152,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 75,
+        "median": 71,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 36,
+        "median": 31,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 24,
+        "median": 24,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 20,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 56,
+        "median": 57,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 229,
+        "median": 245,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 595,
+        "median": 640,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 943,
+        "median": 1031,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 893,
+        "median": 970,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 796,
+        "median": 867,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 789,
+        "median": 814,
+        "sampleCount": 9
+      },
+      "11": {
+        "mean": 902,
+        "median": 935,
+        "sampleCount": 9
+      },
+      "12": {
+        "mean": 899,
+        "median": 912,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 962,
+        "median": 978,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1085,
+        "median": 1079,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1079,
+        "median": 1113,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 968,
+        "median": 1036,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1020,
+        "median": 1064,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 925,
+        "median": 960,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 740,
+        "median": 777,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 623,
+        "median": 638,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 528,
+        "median": 551,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 317,
+        "median": 308,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 183,
+        "median": 168,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 102,
+        "median": 66,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 78,
+        "median": 32,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 41,
+        "median": 21,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 33,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 69,
+        "median": 67,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 240,
+        "median": 256,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 605,
+        "median": 668,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 908,
+        "median": 1019,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 881,
+        "median": 983,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 810,
+        "median": 886,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 775,
+        "median": 847,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 873,
+        "median": 927,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 916,
+        "median": 926,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 999,
+        "median": 1027,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1109,
+        "median": 1093,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1084,
+        "median": 1081,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 985,
+        "median": 969,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1069,
+        "median": 1110,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 940,
+        "median": 955,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 766,
+        "median": 782,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 647,
+        "median": 669,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 539,
+        "median": 544,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 347,
+        "median": 347,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 162,
+        "median": 162,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 71,
+        "median": 73,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 35,
+        "median": 32,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 25,
+        "median": 23,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 25,
+        "median": 23,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 57,
+        "median": 55,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 223,
+        "median": 238,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 563,
+        "median": 605,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 892,
+        "median": 962,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 851,
+        "median": 920,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 765,
+        "median": 788,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 807,
+        "median": 822,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 930,
+        "median": 939,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 993,
+        "median": 999,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1056,
+        "median": 1059,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1151,
+        "median": 1138,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1150,
+        "median": 1169,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1095,
+        "median": 1087,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1071,
+        "median": 1091,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 882,
+        "median": 905,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 679,
+        "median": 660,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 560,
+        "median": 563,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 467,
+        "median": 476,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 376,
+        "median": 377,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 236,
+        "median": 239,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 160,
+        "median": 160,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 91,
+        "median": 88,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 51,
+        "median": 52,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 43,
+        "median": 42,
+        "sampleCount": 10
+      }
+    }
+  },
+  "76208V971383": {},
+  "28495V971383": {
+    "2": {
+      "0": {
+        "mean": 52,
+        "median": 49,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 30,
+        "median": 31,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 23,
+        "median": 23,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 21,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 64,
+        "median": 62,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 272,
+        "median": 287,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 663,
+        "median": 716,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 974,
+        "median": 1049,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 989,
+        "median": 1034,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 875,
+        "median": 895,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 875,
+        "median": 861,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 943,
+        "median": 939,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 978,
+        "median": 954,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1066,
+        "median": 1076,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1158,
+        "median": 1167,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1153,
+        "median": 1206,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1085,
+        "median": 1099,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 995,
+        "median": 1004,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 868,
+        "median": 869,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 657,
+        "median": 661,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 554,
+        "median": 551,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 453,
+        "median": 454,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 273,
+        "median": 271,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 126,
+        "median": 119,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 57,
+        "median": 59,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 33,
+        "median": 28,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 23,
+        "median": 21,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 20,
+        "median": 19,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 62,
+        "median": 64,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 269,
+        "median": 293,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 604,
+        "median": 677,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 869,
+        "median": 1031,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 874,
+        "median": 971,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 822,
+        "median": 883,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 811,
+        "median": 852,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 910,
+        "median": 936,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 941,
+        "median": 936,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1037,
+        "median": 1052,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1118,
+        "median": 1138,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1113,
+        "median": 1182,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1051,
+        "median": 1130,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 957,
+        "median": 1012,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 817,
+        "median": 856,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 618,
+        "median": 660,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 526,
+        "median": 560,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 441,
+        "median": 473,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 280,
+        "median": 287,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 134,
+        "median": 134,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 75,
+        "median": 54,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 57,
+        "median": 26,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 33,
+        "median": 22,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 30,
+        "median": 20,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 78,
+        "median": 78,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 270,
+        "median": 292,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 627,
+        "median": 695,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 914,
+        "median": 1025,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 925,
+        "median": 1022,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 816,
+        "median": 900,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 795,
+        "median": 878,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 907,
+        "median": 973,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 949,
+        "median": 984,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1050,
+        "median": 1090,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1152,
+        "median": 1179,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1194,
+        "median": 1218,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1122,
+        "median": 1171,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 983,
+        "median": 1022,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 845,
+        "median": 861,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 638,
+        "median": 650,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 570,
+        "median": 584,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 456,
+        "median": 468,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 291,
+        "median": 306,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 142,
+        "median": 142,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 56,
+        "median": 59,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 25,
+        "median": 27,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 19,
+        "median": 20,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 17,
+        "median": 21,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 49,
+        "median": 58,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 253,
+        "median": 265,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 589,
+        "median": 625,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 890,
+        "median": 956,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 839,
+        "median": 895,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 764,
+        "median": 798,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 842,
+        "median": 864,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 923,
+        "median": 949,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1036,
+        "median": 1043,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 1117,
+        "median": 1127,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 1240,
+        "median": 1251,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 1242,
+        "median": 1261,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 1177,
+        "median": 1154,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 1008,
+        "median": 1015,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 802,
+        "median": 815,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 584,
+        "median": 575,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 505,
+        "median": 500,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 393,
+        "median": 397,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 309,
+        "median": 303,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 188,
+        "median": 192,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 115,
+        "median": 117,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 73,
+        "median": 76,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 47,
+        "median": 47,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 39,
+        "median": 37,
+        "sampleCount": 10
+      }
+    }
+  },
+  "40488V971307": {},
+  "15322V971307": {
+    "2": {
+      "0": {
+        "mean": 162,
+        "median": 160,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 119,
+        "median": 117,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 106,
+        "median": 104,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 110,
+        "median": 110,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 183,
+        "median": 180,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 881,
+        "median": 955,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 2154,
+        "median": 2361,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 3208,
+        "median": 3589,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2603,
+        "median": 2785,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 2237,
+        "median": 2297,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 2198,
+        "median": 2216,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2384,
+        "median": 2388,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2449,
+        "median": 2367,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2702,
+        "median": 2638,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 3206,
+        "median": 3238,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3966,
+        "median": 4074,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3506,
+        "median": 3523,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2470,
+        "median": 2465,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1888,
+        "median": 1878,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1467,
+        "median": 1495,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1206,
+        "median": 1234,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 989,
+        "median": 1012,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 691,
+        "median": 700,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 338,
+        "median": 326,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 182,
+        "median": 173,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 128,
+        "median": 127,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 113,
+        "median": 116,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 123,
+        "median": 124,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 192,
+        "median": 201,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 859,
+        "median": 949,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1999,
+        "median": 2253,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 3028,
+        "median": 3327,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2523,
+        "median": 2818,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 2120,
+        "median": 2323,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 2098,
+        "median": 2262,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2284,
+        "median": 2377,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2377,
+        "median": 2386,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2639,
+        "median": 2730,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 3081,
+        "median": 3261,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3802,
+        "median": 4092,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3372,
+        "median": 3588,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2407,
+        "median": 2568,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1785,
+        "median": 1879,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1371,
+        "median": 1489,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1138,
+        "median": 1216,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 947,
+        "median": 1037,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 668,
+        "median": 699,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 332,
+        "median": 335,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 199,
+        "median": 171,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 184,
+        "median": 122,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 140,
+        "median": 116,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 128,
+        "median": 128,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 214,
+        "median": 221,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 837,
+        "median": 950,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1997,
+        "median": 2271,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 3033,
+        "median": 3443,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2463,
+        "median": 2780,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 2133,
+        "median": 2374,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 2127,
+        "median": 2339,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2311,
+        "median": 2492,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2518,
+        "median": 2675,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2798,
+        "median": 2920,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 3289,
+        "median": 3513,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 4016,
+        "median": 4255,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3546,
+        "median": 3788,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2589,
+        "median": 2749,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 2009,
+        "median": 2086,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1520,
+        "median": 1589,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1270,
+        "median": 1361,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 1033,
+        "median": 1109,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 713,
+        "median": 726,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 369,
+        "median": 364,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 194,
+        "median": 195,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 121,
+        "median": 116,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 124,
+        "median": 126,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 128,
+        "median": 125,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 191,
+        "median": 198,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 777,
+        "median": 816,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1865,
+        "median": 1989,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 2815,
+        "median": 3052,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2276,
+        "median": 2430,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 2132,
+        "median": 2205,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 2289,
+        "median": 2386,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2652,
+        "median": 2678,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2962,
+        "median": 3007,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 3316,
+        "median": 3421,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 3693,
+        "median": 3699,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 4218,
+        "median": 4310,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3676,
+        "median": 3620,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2724,
+        "median": 2760,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1929,
+        "median": 1884,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1454,
+        "median": 1439,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1181,
+        "median": 1191,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 934,
+        "median": 932,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 722,
+        "median": 700,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 463,
+        "median": 458,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 264,
+        "median": 270,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 183,
+        "median": 183,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 138,
+        "median": 142,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 116,
+        "median": 113,
+        "sampleCount": 10
+      }
+    }
+  },
+  "26266V443149": {
+    "2": {
+      "0": {
+        "mean": 152,
+        "median": 149,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 115,
+        "median": 115,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 102,
+        "median": 99,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 110,
+        "median": 108,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 180,
+        "median": 180,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 880,
+        "median": 956,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1912,
+        "median": 2089,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 2664,
+        "median": 2976,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2358,
+        "median": 2493,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1969,
+        "median": 2048,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1871,
+        "median": 1869,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2022,
+        "median": 2004,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2042,
+        "median": 1998,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2275,
+        "median": 2225,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 2700,
+        "median": 2754,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3399,
+        "median": 3489,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3119,
+        "median": 3184,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2235,
+        "median": 2244,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1605,
+        "median": 1568,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1232,
+        "median": 1257,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1028,
+        "median": 1040,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 904,
+        "median": 900,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 613,
+        "median": 622,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 321,
+        "median": 318,
+        "sampleCount": 10
+      }
+    },
+    "3": {
+      "0": {
+        "mean": 174,
+        "median": 177,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 125,
+        "median": 126,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 110,
+        "median": 109,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 116,
+        "median": 116,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 195,
+        "median": 207,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 832,
+        "median": 916,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1832,
+        "median": 2076,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 2533,
+        "median": 2784,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2240,
+        "median": 2531,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1870,
+        "median": 2069,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1784,
+        "median": 1901,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 1927,
+        "median": 2013,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 1986,
+        "median": 2006,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2217,
+        "median": 2276,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 2605,
+        "median": 2739,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3262,
+        "median": 3493,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3029,
+        "median": 3180,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2179,
+        "median": 2326,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1532,
+        "median": 1619,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1163,
+        "median": 1241,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 995,
+        "median": 1066,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 852,
+        "median": 941,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 609,
+        "median": 631,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 312,
+        "median": 318,
+        "sampleCount": 10
+      }
+    },
+    "4": {
+      "0": {
+        "mean": 188,
+        "median": 167,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 180,
+        "median": 120,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 130,
+        "median": 116,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 126,
+        "median": 123,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 201,
+        "median": 209,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 816,
+        "median": 921,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1791,
+        "median": 2043,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 2537,
+        "median": 2904,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2269,
+        "median": 2545,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1927,
+        "median": 2134,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1813,
+        "median": 2014,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2018,
+        "median": 2159,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2172,
+        "median": 2304,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2412,
+        "median": 2532,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 2868,
+        "median": 2985,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3493,
+        "median": 3682,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3217,
+        "median": 3374,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2389,
+        "median": 2532,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1754,
+        "median": 1781,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1323,
+        "median": 1387,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1103,
+        "median": 1159,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 942,
+        "median": 971,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 637,
+        "median": 649,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 347,
+        "median": 362,
+        "sampleCount": 10
+      }
+    },
+    "5": {
+      "0": {
+        "mean": 187,
+        "median": 186,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 118,
+        "median": 114,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 120,
+        "median": 120,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 126,
+        "median": 128,
+        "sampleCount": 10
+      },
+      "4": {
+        "mean": 190,
+        "median": 196,
+        "sampleCount": 10
+      },
+      "5": {
+        "mean": 724,
+        "median": 772,
+        "sampleCount": 10
+      },
+      "6": {
+        "mean": 1622,
+        "median": 1735,
+        "sampleCount": 10
+      },
+      "7": {
+        "mean": 2326,
+        "median": 2510,
+        "sampleCount": 10
+      },
+      "8": {
+        "mean": 2036,
+        "median": 2195,
+        "sampleCount": 10
+      },
+      "9": {
+        "mean": 1858,
+        "median": 1940,
+        "sampleCount": 10
+      },
+      "10": {
+        "mean": 1961,
+        "median": 2002,
+        "sampleCount": 10
+      },
+      "11": {
+        "mean": 2232,
+        "median": 2265,
+        "sampleCount": 10
+      },
+      "12": {
+        "mean": 2537,
+        "median": 2529,
+        "sampleCount": 10
+      },
+      "13": {
+        "mean": 2882,
+        "median": 2902,
+        "sampleCount": 10
+      },
+      "14": {
+        "mean": 3244,
+        "median": 3292,
+        "sampleCount": 10
+      },
+      "15": {
+        "mean": 3660,
+        "median": 3719,
+        "sampleCount": 10
+      },
+      "16": {
+        "mean": 3331,
+        "median": 3318,
+        "sampleCount": 10
+      },
+      "17": {
+        "mean": 2489,
+        "median": 2486,
+        "sampleCount": 10
+      },
+      "18": {
+        "mean": 1719,
+        "median": 1712,
+        "sampleCount": 10
+      },
+      "19": {
+        "mean": 1280,
+        "median": 1281,
+        "sampleCount": 10
+      },
+      "20": {
+        "mean": 1012,
+        "median": 1037,
+        "sampleCount": 10
+      },
+      "21": {
+        "mean": 843,
+        "median": 851,
+        "sampleCount": 10
+      },
+      "22": {
+        "mean": 674,
+        "median": 635,
+        "sampleCount": 10
+      },
+      "23": {
+        "mean": 431,
+        "median": 424,
+        "sampleCount": 10
+      }
+    },
+    "6": {
+      "0": {
+        "mean": 254,
+        "median": 250,
+        "sampleCount": 10
+      },
+      "1": {
+        "mean": 168,
+        "median": 164,
+        "sampleCount": 10
+      },
+      "2": {
+        "mean": 130,
+        "median": 130,
+        "sampleCount": 10
+      },
+      "3": {
+        "mean": 109,
+        "median": 106,
+        "sampleCount": 10
+      }
+    }
+  },
+  "59044V971518": {}
+}
