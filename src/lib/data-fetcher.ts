@@ -15,9 +15,20 @@ export async function getTrafficData(): Promise<{
     const stationIds = STATIONS.map((s) => s.id);
     const volumes = await fetchLatestHourForAllStations(stationIds);
 
+    // Find the most recent data timestamp to use for normal volume lookup
+    const latestDataTime = volumes.reduce<Date | null>((latest, v) => {
+      if (!v) return latest;
+      const t = new Date(v.to);
+      return !latest || t > latest ? t : latest;
+    }, null);
+
+    // Use data hour for comparison (not current hour) since API has delay
+    const dataHour = latestDataTime ? latestDataTime.getHours() : hour;
+    const dataDay = latestDataTime ? latestDataTime.getDay() : dayOfWeek;
+
     const stations: StationStatus[] = STATIONS.map((station, i) => {
       const volume = volumes[i];
-      const normalVolume = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
+      const normalVolume = getNormalVolume(averages as StationAverages, station.id, dataDay, dataHour);
 
       if (volume === null) {
         return {
@@ -49,7 +60,7 @@ export async function getTrafficData(): Promise<{
     const corridor: CorridorStatus = {
       stations,
       worstPoint,
-      updatedAt: now.toISOString(),
+      updatedAt: latestDataTime?.toISOString() ?? now.toISOString(),
     };
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");

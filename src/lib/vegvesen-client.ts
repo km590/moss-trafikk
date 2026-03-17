@@ -33,7 +33,7 @@ interface VegvesenResponse {
 function buildQuery(stationId: string, from: string, to: string): string {
   return JSON.stringify({
     query: `
-      query ($id: String!, $from: DateTime!, $to: DateTime!) {
+      query ($id: String!, $from: ZonedDateTime!, $to: ZonedDateTime!) {
         trafficData(trafficRegistrationPointId: $id) {
           volume {
             byHour(from: $from, to: $to) {
@@ -96,7 +96,7 @@ export async function fetchHourlyVolume(
 export async function fetchLatestHourForAllStations(
   stationIds: string[]
 ): Promise<(HourlyVolume | null)[]> {
-  const { from, to } = getLastTwoHoursRange();
+  const { from, to } = getRecentHoursRange();
 
   const results = await Promise.all(
     stationIds.map(async (stationId) => {
@@ -114,11 +114,12 @@ export async function fetchLatestHourForAllStations(
   return results;
 }
 
-export function getLastTwoHoursRange(): { from: string; to: string } {
+export function getRecentHoursRange(): { from: string; to: string } {
   const now = new Date();
   now.setMinutes(0, 0, 0);
   const to = now.toISOString();
-  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
-  const from = twoHoursAgo.toISOString();
+  // Vegvesen API has 3-4 hour data delay, fetch 6 hours to be safe
+  const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+  const from = sixHoursAgo.toISOString();
   return { from, to };
 }

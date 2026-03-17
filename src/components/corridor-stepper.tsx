@@ -55,35 +55,33 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
   });
 
   return (
-    <div className="overflow-x-auto">
-      <div className="flex items-start min-w-max px-2 py-4">
-        {nodeData.map((node, index) => {
-          const isLast = index === nodeData.length - 1;
-          const nextNode = nodeData[index + 1] ?? null;
-          const connectorLevel =
-            node.level !== null && nextNode !== null && nextNode.level !== null
-              ? worstCongestion([node.level, nextNode.level])
-              : null;
+    <div className="flex items-start justify-between w-full px-2 py-4">
+      {nodeData.map((node, index) => {
+        const isLast = index === nodeData.length - 1;
+        const nextNode = nodeData[index + 1] ?? null;
+        const connectorLevel =
+          node.level !== null && nextNode !== null && nextNode.level !== null
+            ? worstCongestion([node.level, nextNode.level])
+            : null;
 
-          return (
-            <div key={node.label} className="flex items-start">
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={`h-8 w-8 rounded-full shrink-0 ${circleClass(node.level)}`}
-                />
-                <span className="text-xs text-center text-muted-foreground w-16 leading-tight">
-                  {node.label}
-                </span>
-              </div>
-              {!isLast && (
-                <div
-                  className={`mt-3.5 h-1 w-12 shrink-0 ${lineClass(connectorLevel)}`}
-                />
-              )}
+        return (
+          <div key={node.label} className={`flex items-start ${isLast ? "" : "flex-1"}`}>
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className={`h-6 w-6 sm:h-8 sm:w-8 rounded-full shrink-0 ${circleClass(node.level)}`}
+              />
+              <span className="text-[10px] sm:text-xs text-center text-muted-foreground leading-tight max-w-[56px] sm:max-w-[64px]">
+                {node.label}
+              </span>
             </div>
-          );
-        })}
-      </div>
+            {!isLast && (
+              <div
+                className={`mt-2.5 sm:mt-3.5 h-1 flex-1 min-w-2 mx-1 ${lineClass(connectorLevel)}`}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
