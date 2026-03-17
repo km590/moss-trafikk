@@ -1,6 +1,6 @@
 import { STATIONS } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
-import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime } from "./traffic-logic";
+import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages } from "./types";
 
@@ -10,8 +10,7 @@ export async function getTrafficData(): Promise<{
 }> {
   try {
     const now = new Date();
-    const dayOfWeek = now.getDay();
-    const hour = now.getHours();
+    const { dayOfWeek, hour } = getNorwayTime();
 
     const stationIds = STATIONS.map((s) => s.id);
     const volumes = await fetchLatestHourForAllStations(stationIds);
@@ -56,7 +55,8 @@ export async function getTrafficData(): Promise<{
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
     return { corridor, bestTime };
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch traffic data:", error);
     const now = new Date();
 
     const fallbackStations: StationStatus[] = STATIONS.map((station) => ({

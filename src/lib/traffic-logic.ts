@@ -5,6 +5,35 @@ const FJORDVEIEN_ID = "59044V971518";
 
 const DAY_NAMES = ["søndager", "mandager", "tirsdager", "onsdager", "torsdager", "fredager", "lørdager"];
 
+/** Get current hour and dayOfWeek in Europe/Oslo timezone */
+export function getNorwayTime(): { hour: number; dayOfWeek: number } {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Oslo",
+    hour: "numeric",
+    hour12: false,
+    weekday: "short",
+  });
+  const parts = formatter.formatToParts(now);
+  const hourPart = parts.find((p) => p.type === "hour");
+  const weekdayPart = parts.find((p) => p.type === "weekday");
+
+  const hour = parseInt(hourPart?.value ?? "0", 10);
+  const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const dayOfWeek = dayMap[weekdayPart?.value ?? "Mon"] ?? 1;
+
+  return { hour, dayOfWeek };
+}
+
+/** Format a Date to Norwegian time string "HH:MM" */
+export function formatNorwayTime(date: Date): string {
+  return date.toLocaleTimeString("no-NO", {
+    timeZone: "Europe/Oslo",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export function classifyCongestion(
   currentVolume: number,
   normalVolume: number,
@@ -98,7 +127,6 @@ export function findBestCrossingTime(
   mode: "kanalbrua" | "corridor"
 ): BestTimeResult {
   const dayName = DAY_NAMES[dayOfWeek] ?? "denne dagen";
-  const reason = `Basert på typisk trafikk for ${dayName}`;
 
   const candidates: { hour: number; score: number }[] = [];
 
@@ -108,24 +136,37 @@ export function findBestCrossingTime(
     candidates.push({ hour, score });
   }
 
+  // Calculate deviation as percentage relative to current hour
+  const currentScore = candidates[0].score;
+
   candidates.sort((a, b) => a.score - b.score);
 
   const primaryCandidate = candidates[0];
   const backupCandidate = candidates[1] ?? null;
 
+  const toDeviation = (score: number): number =>
+    currentScore > 0 ? Math.round((score / currentScore) * 100) : 100;
+
+  // Check if we're in low-traffic hours (all candidates < 50 vehicles)
+  const isLowTraffic = candidates.every((c) => c.score < 50);
+
+  const reason = isLowTraffic
+    ? "Lite trafikk akkurat nå"
+    : `Basert på typisk trafikk for ${dayName}`;
+
   const primary: BestTimeWindow = {
     startHour: primaryCandidate.hour,
     endHour: (primaryCandidate.hour + 1) % 24,
-    expectedDeviation: primaryCandidate.score,
-    label: formatTimeWindow(primaryCandidate.hour),
+    expectedDeviation: toDeviation(primaryCandidate.score),
+    label: isLowTraffic ? "Kjør når du vil" : formatTimeWindow(primaryCandidate.hour),
     reason,
   };
 
-  const backup: BestTimeWindow | null = backupCandidate
+  const backup: BestTimeWindow | null = backupCandidate && !isLowTraffic
     ? {
         startHour: backupCandidate.hour,
         endHour: (backupCandidate.hour + 1) % 24,
-        expectedDeviation: backupCandidate.score,
+        expectedDeviation: toDeviation(backupCandidate.score),
         label: formatTimeWindow(backupCandidate.hour),
         reason,
       }

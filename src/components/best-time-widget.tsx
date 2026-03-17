@@ -49,9 +49,11 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult }: Best
           <span className="text-3xl font-bold text-emerald-600">{primary.label}</span>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          ~{Math.round(primary.expectedDeviation)}% av normal trafikk
-        </p>
+        {primary.expectedDeviation > 0 && primary.expectedDeviation < 100 && (
+          <p className="text-sm text-muted-foreground">
+            ~{primary.expectedDeviation}% av trafikken nå
+          </p>
+        )}
 
         {backup && (
           <p className="text-sm text-muted-foreground">

@@ -1,5 +1,5 @@
 import { getTrafficData } from "@/lib/data-fetcher";
-import { findBestCrossingTime, getCongestionLabel } from "@/lib/traffic-logic";
+import { findBestCrossingTime, getCongestionLabel, getNorwayTime, formatNorwayTime } from "@/lib/traffic-logic";
 import averages from "@/data/averages.json";
 import KpiCard from "@/components/kpi-card";
 import CorridorStepper from "@/components/corridor-stepper";
@@ -14,9 +14,7 @@ export default async function Home() {
 
   const kanalbrua = corridor.stations.find(s => s.station.id === KANALBRUA_ID);
 
-  const now = new Date();
-  const currentHour = now.getHours();
-  const dayOfWeek = now.getDay();
+  const { hour: currentHour, dayOfWeek } = getNorwayTime();
   const corridorBestTime = findBestCrossingTime(
     averages as StationAverages,
     currentHour,
@@ -25,7 +23,7 @@ export default async function Home() {
   );
 
   const updatedAt = new Date(corridor.updatedAt);
-  const timeStr = updatedAt.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = formatNorwayTime(updatedAt);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
