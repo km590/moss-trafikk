@@ -104,7 +104,7 @@ export const STATIONS: Station[] = [
 ];
 
 export const KANALBRUA_ID = "40641V971605";
-export const KANALBRUA_ABSOLUTE_GUARDRAIL = 1100;
+export const KANALBRUA_ABSOLUTE_GUARDRAIL = 1800;
 
 export const RV19_STATION_IDS = [
   "39666V971386",

@@ -59,10 +59,10 @@ type SlotSamples = Record<string, Record<string, number[]>>;
 
 function buildQuery(stationId: string, from: string, to: string): string {
   return JSON.stringify({
-    query: `{
-  trafficData(trafficRegistrationPointId: "${stationId}") {
+    query: `query StationVolume($id: String!, $from: String!, $to: String!) {
+  trafficData(trafficRegistrationPointId: $id) {
     volume {
-      byHour(from: "${from}", to: "${to}") {
+      byHour(from: $from, to: $to) {
         edges {
           node {
             from
@@ -81,7 +81,25 @@ function buildQuery(stationId: string, from: string, to: string): string {
     }
   }
 }`,
+    variables: { id: stationId, from, to },
   });
+}
+
+function getOsloTime(isoString: string): { dayOfWeek: number; hour: number } {
+  const date = new Date(isoString);
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Oslo",
+    hour: "numeric",
+    hour12: false,
+    weekday: "short",
+  });
+  const parts = formatter.formatToParts(date);
+  const hourPart = parts.find((p) => p.type === "hour");
+  const weekdayPart = parts.find((p) => p.type === "weekday");
+  const hour = parseInt(hourPart?.value ?? "0", 10);
+  const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const dayOfWeek = dayMap[weekdayPart?.value ?? "Mon"] ?? 1;
+  return { dayOfWeek, hour };
 }
 
 function isoWeekBounds(weeksAgo: number): { from: string; to: string } {
@@ -141,9 +159,7 @@ function addToSamples(samples: SlotSamples, nodes: HourNode[]): void {
     const volume = node.total?.volumeNumbers?.volume;
     if (volume == null) continue;
 
-    const date = new Date(node.from);
-    const dayOfWeek = date.getDay(); // 0 = Sunday
-    const hour = date.getHours();
+    const { dayOfWeek, hour } = getOsloTime(node.from);
 
     const dayKey = String(dayOfWeek);
     const hourKey = String(hour);

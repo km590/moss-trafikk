@@ -185,6 +185,8 @@ export function getCongestionColor(level: CongestionLevel): string {
       return "bg-orange-500";
     case "red":
       return "bg-red-500";
+    case "unknown":
+      return "bg-slate-300";
   }
 }
 
@@ -198,5 +200,7 @@ export function getCongestionLabel(level: CongestionLevel): string {
       return "Mye kø";
     case "red":
       return "Svært mye kø";
+    case "unknown":
+      return "Ukjent status";
   }
 }

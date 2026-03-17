@@ -9,6 +9,12 @@ import type { StationAverages } from "@/lib/types";
 
 export const revalidate = 300;
 
+function deviationToText(percent: number): string {
+  if (percent <= 95) return "Roligere enn vanlig";
+  if (percent <= 110) return "Som vanlig";
+  return `${percent - 100}% mer enn vanlig`;
+}
+
 export default async function Home() {
   const { corridor, bestTime } = await getTrafficData();
 
@@ -39,7 +45,8 @@ export default async function Home() {
       </div>
 
       {corridor.isStale && (
-        <div className="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600">
+        <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
+          <span aria-hidden="true">⚠</span>
           Vegvesen-data er forsinket. Viser typisk trafikk for dette tidspunktet basert på historisk snitt.
         </div>
       )}
@@ -52,7 +59,7 @@ export default async function Home() {
             corridor.isStale
               ? "Basert på historisk snitt"
               : kanalbrua?.currentVolume
-                ? `${kanalbrua.deviationPercent}% av normal`
+                ? deviationToText(kanalbrua.deviationPercent)
                 : "Mangler data"
           }
           congestion={kanalbrua?.congestion ?? "green"}
@@ -60,7 +67,11 @@ export default async function Home() {
         <KpiCard
           title="Korridoren"
           value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Typisk normal" : "Ingen data")}
-          subtitle={corridor.worstPoint ? `Verste punkt – ${corridor.worstPoint.deviationPercent}% av normal` : (corridor.isStale ? "Historisk snitt" : "Alt ser normalt ut")}
+          subtitle={
+            corridor.worstPoint
+              ? `Verste punkt – ${deviationToText(corridor.worstPoint.deviationPercent)}`
+              : (corridor.isStale ? "Historisk snitt" : "Alt ser normalt ut")
+          }
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />
         <KpiCard

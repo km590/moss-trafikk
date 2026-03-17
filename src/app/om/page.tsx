@@ -13,19 +13,19 @@ export default function OmPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Hva er dette?</h2>
         <p className="text-slate-600">
-          Moss Trafikk gir deg trafiktstatus for hele Moss-korridoren – fra E6/Patterød i øst til Kanalbrua og Jeløya i vest. Verktøyet er laget for pendlere som trenger å vite: bør jeg kjøre nå, eller vente?
+          Moss Trafikk gir deg trafikkstatus for hele Moss-korridoren – fra E6/Patterød i øst til Kanalbrua og Jeløya i vest. Verktøyet er laget for pendlere som trenger å vite: bør jeg kjøre nå, eller vente?
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Datakilde</h2>
         <p className="text-slate-600">
-          All trafikkdata hentes fra <a href="https://trafikkdata.atlas.vegvesen.no" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Statens vegvesen Trafikkdata API</a> (åpent, gratis GraphQL-API). Data oppdateres hvert 5. minutt.
+          All trafikkdata hentes fra <a href="https://trafikkdata.atlas.vegvesen.no" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Statens vegvesen Trafikkdata API</a> (åpent, gratis GraphQL-API). Vi bruker timedata som oppdateres ved sidelast.
         </p>
         <p className="text-slate-600">
           Vi bruker {STATIONS.length} verifiserte tellepunkter langs korridoren:
         </p>
-        <ul className="space-y-1">
+        <ul className="list-disc list-inside space-y-1">
           {STATIONS.map(s => (
             <li key={s.id} className="text-sm text-slate-600">
               <span className="font-medium">{s.name}</span> ({s.road}) – {s.role}
@@ -71,11 +71,11 @@ export default function OmPage() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Ærlig om begrensninger</h2>
-        <ul className="space-y-2 text-slate-600">
-          <li>• Vi viser <strong>siste time</strong>, ikke sanntid. Data kan være opptil 5 minutter gammel.</li>
-          <li>• «Beste kryssing» baseres på historisk snitt – ikke spådommer. Uventede hendelser fanges ikke opp.</li>
-          <li>• Ferge-effekt (Rv19/Horten) er <strong>ikke inkludert i 1A</strong> – kommer i neste versjon.</li>
-          <li>• Stasjoner med under 80% dekning markeres med «Mangler data».</li>
+        <ul className="list-disc list-inside space-y-2 text-slate-600">
+          <li>Vi viser <strong>siste time</strong>, ikke sanntid. Data er timebasert og oppdateres ved sidelast.</li>
+          <li>«Beste kryssing» baseres på historisk snitt – ikke spådommer. Uventede hendelser fanges ikke opp.</li>
+          <li>Ferge-effekt (Rv19/Horten) er <strong>ikke inkludert i 1A</strong> – kommer i neste versjon.</li>
+          <li>Stasjoner med under 80% dekning markeres med «Mangler data».</li>
         </ul>
       </section>
 

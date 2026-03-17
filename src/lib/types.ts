@@ -1,4 +1,4 @@
-export type CongestionLevel = "green" | "yellow" | "orange" | "red";
+export type CongestionLevel = "green" | "yellow" | "orange" | "red" | "unknown";
 
 export type Direction = "from" | "to"; // from = away from Moss center, to = toward Moss center
 
