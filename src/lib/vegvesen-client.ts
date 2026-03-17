@@ -33,10 +33,10 @@ interface VegvesenResponse {
 function buildQuery(stationId: string, from: string, to: string): string {
   return JSON.stringify({
     query: `
-      query {
-        trafficData(trafficRegistrationPointId: "${stationId}") {
+      query ($id: String!, $from: DateTime!, $to: DateTime!) {
+        trafficData(trafficRegistrationPointId: $id) {
           volume {
-            byHour(from: "${from}", to: "${to}") {
+            byHour(from: $from, to: $to) {
               edges {
                 node {
                   from
@@ -56,6 +56,7 @@ function buildQuery(stationId: string, from: string, to: string): string {
         }
       }
     `,
+    variables: { id: stationId, from, to },
   });
 }
 
