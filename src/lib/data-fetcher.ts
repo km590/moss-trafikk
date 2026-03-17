@@ -4,6 +4,15 @@ import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCro
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages } from "./types";
 
+const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+function formatDataAge(ms: number): string {
+  const minutes = Math.round(ms / 60000);
+  if (minutes < 60) return `${minutes} min siden`;
+  const hours = Math.round(minutes / 60);
+  return `${hours} ${hours === 1 ? "time" : "timer"} siden`;
+}
+
 export async function getTrafficData(): Promise<{
   corridor: CorridorStatus;
   bestTime: BestTimeResult;
@@ -15,32 +24,39 @@ export async function getTrafficData(): Promise<{
     const stationIds = STATIONS.map((s) => s.id);
     const volumes = await fetchLatestHourForAllStations(stationIds);
 
-    // Find the most recent data timestamp to use for normal volume lookup
+    // Find the most recent data timestamp
     const latestDataTime = volumes.reduce<Date | null>((latest, v) => {
       if (!v) return latest;
       const t = new Date(v.to);
       return !latest || t > latest ? t : latest;
     }, null);
 
-    // Use data hour for comparison (not current hour) since API has delay
-    const dataHour = latestDataTime ? latestDataTime.getHours() : hour;
-    const dataDay = latestDataTime ? latestDataTime.getDay() : dayOfWeek;
+    const dataAgeMs = latestDataTime ? now.getTime() - latestDataTime.getTime() : Infinity;
+    const isStale = dataAgeMs > STALE_THRESHOLD_MS;
 
+    // When data is stale, use current hour's historical averages for status
+    // instead of showing old rush-hour data as "current"
     const stations: StationStatus[] = STATIONS.map((station, i) => {
       const volume = volumes[i];
-      const normalVolume = getNormalVolume(averages as StationAverages, station.id, dataDay, dataHour);
+      const currentNormal = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
 
-      if (volume === null) {
+      if (volume === null || isStale) {
+        // Fall back to historical: current hour is "normal" by definition
         return {
           station,
-          currentVolume: null,
-          normalVolume,
-          congestion: "green",
+          currentVolume: isStale && volume ? volume.total : null,
+          normalVolume: currentNormal,
+          congestion: "green" as const,
           deviationPercent: 100,
           coverage: 0,
-          updatedAt: now.toISOString(),
-        } satisfies StationStatus;
+          updatedAt: isStale && latestDataTime ? latestDataTime.toISOString() : now.toISOString(),
+        };
       }
+
+      // Fresh data: use the data's actual hour for normal comparison
+      const dataHour = new Date(volume.to).getHours();
+      const dataDay = new Date(volume.to).getDay();
+      const normalVolume = getNormalVolume(averages as StationAverages, station.id, dataDay, dataHour);
 
       const { level, deviationPercent } = classifyCongestion(volume.total, normalVolume, station.id);
 
@@ -52,15 +68,17 @@ export async function getTrafficData(): Promise<{
         deviationPercent,
         coverage: volume.coverage,
         updatedAt: volume.to,
-      } satisfies StationStatus;
+      };
     });
 
-    const worstPoint = getCorridorWorstPoint(stations);
+    const worstPoint = isStale ? null : getCorridorWorstPoint(stations);
 
     const corridor: CorridorStatus = {
       stations,
       worstPoint,
       updatedAt: latestDataTime?.toISOString() ?? now.toISOString(),
+      isStale,
+      dataAge: latestDataTime ? formatDataAge(dataAgeMs) : "ukjent",
     };
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
@@ -69,12 +87,13 @@ export async function getTrafficData(): Promise<{
   } catch (error) {
     console.error("Failed to fetch traffic data:", error);
     const now = new Date();
+    const { dayOfWeek, hour } = getNorwayTime();
 
     const fallbackStations: StationStatus[] = STATIONS.map((station) => ({
       station,
       currentVolume: null,
-      normalVolume: 0,
-      congestion: "green",
+      normalVolume: getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour),
+      congestion: "green" as const,
       deviationPercent: 100,
       coverage: 0,
       updatedAt: now.toISOString(),
@@ -84,19 +103,11 @@ export async function getTrafficData(): Promise<{
       stations: fallbackStations,
       worstPoint: null,
       updatedAt: now.toISOString(),
+      isStale: true,
+      dataAge: "ukjent",
     };
 
-    const bestTime: BestTimeResult = {
-      primary: {
-        startHour: 0,
-        endHour: 1,
-        expectedDeviation: 0,
-        label: "Ingen data tilgjengelig",
-        reason: "Ingen data tilgjengelig",
-      },
-      backup: null,
-      mode: "kanalbrua",
-    };
+    const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
     return { corridor, bestTime };
   }

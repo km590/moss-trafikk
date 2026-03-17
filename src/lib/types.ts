@@ -36,6 +36,8 @@ export interface CorridorStatus {
   stations: StationStatus[];
   worstPoint: StationStatus | null;
   updatedAt: string;
+  isStale: boolean; // true if data is >2 hours old
+  dataAge: string; // human-readable, e.g. "3 timer siden"
 }
 
 export interface BestTimeWindow {

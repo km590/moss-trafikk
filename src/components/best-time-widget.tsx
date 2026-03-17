@@ -62,6 +62,9 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult }: Best
         )}
 
         <p className="text-xs italic text-muted-foreground">{primary.reason}</p>
+        <p className="text-[10px] text-muted-foreground/60 pt-1">
+          Basert på historiske snitt, ikke sanntidsdata
+        </p>
       </CardContent>
     </Card>
   );

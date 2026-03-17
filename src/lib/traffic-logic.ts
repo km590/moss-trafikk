@@ -43,7 +43,7 @@ export function classifyCongestion(
     return { level: "green", deviationPercent: 100 };
   }
 
-  const deviationPercent = (currentVolume / normalVolume) * 100;
+  const deviationPercent = Math.round((currentVolume / normalVolume) * 100);
 
   if (stationId === KANALBRUA_ID && currentVolume > KANALBRUA_ABSOLUTE_GUARDRAIL) {
     return { level: "red", deviationPercent };

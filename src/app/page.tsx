@@ -30,21 +30,37 @@ export default async function Home() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Bør du kjøre nå?</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Siste time · Oppdatert kl. {timeStr}
+          {corridor.isStale ? (
+            <>Historisk snitt · Siste måling {corridor.dataAge}</>
+          ) : (
+            <>Siste time · Oppdatert kl. {timeStr}</>
+          )}
         </p>
       </div>
 
+      {corridor.isStale && (
+        <div className="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600">
+          Vegvesen-data er forsinket. Viser typisk trafikk for dette tidspunktet basert på historisk snitt.
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
-          title="Kanalbrua nå"
+          title={corridor.isStale ? "Kanalbrua typisk nå" : "Kanalbrua nå"}
           value={kanalbrua ? getCongestionLabel(kanalbrua.congestion) : "Ingen data"}
-          subtitle={kanalbrua?.currentVolume ? `${kanalbrua.deviationPercent}% av normal` : "Mangler data"}
+          subtitle={
+            corridor.isStale
+              ? "Basert på historisk snitt"
+              : kanalbrua?.currentVolume
+                ? `${kanalbrua.deviationPercent}% av normal`
+                : "Mangler data"
+          }
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
           title="Korridoren"
-          value={corridor.worstPoint ? corridor.worstPoint.station.name : "Ingen data"}
-          subtitle={corridor.worstPoint ? `Verste punkt – ${corridor.worstPoint.deviationPercent}% av normal` : "Alt ser normalt ut"}
+          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Typisk normal" : "Ingen data")}
+          subtitle={corridor.worstPoint ? `Verste punkt – ${corridor.worstPoint.deviationPercent}% av normal` : (corridor.isStale ? "Historisk snitt" : "Alt ser normalt ut")}
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />
         <KpiCard
