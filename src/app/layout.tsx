@@ -22,9 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nb" className={poppins.variable}>
-      <head>
-        <meta httpEquiv="refresh" content="300" />
-      </head>
+      <head />
       <body className={`${poppins.className} bg-slate-50 text-slate-900 antialiased`}>
         <Nav />
         <main className="min-h-screen">
