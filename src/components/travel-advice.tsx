@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import type { TravelDecision, DecisionMode } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { trackEvent } from "@/lib/plausible";
 
 interface TravelAdviceProps {
   decision: TravelDecision;
@@ -61,6 +63,10 @@ function getConfidenceLabel(confidence: "high" | "medium" | "low"): string | nul
 }
 
 export default function TravelAdvice({ decision }: TravelAdviceProps) {
+  useEffect(() => {
+    trackEvent("travel_advice_viewed", { mode: decision.mode });
+  }, [decision.mode]);
+
   const styles = getDecisionStyles(decision.mode);
   const icon = getIcon(decision.mode);
   const confidenceLabel = getConfidenceLabel(decision.confidence);

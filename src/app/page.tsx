@@ -9,6 +9,7 @@ import PredictionCard from "@/components/prediction-card";
 import PredictionChart from "@/components/prediction-chart";
 import FerryCountdown from "@/components/ferry-countdown";
 import Mai17Mode from "@/components/mai17-mode";
+import PartnerLogos from "@/components/partner-logos";
 import { KANALBRUA_ID } from "@/lib/stations";
 import type { StationAverages } from "@/lib/types";
 
@@ -47,6 +48,7 @@ export default async function Home() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <PartnerLogos />
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Er det smart å kjøre nå?</h1>
         <p className="text-sm text-slate-500 mt-1">

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { BestTimeResult, DecisionMode } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { trackEvent } from "@/lib/plausible";
 
 interface BestTimeWidgetProps {
   kanalbruaResult: BestTimeResult;
@@ -12,6 +13,10 @@ interface BestTimeWidgetProps {
 
 export default function BestTimeWidget({ kanalbruaResult, corridorResult, decisionMode }: BestTimeWidgetProps) {
   const [mode, setMode] = useState<"kanalbrua" | "corridor">("kanalbrua");
+
+  useEffect(() => {
+    trackEvent("best_time_state", { state: decisionMode === "wait" ? "showing" : "hidden" });
+  }, [decisionMode]);
   const result = mode === "kanalbrua" ? kanalbruaResult : corridorResult;
   const { primary, backup } = result;
 

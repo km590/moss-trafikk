@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { STATIONS } from "@/lib/stations";
+import TrackPageView from "@/components/track-page-view";
 
 export const metadata: Metadata = {
   title: "Om Moss Trafikk",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
 export default function OmPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-2xl font-bold">Slik fungerer Moss Trafikk</h1>
+      <TrackPageView event="om_page_viewed" />
+
+      <h1 className="text-2xl font-bold">Om Moss Trafikk</h1>
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Hva er dette?</h2>
@@ -18,12 +21,37 @@ export default function OmPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Estimert, ikke live</h2>
+        <h2 className="text-lg font-semibold">Hvem står bak?</h2>
+        <p className="text-slate-600">
+          Moss Trafikk er et samarbeidsprosjekt mellom{" "}
+          <a href="https://synaro.no/" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Synaro</a>{" "}
+          og{" "}
+          <a href="https://www.krescado.no/" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Krescado</a>.
+        </p>
+        <p className="text-slate-600">
+          Bak prosjektet står Jørgen i Synaro og Kenneth i Krescado. Vi er to tidligere kollegaer med felles interesse for teknologi, data og produktutvikling, og begge har en nær relasjon til Moss og Jeløya. Jørgen er oppvokst på Jeløya, har familie der og bor i dag på Ekholt. Kenneth bor på Verket og har venner og turområder på øya.
+        </p>
+        <p className="text-slate-600">
+          Vi pendler begge til Oslo og kjenner godt på spørsmålet mange i Moss stiller seg: Er det smart å kjøre nå, eller lønner det seg å vente litt? Slik startet prosjektet.
+        </p>
+        <p className="text-slate-600">
+          Moss Trafikk er bygget med åpne data, åpne API-er og prediksjonsmodeller for å gi et smart anslag på trafikken akkurat nå og de neste timene. Prosjektet publiseres som open source, slik at andre også kan lære av det eller bygge videre på ideen.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Hvordan fungerer det?</h2>
         <p className="text-slate-600">
           Trafikkdata fra Statens vegvesen er ofte 2-4 timer forsinket. Derfor er Moss Trafikk bygget som et anslagsprodukt, ikke et sanntidsprodukt. Når ferske målinger finnes, bruker vi dem. Når de er forsinket, viser vi et estimat basert på hvordan trafikken vanligvis er på dette tidspunktet.
         </p>
         <p className="text-slate-600">
           Estimatene bygger på historiske målinger fra samme ukedag og time, justert for sesong og høytider. Modellen er trent på omtrent 89 000 timer med trafikkdata over 2 år.
+        </p>
+        <p className="text-slate-600">
+          Modellen kombinerer historiske mønstre med ferske målinger fra alle tellepunkter. Når målinger er ferske, vektes de tungt. Når data er gammelt, faller modellen tilbake til historiske mønstre.
+        </p>
+        <p className="text-slate-600">
+          Usikkerheten i anslaget vises som en tillitsvurdering. Ved høy usikkerhet (gammel data, uvanlig trafikkmønster) er modellen mer forsiktig med å gi sterke anbefalinger om å vente.
         </p>
       </section>
 
@@ -91,25 +119,27 @@ export default function OmPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Modellen</h2>
-        <p className="text-slate-600">
-          Modellen kombinerer historiske mønstre med ferske målinger fra alle tellepunkter. Når målinger er ferske, vektes de tungt. Når data er gammelt, faller modellen tilbake til historiske mønstre.
-        </p>
-        <p className="text-slate-600">
-          Usikkerheten i anslaget vises som en tillitsvurdering. Ved høy usikkerhet (gammel data, uvanlig trafikkmønster) er modellen mer forsiktig med å gi sterke anbefalinger om å vente.
-        </p>
-      </section>
-
-      <section className="space-y-3">
         <h2 className="text-lg font-semibold">Begrensninger</h2>
         <p className="text-slate-600">
           Moss Trafikk er et anslagsverktøy, ikke en fasit. Estimatene treffer vanligvis godt på vanlige hverdager, men er mindre presise på helligdager og i skoleferier. Uventede hendelser som ulykker, veiarbeid eller spesielle arrangementer fanges ikke opp.
         </p>
       </section>
 
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Åpent prosjekt</h2>
+        <p className="text-slate-600">
+          Moss Trafikk er åpen kildekode. All kode er tilgjengelig på{" "}
+          <a href="https://github.com/km590/moss-trafikk" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">GitHub</a>,
+          og trafikkdataene vi bruker er åpne data fra Statens vegvesen (NLOD) og Entur (NLOD).
+        </p>
+        <p className="text-slate-600">
+          Har du tilbakemeldinger eller ideer? Opprett gjerne et issue på{" "}
+          <a href="https://github.com/km590/moss-trafikk" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">GitHub</a>.
+        </p>
+      </section>
+
       <section className="space-y-2 text-sm text-slate-400">
-        <p>Laget av en Moss-pendler. Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeløy Trafikk</a> av Synaro.</p>
-        <p>Data: Statens vegvesen (NLOD) og Entur (NLOD). <a href="https://github.com/km590/moss-trafikk" className="underline" target="_blank" rel="noopener">Kildekode på GitHub</a> (MIT).</p>
+        <p>Data: Statens vegvesen (NLOD) og Entur (NLOD). Kildekode på <a href="https://github.com/km590/moss-trafikk" className="underline" target="_blank" rel="noopener noreferrer">GitHub</a> (MIT).</p>
       </section>
     </div>
   );
