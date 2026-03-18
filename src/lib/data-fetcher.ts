@@ -105,19 +105,12 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
-    // Ferry signal (separate layer, fails gracefully)
-    let ferrySignal: { factor: number; nextDepartureMin: number | null; reason: string } | undefined;
-    try {
-      const fs = await getFerrySignal(KANALBRUA_ID);
-      if (fs.factor > 1.0) {
-        ferrySignal = { factor: fs.factor, nextDepartureMin: fs.nextDeparture?.minutesUntil ?? null, reason: fs.reason };
-      }
-    } catch {
-      // Ferry signal is optional - baseline predictions still work
-    }
+    // Ferry boost disabled: baseline already contains normal ferry rhythm.
+    // Re-enable only as deviation signal (cancellations, delays, extra departures).
+    // See eval data: baseline hit 2.8% error, ferry boost added +25% overshoot.
 
-    // Predictions (ferry boost only on short-term 4h view, not full-day chart)
-    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4, ferrySignal);
+    // Predictions (pure baseline)
+    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4);
     const fullDayPredictions = getPredictions(KANALBRUA_ID, now, hour, 24);
     const chartPredictions = fullDayPredictions.predictions.filter(p => p.hour >= 6 && p.hour <= 22);
 
