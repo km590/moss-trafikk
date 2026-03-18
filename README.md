@@ -41,4 +41,8 @@ npx tsx scripts/golden-test.ts
 
 ## Lisens
 
-Data: Statens vegvesen, NLOD-lisens. Fergeavganger: Entur, NLOD-lisens.
+Kode: [MIT](LICENSE)
+
+Datakilder folger egne vilkar:
+- Trafikkdata: Statens vegvesen, [NLOD](https://data.norge.no/nlod)
+- Fergeavganger: Entur, [NLOD](https://developer.entur.org/pages-intro-setup-and-access)
