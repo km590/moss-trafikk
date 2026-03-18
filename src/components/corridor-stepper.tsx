@@ -6,7 +6,7 @@ interface CorridorStepperProps {
   statuses: StationStatus[];
 }
 
-const CONGESTION_ORDER: CongestionLevel[] = ["unknown", "green", "yellow", "orange", "red"];
+const CONGESTION_ORDER: CongestionLevel[] = ["unknown", "green", "yellow", "red"];
 
 function worstCongestion(levels: CongestionLevel[]): CongestionLevel {
   if (levels.length === 0) return "green";
@@ -19,7 +19,6 @@ function circleColor(level: CongestionLevel | null): string {
   switch (level) {
     case "green": return "bg-emerald-500";
     case "yellow": return "bg-amber-400";
-    case "orange": return "bg-orange-500";
     case "red": return "bg-red-500";
     case "unknown": return "bg-slate-300";
     default: return "bg-slate-300";
@@ -30,7 +29,6 @@ function lineColor(level: CongestionLevel | null): string {
   switch (level) {
     case "green": return "bg-emerald-500";
     case "yellow": return "bg-amber-400";
-    case "orange": return "bg-orange-500";
     case "red": return "bg-red-500";
     case "unknown": return "bg-slate-300";
     default: return "bg-slate-300";
@@ -40,12 +38,11 @@ function lineColor(level: CongestionLevel | null): string {
 function getLabelForLevel(level: CongestionLevel | null, isEstimate: boolean): string {
   if (level === null || level === "unknown") return "Ukjent status";
   if (!isEstimate) return getCongestionLabel(level);
-  // Estimate mode: labels express typical busyness, not live congestion
+  // Estimate mode: passability labels
   switch (level) {
-    case "green": return "Vanligvis rolig";
-    case "yellow": return "Vanligvis noe trafikk";
-    case "orange": return "Vanligvis travel";
-    case "red": return "Vanligvis svært travel";
+    case "green": return "Ser rolig ut";
+    case "yellow": return "Ser travelt ut";
+    case "red": return "Kø sannsynlig";
     default: return "Ukjent";
   }
 }

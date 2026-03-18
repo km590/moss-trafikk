@@ -31,7 +31,6 @@ function HourBar({ prediction }: { prediction: HourlyPrediction }) {
   const colorMap: Record<string, string> = {
     green: "bg-emerald-500",
     yellow: "bg-amber-400",
-    orange: "bg-orange-500",
     red: "bg-red-500",
     unknown: "bg-slate-300",
   };
