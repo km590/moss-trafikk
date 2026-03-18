@@ -11,7 +11,7 @@ export default function PartnerLogos() {
         rel="noopener noreferrer"
         aria-label="Synaro"
         onClick={() => trackEvent("source_logo_clicked", { source: "synaro" })}
-        className="text-slate-700 font-bold tracking-[0.15em] text-xs uppercase hover:text-slate-900 transition-colors"
+        className="text-slate-500 font-semibold tracking-[0.15em] text-xs uppercase hover:text-slate-700 transition-colors"
       >
         SYNARO
       </a>
@@ -24,7 +24,7 @@ export default function PartnerLogos() {
         onClick={() => trackEvent("source_logo_clicked", { source: "krescado" })}
         className="hover:opacity-80 transition-opacity"
       >
-        <img src="/krescado-logo.webp" alt="Krescado" className="h-5 w-auto" />
+        <img src="/krescado-logo.webp" alt="Krescado" className="h-3 w-auto opacity-70" />
       </a>
     </div>
   );

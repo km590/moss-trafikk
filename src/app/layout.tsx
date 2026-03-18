@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-          Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeløy Trafikk</a> av Synaro · Data: Statens vegvesen og Entur · <a href="/om" className="underline">Slik fungerer det</a>
+          Data: Statens vegvesen og Entur · <a href="/om" className="underline">Slik fungerer det</a>
         </footer>
       </body>
     </html>
