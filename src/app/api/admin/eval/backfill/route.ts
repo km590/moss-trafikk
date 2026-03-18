@@ -9,7 +9,7 @@ import { fetchHourlyVolume } from "@/lib/vegvesen-client";
  */
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
-  const expectedKey = process.env.ADMIN_API_KEY;
+  const expectedKey = process.env.ADMIN_API_KEY?.trim();
   if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

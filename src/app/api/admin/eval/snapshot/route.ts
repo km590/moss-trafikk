@@ -17,7 +17,7 @@ const EVAL_STATIONS = [KANALBRUA_ID, ...RV19_STATION_IDS];
 export async function POST(request: Request) {
   // Simple auth check
   const authHeader = request.headers.get("authorization");
-  const expectedKey = process.env.ADMIN_API_KEY;
+  const expectedKey = process.env.ADMIN_API_KEY?.trim();
   if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
