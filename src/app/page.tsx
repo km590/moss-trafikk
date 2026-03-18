@@ -43,9 +43,9 @@ export default async function Home() {
         <h1 className="text-2xl font-bold text-slate-900">Bør du kjøre nå?</h1>
         <p className="text-sm text-slate-500 mt-1">
           {corridor.isStale ? (
-            <>Historisk snitt · Siste måling {corridor.dataAge}</>
+            <>Estimert nå · Siste måling {corridor.dataAge}</>
           ) : (
-            <>Siste time · Oppdatert kl. {timeStr}</>
+            <>Målt siste time · Oppdatert kl. {timeStr}</>
           )}
         </p>
       </div>
@@ -53,18 +53,18 @@ export default async function Home() {
       {corridor.isStale && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
           <span aria-hidden="true">⚠</span>
-          Vegvesen-data er forsinket. Viser typisk trafikk for dette tidspunktet basert på historisk snitt.
+          Vegvesen-data er forsinket. Viser estimert status basert på historisk mønster for dette tidspunktet.
         </div>
       )}
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
-          title={corridor.isStale ? "Kanalbrua typisk nå" : "Kanalbrua nå"}
+          title={kanalbrua?.isEstimate ? "Kanalbrua estimert nå" : "Kanalbrua nå"}
           value={kanalbrua ? getCongestionLabel(kanalbrua.congestion) : "Ingen data"}
           subtitle={
-            corridor.isStale
-              ? "Basert på historisk snitt"
+            kanalbrua?.isEstimate
+              ? "Typisk for dette tidspunktet"
               : kanalbrua?.currentVolume
                 ? deviationToText(kanalbrua.deviationPercent)
                 : "Mangler data"
@@ -72,12 +72,12 @@ export default async function Home() {
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
-          title="Korridoren"
-          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Typisk normal" : "Ingen data")}
+          title={corridor.isStale ? "Korridoren estimert" : "Korridoren"}
+          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Trolig normal" : "Ingen data")}
           subtitle={
             corridor.worstPoint
               ? `Verste punkt – ${deviationToText(corridor.worstPoint.deviationPercent)}`
-              : (corridor.isStale ? "Historisk snitt" : "Alt ser normalt ut")
+              : (corridor.isStale ? "Typisk for dette tidspunktet" : "Alt ser normalt ut")
           }
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />

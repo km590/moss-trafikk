@@ -15,44 +15,32 @@ function worstCongestion(levels: CongestionLevel[]): CongestionLevel {
   );
 }
 
-function circleClass(level: CongestionLevel | null): string {
+function circleColor(level: CongestionLevel | null): string {
   switch (level) {
-    case "green":
-      return "bg-emerald-500";
-    case "yellow":
-      return "bg-amber-400";
-    case "orange":
-      return "bg-orange-500";
-    case "red":
-      return "bg-red-500";
-    case "unknown":
-      return "bg-slate-300";
-    default:
-      return "bg-slate-300";
+    case "green": return "bg-emerald-500";
+    case "yellow": return "bg-amber-400";
+    case "orange": return "bg-orange-500";
+    case "red": return "bg-red-500";
+    case "unknown": return "bg-slate-300";
+    default: return "bg-slate-300";
   }
 }
 
-function lineClass(level: CongestionLevel | null): string {
+function lineColor(level: CongestionLevel | null): string {
   switch (level) {
-    case "green":
-      return "bg-emerald-500";
-    case "yellow":
-      return "bg-amber-400";
-    case "orange":
-      return "bg-orange-500";
-    case "red":
-      return "bg-red-500";
-    case "unknown":
-      return "bg-slate-300";
-    default:
-      return "bg-slate-300";
+    case "green": return "bg-emerald-500";
+    case "yellow": return "bg-amber-400";
+    case "orange": return "bg-orange-500";
+    case "red": return "bg-red-500";
+    case "unknown": return "bg-slate-300";
+    default: return "bg-slate-300";
   }
 }
 
-function getLabelForLevel(level: CongestionLevel | null): string {
-  if (level === null) return "Ukjent status";
-  if (level === "unknown") return "Ukjent status";
-  return getCongestionLabel(level);
+function getLabelForLevel(level: CongestionLevel | null, isEstimate: boolean): string {
+  if (level === null || level === "unknown") return "Ukjent status";
+  const base = getCongestionLabel(level);
+  return isEstimate ? `${base} (estimert)` : base;
 }
 
 export default function CorridorStepper({ statuses }: CorridorStepperProps) {
@@ -62,7 +50,8 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
     );
     const levels = matchingStatuses.map((s) => s.congestion);
     const level: CongestionLevel | null = levels.length > 0 ? worstCongestion(levels) : null;
-    return { label: node.label, level };
+    const isEstimate = matchingStatuses.length > 0 && matchingStatuses.every((s) => s.isEstimate);
+    return { label: node.label, level, isEstimate };
   });
 
   return (
@@ -71,17 +60,21 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
       <div className="flex flex-col gap-0 sm:hidden px-2 py-4">
         {nodeData.map((node, index) => {
           const isLast = index === nodeData.length - 1;
-          const statusLabel = getLabelForLevel(node.level);
+          const statusLabel = getLabelForLevel(node.level, node.isEstimate);
 
           return (
             <div key={node.label}>
               <div className="flex items-center gap-3">
                 <div
-                  className={`h-6 w-6 rounded-full shrink-0 ${circleClass(node.level)}`}
+                  className={`h-6 w-6 rounded-full shrink-0 ${circleColor(node.level)} ${
+                    node.isEstimate ? "opacity-50 ring-1 ring-dashed ring-slate-400" : ""
+                  }`}
                   aria-label={statusLabel}
                 />
                 <span className="text-sm font-medium text-slate-800 flex-1">{node.label}</span>
-                <span className="text-xs text-muted-foreground">{statusLabel}</span>
+                <span className={`text-xs ${node.isEstimate ? "text-slate-400 italic" : "text-muted-foreground"}`}>
+                  {statusLabel}
+                </span>
               </div>
               {!isLast && (
                 <div className="ml-3 w-px h-4 bg-slate-200 my-0.5" />
@@ -100,13 +93,16 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
             node.level !== null && nextNode !== null && nextNode.level !== null
               ? worstCongestion([node.level, nextNode.level])
               : null;
-          const statusLabel = getLabelForLevel(node.level);
+          const statusLabel = getLabelForLevel(node.level, node.isEstimate);
+          const connectorEstimate = node.isEstimate || (nextNode?.isEstimate ?? false);
 
           return (
             <div key={node.label} className={`flex items-start ${isLast ? "" : "flex-1"}`}>
               <div className="flex flex-col items-center gap-1.5">
                 <div
-                  className={`h-8 w-8 rounded-full shrink-0 ${circleClass(node.level)}`}
+                  className={`h-8 w-8 rounded-full shrink-0 ${circleColor(node.level)} ${
+                    node.isEstimate ? "opacity-50 ring-2 ring-offset-1 ring-slate-300" : ""
+                  }`}
                   aria-label={statusLabel}
                 />
                 <span className="text-xs text-center text-muted-foreground leading-tight max-w-[64px]">
@@ -115,13 +111,23 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
               </div>
               {!isLast && (
                 <div
-                  className={`mt-3.5 h-1 flex-1 min-w-2 mx-1 ${lineClass(connectorLevel)}`}
+                  className={`mt-3.5 h-1 flex-1 min-w-2 mx-1 ${lineColor(connectorLevel)} ${
+                    connectorEstimate ? "opacity-40" : ""
+                  }`}
+                  style={connectorEstimate ? { backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 4px, white 4px, white 8px)" } : undefined}
                 />
               )}
             </div>
           );
         })}
       </div>
+
+      {/* Estimate notice */}
+      {nodeData.some(n => n.isEstimate) && (
+        <p className="text-[11px] text-slate-400 text-center -mt-2 mb-1">
+          Estimert basert på typisk mønster for dette tidspunktet
+        </p>
+      )}
     </>
   );
 }

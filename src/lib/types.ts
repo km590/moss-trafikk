@@ -30,6 +30,7 @@ export interface StationStatus {
   deviationPercent: number; // e.g. 132 means 132% of normal
   coverage: number;
   updatedAt: string;
+  isEstimate: boolean; // true when congestion is predicted, not measured
 }
 
 export interface CorridorStatus {

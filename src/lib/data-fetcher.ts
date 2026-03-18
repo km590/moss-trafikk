@@ -1,7 +1,7 @@
 import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
-import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume } from "./prediction-engine";
+import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume, predictVolume } from "./prediction-engine";
 import { getFerrySignal } from "./ferry-signal";
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
@@ -54,15 +54,21 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       const currentNormal = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
 
       if (volume === null || isStale) {
-        // Fall back to historical: current hour is "normal" by definition
+        // Use prediction as estimate instead of showing "unknown"
+        const pred = predictVolume(station.id, now, hour);
+        const estimatedCongestion = pred.predicted > 0
+          ? classifyCongestion(pred.predicted, currentNormal, station.id).level
+          : "unknown" as const;
+
         return {
           station,
           currentVolume: isStale && volume ? volume.total : null,
           normalVolume: currentNormal,
-          congestion: "unknown" as const,
+          congestion: estimatedCongestion,
           deviationPercent: 100,
           coverage: 0,
           updatedAt: isStale && latestDataTime ? latestDataTime.toISOString() : now.toISOString(),
+          isEstimate: true,
         };
       }
 
@@ -81,10 +87,13 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
         deviationPercent,
         coverage: volume.coverage,
         updatedAt: volume.to,
+        isEstimate: false,
       };
     });
 
-    const worstPoint = isStale ? null : getCorridorWorstPoint(stations);
+    // Find worst point even when stale (using estimates)
+    const nonUnknown = stations.filter(s => s.congestion !== "unknown");
+    const worstPoint = nonUnknown.length > 0 ? getCorridorWorstPoint(nonUnknown) : null;
 
     const corridor: CorridorStatus = {
       stations,
@@ -145,15 +154,24 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
     const now = new Date();
     const { dayOfWeek, hour } = getNorwayTime();
 
-    const fallbackStations: StationStatus[] = STATIONS.map((station) => ({
-      station,
-      currentVolume: null,
-      normalVolume: getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour),
-      congestion: "unknown" as const,
-      deviationPercent: 100,
-      coverage: 0,
-      updatedAt: now.toISOString(),
-    }));
+    const fallbackStations: StationStatus[] = STATIONS.map((station) => {
+      const normalVolume = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
+      const pred = predictVolume(station.id, now, hour);
+      const estimatedCongestion = pred.predicted > 0
+        ? classifyCongestion(pred.predicted, normalVolume, station.id).level
+        : "unknown" as const;
+
+      return {
+        station,
+        currentVolume: null,
+        normalVolume,
+        congestion: estimatedCongestion,
+        deviationPercent: 100,
+        coverage: 0,
+        updatedAt: now.toISOString(),
+        isEstimate: true,
+      };
+    });
 
     const corridor: CorridorStatus = {
       stations: fallbackStations,
