@@ -13,24 +13,24 @@ export default function OmPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Hva er dette?</h2>
         <p className="text-slate-600">
-          Moss Trafikk gir deg et smart anslag pa trafikken i Moss-korridoren akkurat na. Fra E6 ved Patterod i ost til Kanalbrua og Jeloya i vest. Laget for pendlere som lurer pa: er det smart a kjore na, eller loner det seg a vente?
+          Moss Trafikk gir deg et smart anslag på trafikken i Moss-korridoren akkurat nå. Fra E6 ved Patterød i øst til Kanalbrua og Jeløya i vest. Laget for pendlere som lurer på: er det smart å kjøre nå, eller lønner det seg å vente?
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Estimert, ikke live</h2>
         <p className="text-slate-600">
-          Trafikkdata fra Statens vegvesen er ofte 2-4 timer forsinket. Derfor er Moss Trafikk bygget som et anslagsprodukt, ikke et sanntidsprodukt. Nar ferske malinger finnes, bruker vi dem. Nar de er forsinket, viser vi et estimat basert pa hvordan trafikken vanligvis er pa dette tidspunktet.
+          Trafikkdata fra Statens vegvesen er ofte 2-4 timer forsinket. Derfor er Moss Trafikk bygget som et anslagsprodukt, ikke et sanntidsprodukt. Når ferske målinger finnes, bruker vi dem. Når de er forsinket, viser vi et estimat basert på hvordan trafikken vanligvis er på dette tidspunktet.
         </p>
         <p className="text-slate-600">
-          Estimatene bygger pa historiske malinger fra samme ukedag og time, justert for sesong og hoytider. Modellen er trent pa omtrent 89 000 timer med trafikkdata over 2 ar.
+          Estimatene bygger på historiske målinger fra samme ukedag og time, justert for sesong og høytider. Modellen er trent på omtrent 89 000 timer med trafikkdata over 2 år.
         </p>
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Trafikkniva</h2>
+        <h2 className="text-lg font-semibold">Trafikknivå</h2>
         <p className="text-slate-600">
-          Fargene uttrykker hvor travel en time typisk er for den aktuelle stasjonen, basert pa historisk monster.
+          Fargene uttrykker hvor travel en time typisk er for den aktuelle stasjonen, basert på historisk mønster.
         </p>
         <div className="rounded-lg border border-slate-200 overflow-hidden">
           <table className="w-full text-sm">
@@ -54,21 +54,21 @@ export default function OmPage() {
                 <td className="px-4 py-2">Travlere enn vanlig for denne stasjonen</td>
               </tr>
               <tr className="border-t border-slate-100">
-                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" />Svart travel</td>
-                <td className="px-4 py-2">Blant de travleste timene i dognet</td>
+                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" />Svært travel</td>
+                <td className="px-4 py-2">Blant de travleste timene i døgnet</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p className="text-sm text-slate-500">
-          Nar vi har ferske malinger fra Vegvesen, brukes avvik fra normalen i stedet for percentiler.
+          Når vi har ferske målinger fra Vegvesen, brukes avvik fra normalen i stedet for percentiler.
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Ferge</h2>
         <p className="text-slate-600">
-          Vi viser neste fergeavganger fra Moss ferjekai (Moss-Horten) som kontekstsignal. Fergeavgangene kan pavirke trafikken rundt sentrum og Rv19. Fergetidene hentes i sanntid fra Entur.
+          Vi viser neste fergeavganger fra Moss ferjekai (Moss-Horten) som kontekstsignal. Fergeavgangene kan påvirke trafikken rundt sentrum og Rv19. Fergetidene hentes i sanntid fra Entur.
         </p>
       </section>
 
@@ -93,13 +93,13 @@ export default function OmPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Begrensninger</h2>
         <p className="text-slate-600">
-          Moss Trafikk er et anslagsverktoy, ikke en fasit. Estimatene treffer vanligvis godt pa vanlige hverdager, men er mindre presise pa helligdager og i skoleferier. Uventede hendelser som ulykker, veiarbeid eller spesielle arrangementer fanges ikke opp.
+          Moss Trafikk er et anslagsverktøy, ikke en fasit. Estimatene treffer vanligvis godt på vanlige hverdager, men er mindre presise på helligdager og i skoleferier. Uventede hendelser som ulykker, veiarbeid eller spesielle arrangementer fanges ikke opp.
         </p>
       </section>
 
       <section className="space-y-2 text-sm text-slate-400">
-        <p>Laget av en Moss-pendler. Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeloy Trafikk</a> av Synaro.</p>
-        <p>Data: Statens vegvesen (NLOD) og Entur (NLOD). <a href="https://github.com/km590/moss-trafikk" className="underline" target="_blank" rel="noopener">Kildekode pa GitHub</a> (MIT).</p>
+        <p>Laget av en Moss-pendler. Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeløy Trafikk</a> av Synaro.</p>
+        <p>Data: Statens vegvesen (NLOD) og Entur (NLOD). <a href="https://github.com/km590/moss-trafikk" className="underline" target="_blank" rel="noopener">Kildekode på GitHub</a> (MIT).</p>
       </section>
     </div>
   );

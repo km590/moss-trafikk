@@ -210,7 +210,7 @@ export function getCongestionLabel(level: CongestionLevel): string {
     case "orange":
       return "Travel";
     case "red":
-      return "Svart travel";
+      return "Svært travel";
     case "unknown":
       return "Ukjent";
   }
@@ -225,7 +225,7 @@ export function getEstimateCongestionLabel(level: CongestionLevel): string {
     case "orange":
       return "Travel";
     case "red":
-      return "Svart travel";
+      return "Svært travel";
     case "unknown":
       return "Ukjent";
   }

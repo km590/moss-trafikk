@@ -13,7 +13,7 @@ import type { StationAverages } from "@/lib/types";
 
 export const revalidate = 300;
 
-const DAY_LABELS = ["sondag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lordag"];
+const DAY_LABELS = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
 
 function deviationToText(percent: number): string {
   if (percent <= 95) return "Roligere enn vanlig";
@@ -47,12 +47,12 @@ export default async function Home() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Er det smart a kjore na?</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Er det smart å kjøre nå?</h1>
         <p className="text-sm text-slate-500 mt-1">
           {corridor.isStale ? (
-            <>Estimert na · Sist malt for {corridor.dataAge}</>
+            <>Estimert nå · Sist målt for {corridor.dataAge}</>
           ) : (
-            <>Malt siste time · Oppdatert kl. {timeStr}</>
+            <>Målt siste time · Oppdatert kl. {timeStr}</>
           )}
         </p>
       </div>
@@ -60,14 +60,14 @@ export default async function Home() {
       {corridor.isStale && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
           <span aria-hidden="true">⚠</span>
-          Vegvesen-data er forsinket akkurat na. Derfor viser vi et estimat basert pa hvordan trafikken vanligvis utvikler seg pa dette tidspunktet.
+          Vegvesen-data er forsinket akkurat nå. Derfor viser vi et estimat basert på hvordan trafikken vanligvis utvikler seg på dette tidspunktet.
         </div>
       )}
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
-          title="Kanalbrua na"
+          title="Kanalbrua nå"
           value={kanalbruaLabel}
           subtitle={
             kanalbrua?.isEstimate
@@ -79,11 +79,11 @@ export default async function Home() {
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
-          title="Mest belastet na"
+          title="Mest belastet nå"
           value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Ser normalt ut" : "Ingen data")}
           subtitle={
             corridor.worstPoint
-              ? "Ser ut til a vare tregest i korridoren akkurat na"
+              ? "Ser ut til å være tregest i korridoren akkurat nå"
               : (corridor.isStale ? "Ingen steder skiller seg ut" : "Alt ser normalt ut")
           }
           congestion={corridor.worstPoint?.congestion ?? "green"}
@@ -91,7 +91,7 @@ export default async function Home() {
         <KpiCard
           title="Roligst senere i dag"
           value={bestTime.primary.label}
-          subtitle="Vanligvis roligere enn na"
+          subtitle="Vanligvis roligere enn nå"
           congestion="green"
         />
       </div>
@@ -143,7 +143,7 @@ export default async function Home() {
       <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} />
 
       <p className="text-xs text-slate-400 text-center">
-        Dette er et smart estimat, ikke live trafikk. Anslagene bygger pa historiske malinger fra samme ukedag og tidspunkt, justert for sesong og hoytider.{" "}
+        Dette er et smart estimat, ikke live trafikk. Anslagene bygger på historiske målinger fra samme ukedag og tidspunkt, justert for sesong og høytider.{" "}
         <a href="/om" className="underline">Slik fungerer det</a>.
       </p>
     </div>
