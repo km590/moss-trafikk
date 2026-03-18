@@ -6,6 +6,7 @@ import CorridorStepper from "@/components/corridor-stepper";
 import BestTimeWidget from "@/components/best-time-widget";
 import PredictionCard from "@/components/prediction-card";
 import PredictionChart from "@/components/prediction-chart";
+import FerryCountdown from "@/components/ferry-countdown";
 import Mai17Mode from "@/components/mai17-mode";
 import { KANALBRUA_ID } from "@/lib/stations";
 import type { StationAverages } from "@/lib/types";
@@ -21,7 +22,7 @@ function deviationToText(percent: number): string {
 }
 
 export default async function Home() {
-  const { corridor, bestTime, predictions, chartPredictions, normalPattern, may17 } = await getTrafficData();
+  const { corridor, bestTime, predictions, chartPredictions, normalPattern, ferryDepartures, may17 } = await getTrafficData();
 
   const kanalbrua = corridor.stations.find(s => s.station.id === KANALBRUA_ID);
 
@@ -91,6 +92,11 @@ export default async function Home() {
 
       {/* Prediction card */}
       <PredictionCard prediction={predictions} stationName="Kanalbrua" />
+
+      {/* Ferry countdown */}
+      {ferryDepartures.length > 0 && (
+        <FerryCountdown departures={ferryDepartures} />
+      )}
 
       {/* Corridor stepper */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">

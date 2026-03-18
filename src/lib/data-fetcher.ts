@@ -2,7 +2,7 @@ import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
 import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume, predictVolume } from "./prediction-engine";
-import { getFerrySignal } from "./ferry-signal";
+import { fetchFerryDepartures, type FerryDeparture } from "./entur-client";
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
 
@@ -21,6 +21,7 @@ export interface TrafficDataResult {
   predictions: PredictionResult;
   chartPredictions: HourlyPrediction[];
   normalPattern: { hour: number; volume: number }[];
+  ferryDepartures: FerryDeparture[];
   may17: {
     showSection: boolean; // Only true May 1-17
     active: boolean;      // Auto-activated May 16 (Fri) and May 17
@@ -120,6 +121,14 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       normalPattern.push({ hour: h, volume: getModelNormalVolume(KANALBRUA_ID, dayOfWeek, h) });
     }
 
+    // Ferry departures (info only, no prediction boost)
+    let ferryDepartures: FerryDeparture[] = [];
+    try {
+      ferryDepartures = await fetchFerryDepartures(3);
+    } catch {
+      // Ferry info is optional
+    }
+
     // May 17 mode: only show section May 1-17
     const nowMonth = now.getMonth(); // 0-indexed, May = 4
     const nowDay = now.getDate();
@@ -135,6 +144,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       predictions,
       chartPredictions,
       normalPattern,
+      ferryDepartures,
       may17: {
         showSection: showMay17Section,
         active: may17Active,
@@ -189,6 +199,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       predictions,
       chartPredictions,
       normalPattern,
+      ferryDepartures: [],
       may17: {
         showSection: false,
         active: false,
