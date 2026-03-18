@@ -1,7 +1,7 @@
 import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
-import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume, predictVolume } from "./prediction-engine";
+import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume, predictVolume, classifyPredictedCongestion } from "./prediction-engine";
 import { fetchFerryDepartures, type FerryDeparture } from "./entur-client";
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
@@ -55,10 +55,10 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       const currentNormal = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
 
       if (volume === null || isStale) {
-        // Use prediction as estimate instead of showing "unknown"
+        // Use prediction as estimate with percentile classification
         const pred = predictVolume(station.id, now, hour);
         const estimatedCongestion = pred.predicted > 0
-          ? classifyCongestion(pred.predicted, currentNormal, station.id).level
+          ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek)
           : "unknown" as const;
 
         return {
@@ -161,7 +161,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       const normalVolume = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
       const pred = predictVolume(station.id, now, hour);
       const estimatedCongestion = pred.predicted > 0
-        ? classifyCongestion(pred.predicted, normalVolume, station.id).level
+        ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek)
         : "unknown" as const;
 
       return {

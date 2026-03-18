@@ -168,7 +168,7 @@ function predictMay17Volume(
  * - orange: p50-p75 (travel time)
  * - red:    over p75 (blant de travleste timene)
  */
-function classifyPredictedCongestion(predicted: number, stationId: string, dayOfWeek: number): CongestionLevel {
+export function classifyPredictedCongestion(predicted: number, stationId: string, dayOfWeek: number): CongestionLevel {
   if (predicted < 10) return "green";
 
   if (stationId === KANALBRUA_ID && predicted > KANALBRUA_ABSOLUTE_GUARDRAIL) {
