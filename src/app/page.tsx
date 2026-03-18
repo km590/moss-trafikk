@@ -4,6 +4,7 @@ import averages from "@/data/averages.json";
 import KpiCard from "@/components/kpi-card";
 import CorridorStepper from "@/components/corridor-stepper";
 import BestTimeWidget from "@/components/best-time-widget";
+import TravelAdvice from "@/components/travel-advice";
 import PredictionCard from "@/components/prediction-card";
 import PredictionChart from "@/components/prediction-chart";
 import FerryCountdown from "@/components/ferry-countdown";
@@ -22,7 +23,7 @@ function deviationToText(percent: number): string {
 }
 
 export default async function Home() {
-  const { corridor, bestTime, predictions, chartPredictions, normalPattern, ferryDepartures, may17 } = await getTrafficData();
+  const { corridor, bestTime, predictions, chartPredictions, normalPattern, ferryDepartures, may17, travelDecision, v2Predictions } = await getTrafficData();
 
   const kanalbrua = corridor.stations.find(s => s.station.id === KANALBRUA_ID);
 
@@ -70,11 +71,12 @@ export default async function Home() {
           title="Kanalbrua nå"
           value={kanalbruaLabel}
           subtitle={
-            kanalbrua?.isEstimate
-              ? "Omtrent som vanlig for denne tiden"
-              : kanalbrua?.currentVolume
-                ? deviationToText(kanalbrua.deviationPercent)
-                : "Mangler data"
+            v2Predictions?.[0]?.explanation
+              ?? (kanalbrua?.isEstimate
+                ? "Omtrent som vanlig for denne tiden"
+                : kanalbrua?.currentVolume
+                  ? deviationToText(kanalbrua.deviationPercent)
+                  : "Mangler data")
           }
           congestion={kanalbrua?.congestion ?? "green"}
         />
@@ -91,7 +93,7 @@ export default async function Home() {
         <KpiCard
           title="Roligst senere i dag"
           value={bestTime.primary.label}
-          subtitle="Vanligvis roligere enn nå"
+          subtitle={travelDecision.detail ?? "Vanligvis roligere enn nå"}
           congestion="green"
         />
       </div>
@@ -139,6 +141,8 @@ export default async function Home() {
           stationName="Kanalbrua"
         />
       )}
+
+      <TravelAdvice decision={travelDecision} />
 
       <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} />
 

@@ -2,9 +2,12 @@ import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
 import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume, predictVolume, classifyPredictedCongestion } from "./prediction-engine";
+import { isV2Enabled, getV2Predictions } from "./prediction-engine-v2";
+import { makeDecision } from "./decision-engine";
+import type { StationLiveData } from "./feature-builder";
 import { fetchFerryDepartures, type FerryDeparture } from "./entur-client";
 import averages from "../data/averages.json";
-import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
+import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction, HourlyPredictionV2, TravelDecision } from "./types";
 
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -28,6 +31,9 @@ export interface TrafficDataResult {
     normalDay: HourlyPrediction[];
     may17Day: HourlyPrediction[];
   };
+  // V2: decision layer + residual predictions
+  travelDecision: TravelDecision;
+  v2Predictions: HourlyPredictionV2[] | null;
 }
 
 export async function getTrafficData(): Promise<TrafficDataResult> {
@@ -58,7 +64,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
         // Use prediction as estimate with percentile classification
         const pred = predictVolume(station.id, now, hour);
         const estimatedCongestion = pred.predicted > 0
-          ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek)
+          ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek, hour)
           : "unknown" as const;
 
         return {
@@ -78,7 +84,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       const dataDay = new Date(volume.to).getDay();
       const normalVolume = getNormalVolume(averages as StationAverages, station.id, dataDay, dataHour);
 
-      const { level, deviationPercent } = classifyCongestion(volume.total, normalVolume, station.id);
+      const { level, deviationPercent } = classifyCongestion(volume.total, normalVolume, station.id, dataHour);
 
       return {
         station,
@@ -138,6 +144,57 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       ? getMay17Comparison(KANALBRUA_ID, now.getFullYear())
       : { normalDay: [], may17Day: [] };
 
+    // V2: Build latestVolumes map for residual model features
+    let v2Predictions: HourlyPredictionV2[] | null = null;
+    let travelDecision: TravelDecision;
+
+    if (isV2Enabled()) {
+      const latestVolumes = new Map<string, StationLiveData>();
+      for (const st of stations) {
+        const vol = st.currentVolume;
+        if (vol !== null) {
+          const ageMs = now.getTime() - new Date(st.updatedAt).getTime();
+          const ageHours = ageMs / (1000 * 60 * 60);
+          latestVolumes.set(st.station.id, {
+            volume: vol,
+            ageHours,
+            coverage: st.coverage,
+          });
+        }
+      }
+
+      v2Predictions = getV2Predictions(KANALBRUA_ID, now, hour, 5, latestVolumes);
+
+      // Decision engine: current + next 4 hours
+      const currentV2 = v2Predictions[0];
+      const futureV2 = v2Predictions.slice(1);
+      const kanalbruaStation = stations.find(s => s.station.id === KANALBRUA_ID);
+      const currentCongestion = kanalbruaStation?.congestion ?? currentV2.congestion;
+      travelDecision = makeDecision(currentV2, futureV2, currentCongestion);
+    } else {
+      // V1 fallback: build decision from v1 predictions
+      const v1Current = predictions.predictions[0];
+      const v1Future = predictions.predictions.slice(1);
+      const kanalbruaStationV1 = stations.find(s => s.station.id === KANALBRUA_ID);
+      const kanalbruaCongestion = kanalbruaStationV1?.congestion ?? "unknown";
+
+      // Convert v1 predictions to v2 format for decision engine
+      const toV2 = (p: HourlyPrediction): HourlyPredictionV2 => ({
+        ...p,
+        predictedLow: p.predicted,
+        predictedHigh: p.predicted,
+        residual: 0,
+        modelVersion: "v1",
+        confidenceBucket: p.confidence,
+      });
+
+      travelDecision = makeDecision(
+        toV2(v1Current),
+        v1Future.map(toV2),
+        kanalbruaCongestion,
+      );
+    }
+
     return {
       corridor,
       bestTime,
@@ -151,6 +208,8 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
         normalDay: may17Data.normalDay,
         may17Day: may17Data.may17Day,
       },
+      travelDecision,
+      v2Predictions,
     };
   } catch (error) {
     console.error("Failed to fetch traffic data:", error);
@@ -161,7 +220,7 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
       const normalVolume = getNormalVolume(averages as StationAverages, station.id, dayOfWeek, hour);
       const pred = predictVolume(station.id, now, hour);
       const estimatedCongestion = pred.predicted > 0
-        ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek)
+        ? classifyPredictedCongestion(pred.predicted, station.id, dayOfWeek, hour)
         : "unknown" as const;
 
       return {
@@ -193,6 +252,22 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
     for (let h = 6; h <= 22; h++) {
       normalPattern.push({ hour: h, volume: getModelNormalVolume(KANALBRUA_ID, dayOfWeek, h) });
     }
+
+    // V1 fallback decision
+    const toV2Fallback = (p: HourlyPrediction): HourlyPredictionV2 => ({
+      ...p,
+      predictedLow: p.predicted,
+      predictedHigh: p.predicted,
+      residual: 0,
+      modelVersion: "v1",
+      confidenceBucket: p.confidence,
+    });
+    const fallbackDecision = makeDecision(
+      toV2Fallback(predictions.predictions[0]),
+      predictions.predictions.slice(1).map(toV2Fallback),
+      "unknown",
+    );
+
     return {
       corridor,
       bestTime,
@@ -206,6 +281,8 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
         normalDay: [],
         may17Day: [],
       },
+      travelDecision: fallbackDecision,
+      v2Predictions: null,
     };
   }
 }

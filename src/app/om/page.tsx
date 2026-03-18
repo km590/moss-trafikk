@@ -28,40 +28,40 @@ export default function OmPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Trafikknivå</h2>
+        <h2 className="text-lg font-semibold">Framkommelighet</h2>
         <p className="text-slate-600">
-          Fargene uttrykker hvor travel en time typisk er for den aktuelle stasjonen, basert på historisk mønster.
+          Fargene viser hvor lett det sannsynligvis er å komme fram, ikke bare hvor mye trafikk det er. Vurderingen bygger på tre uavhengige signaler: absolutt trafikkmengde, avvik fra normalen, og stasjonens kjente sårbarhet.
         </p>
         <div className="rounded-lg border border-slate-200 overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-slate-50">
               <tr>
                 <th className="text-left px-4 py-2 font-medium">Farge</th>
-                <th className="text-left px-4 py-2 font-medium">Betydning</th>
+                <th className="text-left px-4 py-2 font-medium">Målt</th>
+                <th className="text-left px-4 py-2 font-medium">Estimert</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-t border-slate-100">
-                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />Rolig</td>
-                <td className="px-4 py-2">Blant de roligste timene for denne stasjonen</td>
+                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />Grønn</td>
+                <td className="px-4 py-2">Går fint</td>
+                <td className="px-4 py-2">Ser rolig ut</td>
               </tr>
               <tr className="border-t border-slate-100">
-                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-400 inline-block" />Noe trafikk</td>
-                <td className="px-4 py-2">Moderat travelhet, omtrent som vanlig</td>
+                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-400 inline-block" />Gul</td>
+                <td className="px-4 py-2">Travelt</td>
+                <td className="px-4 py-2">Ser travelt ut</td>
               </tr>
               <tr className="border-t border-slate-100">
-                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-orange-500 inline-block" />Travel</td>
-                <td className="px-4 py-2">Travlere enn vanlig for denne stasjonen</td>
-              </tr>
-              <tr className="border-t border-slate-100">
-                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" />Svært travel</td>
-                <td className="px-4 py-2">Blant de travleste timene i døgnet</td>
+                <td className="px-4 py-2 flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" />Rød</td>
+                <td className="px-4 py-2">Kø</td>
+                <td className="px-4 py-2">Kø sannsynlig</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p className="text-sm text-slate-500">
-          Når vi har ferske målinger fra Vegvesen, brukes avvik fra normalen i stedet for percentiler.
+          Rødt er konservativt: for målte data kreves minst 2 av 3 signaler, for estimater alle 3. Tvil mellom grønn og gul heller mot grønn. Kveldstrafikk overvarsles ikke.
         </p>
       </section>
 
@@ -87,6 +87,16 @@ export default function OmPage() {
         <p className="text-sm text-slate-500 mt-2">
           Trafikkdata: <a href="https://trafikkdata.atlas.vegvesen.no" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Statens vegvesen Trafikkdata API</a>.
           Fergeavganger: <a href="https://developer.entur.org" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Entur Journey Planner API</a>.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Modellen</h2>
+        <p className="text-slate-600">
+          Modellen kombinerer historiske mønstre med ferske målinger fra alle tellepunkter. Når målinger er ferske, vektes de tungt. Når data er gammelt, faller modellen tilbake til historiske mønstre.
+        </p>
+        <p className="text-slate-600">
+          Usikkerheten i anslaget vises som en tillitsvurdering. Ved høy usikkerhet (gammel data, uvanlig trafikkmønster) er modellen mer forsiktig med å gi sterke anbefalinger om å vente.
         </p>
       </section>
 

@@ -1,5 +1,5 @@
 import { CongestionLevel, StationStatus, StationAverages, BestTimeWindow, BestTimeResult, ModelWeights } from "./types";
-import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, RV19_STATION_IDS, E6_STATION_IDS } from "./stations";
+import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, RV19_STATION_IDS, E6_STATION_IDS, getStationVulnerability } from "./stations";
 import modelWeightsData from "../data/model-weights.json";
 
 const modelWeights = modelWeightsData as ModelWeights;
@@ -36,33 +36,84 @@ export function formatNorwayTime(date: Date): string {
   });
 }
 
+// --- Congestion thresholds (CALIBRATION V1) ---
+const DEVIATION_YELLOW = 1.15; // CALIBRATION: 115% of normal triggers yellow signal
+const DEVIATION_RED = 1.35;    // CALIBRATION: 135% of normal triggers red signal
+const LEAN_GREEN_DEVIATION = 1.20; // CALIBRATION: below this + below yellowAbs*1.05 = lean green
+const LEAN_GREEN_ABS_FACTOR = 1.05; // CALIBRATION
+
+// Rush hours where friction signal is strongest (CALIBRATION)
+const RUSH_HOURS = [7, 8, 15, 16, 17]; // CALIBRATION
+
+/**
+ * Classify measured congestion using 3 independent signals.
+ *
+ * Signal 1: Absolute volume - raw volume vs station thresholds
+ * Signal 2: Deviation from normal - current vs expected for this time
+ * Signal 3: Station/time friction - is this volume problematic given
+ *           the station's physical capacity at this specific time?
+ *
+ * Red: 2 of 3 signals (damped hours: 3 of 3)
+ * Yellow: 1+ signals, with "lean green" clause for marginal cases
+ * Green: 0 signals, or lean-green override
+ */
 export function classifyCongestion(
   currentVolume: number,
   normalVolume: number,
-  stationId: string
+  stationId: string,
+  hour: number
 ): { level: CongestionLevel; deviationPercent: number } {
   if (normalVolume === 0 || normalVolume < 10) {
     return { level: "green", deviationPercent: 100 };
   }
 
   const deviationPercent = Math.round((currentVolume / normalVolume) * 100);
+  const deviationRatio = currentVolume / normalVolume;
+  const vuln = getStationVulnerability(stationId);
 
-  if (stationId === KANALBRUA_ID && currentVolume > KANALBRUA_ABSOLUTE_GUARDRAIL) {
+  // --- Signal 1: Absolute level ---
+  const absYellow = currentVolume >= vuln.yellowAbsolute;
+  const absRed = currentVolume >= vuln.redAbsolute;
+
+  // --- Signal 2: Deviation from normal ---
+  const devYellow = deviationRatio >= DEVIATION_YELLOW;
+  const devRed = deviationRatio >= DEVIATION_RED;
+
+  // --- Signal 3: Station/time friction ---
+  // Combines friction coefficient with time-specific weighting
+  const isRush = RUSH_HOURS.includes(hour);
+  const timeFactor = isRush ? 1.2 : (vuln.dampedHours.includes(hour) ? 0.7 : 1.0); // CALIBRATION
+  const effectiveFriction = vuln.friction * timeFactor;
+  // Friction signal fires when volume * friction exceeds yellow/red thresholds
+  const frictionYellow = currentVolume * effectiveFriction >= vuln.yellowAbsolute;
+  const frictionRed = currentVolume * effectiveFriction >= vuln.redAbsolute;
+
+  // --- Count signals ---
+  const yellowSignals = [absYellow, devYellow, frictionYellow].filter(Boolean).length;
+  const redSignals = [absRed, devRed, frictionRed].filter(Boolean).length;
+
+  const isDamped = vuln.dampedHours.includes(hour);
+
+  // --- Red classification ---
+  // Normal: 2 of 3 red signals. Damped hours: all 3 required.
+  const redThreshold = isDamped ? 3 : 2;
+  if (redSignals >= redThreshold) {
     return { level: "red", deviationPercent };
   }
 
-  let level: CongestionLevel;
-  if (deviationPercent < 110) {
-    level = "green";
-  } else if (deviationPercent < 125) {
-    level = "yellow";
-  } else if (deviationPercent < 145) {
-    level = "orange";
-  } else {
-    level = "red";
+  // --- Lean green clause ---
+  // If deviation is marginal AND absolute is close to but below yellow threshold,
+  // lean toward green (doubt between green/yellow -> green)
+  if (yellowSignals >= 1 && deviationRatio < LEAN_GREEN_DEVIATION && currentVolume < vuln.yellowAbsolute * LEAN_GREEN_ABS_FACTOR) {
+    return { level: "green", deviationPercent };
   }
 
-  return { level, deviationPercent };
+  // --- Yellow classification ---
+  if (yellowSignals >= 1) {
+    return { level: "yellow", deviationPercent };
+  }
+
+  return { level: "green", deviationPercent };
 }
 
 export function getCorridorWorstPoint(statuses: StationStatus[]): StationStatus | null {
@@ -192,8 +243,6 @@ export function getCongestionColor(level: CongestionLevel): string {
       return "bg-emerald-500";
     case "yellow":
       return "bg-amber-400";
-    case "orange":
-      return "bg-orange-500";
     case "red":
       return "bg-red-500";
     case "unknown":
@@ -204,13 +253,11 @@ export function getCongestionColor(level: CongestionLevel): string {
 export function getCongestionLabel(level: CongestionLevel): string {
   switch (level) {
     case "green":
-      return "Rolig";
+      return "Går fint";
     case "yellow":
-      return "Noe trafikk";
-    case "orange":
-      return "Travel";
+      return "Travelt";
     case "red":
-      return "Svært travel";
+      return "Kø";
     case "unknown":
       return "Ukjent";
   }
@@ -219,13 +266,11 @@ export function getCongestionLabel(level: CongestionLevel): string {
 export function getEstimateCongestionLabel(level: CongestionLevel): string {
   switch (level) {
     case "green":
-      return "Rolig";
+      return "Ser rolig ut";
     case "yellow":
-      return "Noe trafikk";
-    case "orange":
-      return "Travel";
+      return "Ser travelt ut";
     case "red":
-      return "Svært travel";
+      return "Kø sannsynlig";
     case "unknown":
       return "Ukjent";
   }

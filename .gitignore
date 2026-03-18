@@ -47,3 +47,7 @@ scripts/raw-history/
 # supabase CLI cache
 supabase/.temp/
 .env*.local
+
+# Python training venv
+scripts/training/.venv/
+__pycache__/

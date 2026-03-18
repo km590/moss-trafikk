@@ -1,0 +1,120 @@
+"""
+All calibration constants, feature names, station lists and hyperparameters.
+"""
+
+# --- Station lists ---
+
+MIN_RECORDS_FOR_TRAINING = 1000
+
+FULL_DATA_STATIONS = [
+    "40641V971605",  # Kanalbrua
+    "15322V971307",  # Storebaug
+    "26266V443149",  # E6 Nord
+    "28495V971383",  # Patterød vest
+    "69994V971384",  # Vogts gate
+]
+
+RV19_IDS = [
+    "39666V971386",  # Østre Kanalgate
+    "72867V971385",  # Rådhusbrua
+    "69994V971384",  # Vogts gate
+    "76208V971383",  # Mosseelva
+]
+
+E6_IDS = [
+    "40488V971307",  # Patterød sør
+    "15322V971307",  # Storebaug
+    "26266V443149",  # E6 Nord
+]
+
+CENTRUM_IDS = [
+    "69994V971384",  # Vogts gate
+    "72867V971385",  # Rådhusbrua
+]
+
+# --- Categorical encoding ---
+
+STATION_ENCODING = {
+    "40641V971605": 0,  # Kanalbrua
+    "15322V971307": 1,  # Storebaug
+    "26266V443149": 2,  # E6 Nord
+    "28495V971383": 3,  # Patterød vest
+    "69994V971384": 4,  # Vogts gate
+    "72867V971385": 5,  # Rådhusbrua
+    "59044V971518": 6,  # Fjordveien
+    "76208V971383": 7,  # Mosseelva
+    "39666V971386": 8,  # Østre Kanalgate
+    "40488V971307": 9,  # Patterød sør
+}
+
+DAY_TYPE_ENCODING = {
+    "normal": 0,
+    "school_break": 1,
+    "pre_holiday": 2,
+    "public_holiday": 3,
+}
+
+CATEGORICAL_FEATURES = {
+    "station_id": STATION_ENCODING,
+}
+
+# --- Feature names (order matters for LightGBM) ---
+
+FEATURE_NAMES = [
+    "baseline_prediction",
+    "station_id",
+    "weekday",
+    "hour",
+    "month",
+    "day_type",
+    "is_rush",
+    "is_evening",
+    "latest_measured_volume",
+    "freshness",
+    "coverage",
+    "lag_1h",
+    "lag_2h",
+    "lag_3h",
+    "sum_rv19",
+    "sum_e6",
+    "centrum_pressure",
+    "neighbor_avg",
+]
+
+# --- LightGBM hyperparameters ---
+
+LGBM_PARAMS = {
+    "objective": "quantile",
+    "metric": "quantile",
+    "num_leaves": 31,
+    "learning_rate": 0.05,
+    "min_data_in_leaf": 50,
+    "feature_fraction": 0.8,
+    "bagging_fraction": 0.8,
+    "bagging_freq": 1,
+    "verbose": -1,
+}
+
+N_ESTIMATORS = 50
+
+QUANTILE_ALPHAS = [0.1, 0.5, 0.9]
+QUANTILE_LABELS = ["p10", "p50", "p90"]
+
+# --- Freshness simulation (training augmentation) ---
+
+FRESHNESS_SIMULATION = {
+    "fresh_prob": 0.70,       # freshness=0, full lag features
+    "stale_prob": 0.20,       # freshness=random(2,4), lags=-1
+    "missing_prob": 0.10,     # freshness=random(4,8), lags=-1 + latest=-1
+    "stale_range": (2, 4),
+    "missing_range": (4, 8),
+}
+
+# --- Train/test split ---
+
+TEST_MONTHS = 4
+
+# --- Quality thresholds ---
+
+MIN_COVERAGE = 50
+MIN_VOLUME = 10

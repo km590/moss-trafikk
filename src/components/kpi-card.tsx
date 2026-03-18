@@ -16,8 +16,6 @@ function getBorderColor(level: CongestionLevel): string {
       return "border-l-emerald-500";
     case "yellow":
       return "border-l-amber-400";
-    case "orange":
-      return "border-l-orange-500";
     case "red":
       return "border-l-red-500";
     case "unknown":

@@ -1,4 +1,4 @@
-export type CongestionLevel = "green" | "yellow" | "orange" | "red" | "unknown";
+export type CongestionLevel = "green" | "yellow" | "red" | "unknown";
 
 export type Direction = "from" | "to"; // from = away from Moss center, to = toward Moss center
 
@@ -96,6 +96,27 @@ export interface PredictionResult {
   summary: string; // e.g. "Mest trafikk kl. 16"
   dayType: DayType;
   ferry: FerryBoost;
+}
+
+// V2 prediction types (residual model)
+
+export interface HourlyPredictionV2 extends HourlyPrediction {
+  predictedLow: number;     // p10 (baseline + residual_p10)
+  predictedHigh: number;    // p90 (baseline + residual_p90)
+  residual: number;         // p50 residual from tree-walker
+  modelVersion: "v1" | "v2";
+  explanation?: string;     // signal-based explanation
+  confidenceBucket: "high" | "medium" | "low"; // from band width
+}
+
+export type DecisionMode = "go_now" | "wait" | "no_clear_advantage";
+
+export interface TravelDecision {
+  mode: DecisionMode;
+  headline: string;
+  detail: string | null;
+  confidence: "high" | "medium" | "low";
+  bestWindow: BestTimeWindow | null;
 }
 
 export interface ModelWeights {

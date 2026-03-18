@@ -1,6 +1,6 @@
 import type { ModelWeights, HourlyPrediction, PredictionResult, CongestionLevel, DayType, FerryBoost } from "./types";
 import { classifyDate, shouldAutoActivateMay17 } from "./norwegian-calendar";
-import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL } from "./stations";
+import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, getStationVulnerability } from "./stations";
 import modelWeightsData from "../data/model-weights.json";
 import type { FerryDeparture } from "./entur-client";
 
@@ -156,46 +156,86 @@ function predictMay17Volume(
   return { predicted, confidence: "medium", sampleCount: wedBase.sampleCount };
 }
 
+// --- Estimated congestion thresholds (CALIBRATION V1) ---
+// Stricter than measured: estimates carry more uncertainty
+const EST_RUSH_HOURS = [7, 8, 15, 16, 17]; // CALIBRATION
+
 /**
- * Classify predicted congestion using percentile buckets.
+ * Classify predicted congestion using 3 independent signals (stricter than measured).
  *
- * Estimate mode cannot use "deviation from normal" because predicted IS the normal.
- * Instead, we classify how busy this hour typically is relative to the station's
- * own daily profile, using percentiles of all 24 hourly medians for this day of week.
+ * Signal 1: Absolute level - predicted volume vs station thresholds
+ * Signal 2: Relative position - predicted vs p60/p85 of station's daily profile
+ * Signal 3: Station/time friction - predicted * friction vs thresholds
  *
- * - green:  under p25 (rolig time for denne stasjonen)
- * - yellow: p25-p50 (normal travelhet)
- * - orange: p50-p75 (travel time)
- * - red:    over p75 (blant de travleste timene)
+ * Red: ALL 3 signals must be true (damped hours: all 3 + absolute > redAbsolute * 1.1)
+ * Yellow: 2 of 3 signals (measured needs only 1)
+ * Green: 0-1 signals
  */
-export function classifyPredictedCongestion(predicted: number, stationId: string, dayOfWeek: number): CongestionLevel {
+export function classifyPredictedCongestion(
+  predicted: number,
+  stationId: string,
+  dayOfWeek: number,
+  hour: number
+): CongestionLevel {
   if (predicted < 10) return "green";
 
-  if (stationId === KANALBRUA_ID && predicted > KANALBRUA_ABSOLUTE_GUARDRAIL) {
-    return "red";
-  }
+  const vuln = getStationVulnerability(stationId);
 
-  // Collect all hourly medians for this station+day
+  // --- Signal 1: Absolute level ---
+  const absYellow = predicted >= vuln.yellowAbsolute;
+  const absRed = predicted >= vuln.redAbsolute;
+
+  // --- Signal 2: Relative position (p60/p85 instead of deviation) ---
   const dayData = weights.basePatterns[stationId]?.[dayOfWeek];
-  if (!dayData) return "green";
-
-  const medians: number[] = [];
-  for (const hour of Object.keys(dayData)) {
-    const med = dayData[parseInt(hour)]?.median;
-    if (med !== undefined && med > 0) medians.push(med);
+  let relYellow = false;
+  let relRed = false;
+  if (dayData) {
+    const medians: number[] = [];
+    for (const h of Object.keys(dayData)) {
+      const med = dayData[parseInt(h)]?.median;
+      if (med !== undefined && med > 0) medians.push(med);
+    }
+    if (medians.length >= 4) {
+      medians.sort((a, b) => a - b);
+      const p60 = medians[Math.floor(medians.length * 0.60)]; // CALIBRATION
+      const p85 = medians[Math.floor(medians.length * 0.85)]; // CALIBRATION
+      relYellow = predicted >= p60;
+      relRed = predicted >= p85;
+    }
   }
 
-  if (medians.length < 4) return "green"; // Too few hours to classify
+  // --- Signal 3: Station/time friction ---
+  const isRush = EST_RUSH_HOURS.includes(hour);
+  const timeFactor = isRush ? 1.2 : (vuln.dampedHours.includes(hour) ? 0.7 : 1.0); // CALIBRATION
+  const effectiveFriction = vuln.friction * timeFactor;
+  const frictionYellow = predicted * effectiveFriction >= vuln.yellowAbsolute;
+  const frictionRed = predicted * effectiveFriction >= vuln.redAbsolute;
 
-  medians.sort((a, b) => a - b);
-  const p25 = medians[Math.floor(medians.length * 0.25)];
-  const p50 = medians[Math.floor(medians.length * 0.50)];
-  const p75 = medians[Math.floor(medians.length * 0.75)];
+  // --- Count signals ---
+  const yellowSignals = [absYellow, relYellow, frictionYellow].filter(Boolean).length;
+  const redSignals = [absRed, relRed, frictionRed].filter(Boolean).length;
 
-  if (predicted < p25) return "green";
-  if (predicted < p50) return "yellow";
-  if (predicted < p75) return "orange";
-  return "red";
+  const isDamped = vuln.dampedHours.includes(hour);
+
+  // --- Red: all 3 signals required (damped: all 3 + absolute > redAbsolute * 1.1) ---
+  if (redSignals >= 3) {
+    if (isDamped) {
+      // Damped hours: red still possible but needs extra absolute headroom
+      if (predicted >= vuln.redAbsolute * 1.1) { // CALIBRATION
+        return "red";
+      }
+      // Fall through to yellow
+    } else {
+      return "red";
+    }
+  }
+
+  // --- Yellow: 2 of 3 signals ---
+  if (yellowSignals >= 2) {
+    return "yellow";
+  }
+
+  return "green";
 }
 
 /**
@@ -253,7 +293,7 @@ export function getPredictions(
   }
 
   const predictions: HourlyPrediction[] = rawPredictions.map(({ hour, predicted, confidence, insufficientData }) => {
-    const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek);
+    const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek, hour);
     const finalConfidence = insufficientData ? "low" : confidence;
 
     return {
@@ -345,7 +385,7 @@ export function getMay17Comparison(
     normalDay.push({
       hour,
       predicted: normalPred.predicted,
-      congestion: classifyPredictedCongestion(normalPred.predicted, stationId, wedDow),
+      congestion: classifyPredictedCongestion(normalPred.predicted, stationId, wedDow, hour),
       confidence: normalPred.confidence,
       label: `${String(hour).padStart(2, "0")}:00`,
     });
@@ -353,7 +393,7 @@ export function getMay17Comparison(
     may17Day.push({
       hour,
       predicted: may17Pred.predicted,
-      congestion: classifyPredictedCongestion(may17Pred.predicted, stationId, wedDow),
+      congestion: classifyPredictedCongestion(may17Pred.predicted, stationId, wedDow, hour),
       confidence: may17Pred.confidence,
       label: `${String(hour).padStart(2, "0")}:00`,
     });
