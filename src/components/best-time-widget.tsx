@@ -1,25 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { BestTimeResult } from "@/lib/types";
+import type { BestTimeResult, DecisionMode } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface BestTimeWidgetProps {
   kanalbruaResult: BestTimeResult;
   corridorResult: BestTimeResult;
+  decisionMode: DecisionMode;
 }
 
-export default function BestTimeWidget({ kanalbruaResult, corridorResult }: BestTimeWidgetProps) {
+export default function BestTimeWidget({ kanalbruaResult, corridorResult, decisionMode }: BestTimeWidgetProps) {
   const [mode, setMode] = useState<"kanalbrua" | "corridor">("kanalbrua");
   const result = mode === "kanalbrua" ? kanalbruaResult : corridorResult;
   const { primary, backup } = result;
+
+  // When decision layer says go_now or no_clear_advantage,
+  // don't show a later time as recommendation (avoids double messaging)
+  const showTimeRecommendation = decisionMode === "wait";
 
   return (
     <Card>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-            Når er det smartest å kjøre?
+            De neste timene
           </p>
           <div className="flex rounded-full bg-slate-100 p-0.5 text-xs">
             <button
@@ -45,23 +50,31 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult }: Best
           </div>
         </div>
 
-        <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-emerald-600">{primary.label}</span>
-        </div>
+        {showTimeRecommendation ? (
+          <>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-emerald-600">{primary.label}</span>
+            </div>
 
-        {primary.expectedDeviation > 0 && primary.expectedDeviation < 100 && (
-          <p className="text-sm text-muted-foreground">
-            {primary.expectedDeviation < 80
-              ? "Vesentlig roligere enn nå"
-              : primary.expectedDeviation < 95
-              ? "Roligere enn nå"
-              : "Omtrent som nå"}
-          </p>
-        )}
+            {primary.expectedDeviation > 0 && primary.expectedDeviation < 100 && (
+              <p className="text-sm text-muted-foreground">
+                {primary.expectedDeviation < 80
+                  ? "Vesentlig roligere enn nå"
+                  : primary.expectedDeviation < 95
+                  ? "Roligere enn nå"
+                  : "Omtrent som nå"}
+              </p>
+            )}
 
-        {backup && (
+            {backup && (
+              <p className="text-sm text-muted-foreground">
+                Alternativ: <span className="font-medium">{backup.label}</span>
+              </p>
+            )}
+          </>
+        ) : (
           <p className="text-sm text-muted-foreground">
-            Alternativ: <span className="font-medium">{backup.label}</span>
+            Det ser greit ut de neste timene. Ingen tydelig gevinst i å vente.
           </p>
         )}
 

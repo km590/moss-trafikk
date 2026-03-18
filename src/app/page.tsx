@@ -91,10 +91,12 @@ export default async function Home() {
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />
         <KpiCard
-          title="Roligst senere i dag"
-          value={bestTime.primary.label}
-          subtitle={travelDecision.detail ?? "Vanligvis roligere enn nå"}
-          congestion="green"
+          title="De neste timene"
+          value={travelDecision.mode === "wait"
+            ? bestTime.primary.label
+            : "Ser greit ut"}
+          subtitle={travelDecision.detail ?? "Ingen tydelig gevinst i å vente"}
+          congestion={travelDecision.mode === "wait" ? "yellow" : "green"}
         />
       </div>
 
@@ -144,7 +146,7 @@ export default async function Home() {
 
       <TravelAdvice decision={travelDecision} />
 
-      <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} />
+      <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} decisionMode={travelDecision.mode} />
 
       <p className="text-xs text-slate-400 text-center">
         Dette er et smart estimat, ikke live trafikk. Anslagene bygger på historiske målinger fra samme ukedag og tidspunkt, justert for sesong og høytider.{" "}
