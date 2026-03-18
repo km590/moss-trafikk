@@ -1,6 +1,8 @@
-import { CongestionLevel, StationStatus, StationAverages, BestTimeWindow, BestTimeResult } from "./types";
+import { CongestionLevel, StationStatus, StationAverages, BestTimeWindow, BestTimeResult, ModelWeights } from "./types";
 import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, RV19_STATION_IDS, E6_STATION_IDS } from "./stations";
+import modelWeightsData from "../data/model-weights.json";
 
+const modelWeights = modelWeightsData as ModelWeights;
 const FJORDVEIEN_ID = "59044V971518";
 
 const DAY_NAMES = ["søndager", "mandager", "tirsdager", "onsdager", "torsdager", "fredager", "lørdager"];
@@ -78,6 +80,15 @@ export function getNormalVolume(
   dayOfWeek: number,
   hour: number
 ): number {
+  // Use model weights (median) as primary source
+  const modelMedian = modelWeights.basePatterns[stationId]?.[dayOfWeek]?.[hour]?.median;
+  if (modelMedian !== undefined && modelMedian > 0) return modelMedian;
+  // Mon/Tue proxy: fall back to Wednesday when no data
+  if (dayOfWeek === 1 || dayOfWeek === 2) {
+    const wedMedian = modelWeights.basePatterns[stationId]?.[3]?.[hour]?.median;
+    if (wedMedian !== undefined && wedMedian > 0) return wedMedian;
+  }
+  // Legacy fallback
   return averages[stationId]?.[dayOfWeek]?.[hour]?.mean ?? 0;
 }
 

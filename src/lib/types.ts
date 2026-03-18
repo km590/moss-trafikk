@@ -67,3 +67,53 @@ export interface StationAverages {
     };
   };
 }
+
+// ML prediction types (Sprint 2)
+
+export type DayType = "public_holiday" | "pre_holiday" | "school_break" | "normal";
+
+export interface HourlyPrediction {
+  hour: number;
+  predicted: number;
+  congestion: CongestionLevel;
+  confidence: "high" | "medium" | "low";
+  label: string; // e.g. "14:00"
+}
+
+export interface PredictionResult {
+  stationId: string;
+  predictions: HourlyPrediction[];
+  peakHour: number;
+  quietestHour: number;
+  summary: string; // e.g. "Mest trafikk kl. 16"
+  dayType: DayType;
+}
+
+export interface ModelWeights {
+  basePatterns: {
+    [stationId: string]: {
+      [dayOfWeek: number]: {
+        [hour: number]: {
+          median: number;
+          mean: number;
+          sampleCount: number;
+          p25: number;
+          p75: number;
+        };
+      };
+    };
+  };
+  monthFactors: {
+    [month: number]: number; // 0-11, multiplier relative to annual average
+  };
+  holidayFactors: {
+    public_holiday: number;
+    pre_holiday: number;
+    school_break: number;
+  };
+  metadata: {
+    generatedAt: string;
+    weeksOfData: number;
+    stationCount: number;
+  };
+}

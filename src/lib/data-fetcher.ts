@@ -1,8 +1,9 @@
-import { STATIONS } from "./stations";
+import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
+import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume } from "./prediction-engine";
 import averages from "../data/averages.json";
-import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages } from "./types";
+import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
 
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -13,10 +14,21 @@ function formatDataAge(ms: number): string {
   return `${hours} ${hours === 1 ? "time" : "timer"} siden`;
 }
 
-export async function getTrafficData(): Promise<{
+export interface TrafficDataResult {
   corridor: CorridorStatus;
   bestTime: BestTimeResult;
-}> {
+  predictions: PredictionResult;
+  chartPredictions: HourlyPrediction[];
+  normalPattern: { hour: number; volume: number }[];
+  may17: {
+    showSection: boolean; // Only true May 1-17
+    active: boolean;      // Auto-activated May 16 (Fri) and May 17
+    normalDay: HourlyPrediction[];
+    may17Day: HourlyPrediction[];
+  };
+}
+
+export async function getTrafficData(): Promise<TrafficDataResult> {
   try {
     const now = new Date();
     const { dayOfWeek, hour } = getNorwayTime();
@@ -83,7 +95,39 @@ export async function getTrafficData(): Promise<{
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
-    return { corridor, bestTime };
+    // Predictions
+    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4);
+    const fullDayPredictions = getPredictions(KANALBRUA_ID, now, hour, 24);
+    const chartPredictions = fullDayPredictions.predictions.filter(p => p.hour >= 6 && p.hour <= 22);
+
+    // Normal pattern for chart
+    const normalPattern = [];
+    for (let h = 6; h <= 22; h++) {
+      normalPattern.push({ hour: h, volume: getModelNormalVolume(KANALBRUA_ID, dayOfWeek, h) });
+    }
+
+    // May 17 mode: only show section May 1-17
+    const nowMonth = now.getMonth(); // 0-indexed, May = 4
+    const nowDay = now.getDate();
+    const showMay17Section = nowMonth === 4 && nowDay <= 17;
+    const may17Active = isMay17ModeActive(now);
+    const may17Data = showMay17Section
+      ? getMay17Comparison(KANALBRUA_ID, now.getFullYear())
+      : { normalDay: [], may17Day: [] };
+
+    return {
+      corridor,
+      bestTime,
+      predictions,
+      chartPredictions,
+      normalPattern,
+      may17: {
+        showSection: showMay17Section,
+        active: may17Active,
+        normalDay: may17Data.normalDay,
+        may17Day: may17Data.may17Day,
+      },
+    };
   } catch (error) {
     console.error("Failed to fetch traffic data:", error);
     const now = new Date();
@@ -109,6 +153,25 @@ export async function getTrafficData(): Promise<{
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
-    return { corridor, bestTime };
+    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4);
+    const fullDayPredictions = getPredictions(KANALBRUA_ID, now, hour, 24);
+    const chartPredictions = fullDayPredictions.predictions.filter(p => p.hour >= 6 && p.hour <= 22);
+    const normalPattern = [];
+    for (let h = 6; h <= 22; h++) {
+      normalPattern.push({ hour: h, volume: getModelNormalVolume(KANALBRUA_ID, dayOfWeek, h) });
+    }
+    return {
+      corridor,
+      bestTime,
+      predictions,
+      chartPredictions,
+      normalPattern,
+      may17: {
+        showSection: false,
+        active: false,
+        normalDay: [],
+        may17Day: [],
+      },
+    };
   }
 }
