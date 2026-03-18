@@ -1,23 +1,27 @@
 # Moss Trafikk
 
-Trafikstatus for hele Moss-korridoren. Kanalbrua, Rv19, E6/Mosseporten.
+Trafikkstatus og prediksjoner for hele Moss-korridoren. Kanalbrua, Rv19, E6/Mosseporten.
 
 **Bor du kjore na, eller vente?**
 
+Inspirert av [Jeloy Trafikk](https://synaro.no/jeloytrafikk) av Synaro.
+
 ## Hva
 
-Avviksbasert trengselsanalyse for 10 tellepunkter langs korridoren fra Valer/E6 til Kanalbrua/Jeloya. Sammenligner siste times trafikk mot historisk snitt for denne ukedagen og timen.
+Avviksbasert trengselsanalyse og prediksjoner for 10 tellepunkter langs korridoren fra Valer/E6 til Kanalbrua/Jeloya. Baseline-modell med 2 ar historikk (89 000 timer), sanntids ferjesignal fra Entur, og estimert korridorstatus nar Vegvesen-data er forsinket.
 
 ## Datakilder
 
 - [Statens vegvesen Trafikkdata API](https://trafikkdata.atlas.vegvesen.no/) (apent GraphQL API, ingen auth)
-- Historiske gjennomsnitt basert pa 10 uker med timedata
+- [Entur Journey Planner API](https://developer.entur.org/) (fergeavganger Moss-Horten)
+- Prediksjonsmodell: median per (stasjon, ukedag, time) med sesong- og helligdagsfaktorer
 
 ## Tech
 
-- Next.js 15 (App Router, ISR 5 min)
-- Tailwind CSS + shadcn/ui
-- Vercel (arn1/Stockholm)
+- Next.js 16 (App Router, ISR 5 min)
+- Tailwind CSS + shadcn/ui + Recharts
+- Supabase (eval/kalibrering)
+- Vercel
 
 ## Kjor lokalt
 
@@ -26,12 +30,15 @@ npm install
 npm run dev
 ```
 
-Generer historiske snitt (tar ca 3 min):
+Generer modellvekter fra historikk (tar ca 15 min forste gang):
 
 ```bash
-npx tsx scripts/generate-averages.ts
+npx tsx scripts/fetch-history.ts
+npx tsx scripts/compute-model.ts
+npx tsx scripts/validate-model.ts
+npx tsx scripts/golden-test.ts
 ```
 
 ## Lisens
 
-Data: Statens vegvesen, NLOD-lisens.
+Data: Statens vegvesen, NLOD-lisens. Fergeavganger: Entur, NLOD-lisens.

@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-          Data: Statens vegvesen Trafikkdata API · Timedata, oppdatert ved sidelast · <a href="/om" className="underline">Om tjenesten</a>
+          Data: Statens vegvesen Trafikkdata API · Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeløy Trafikk</a> av Synaro · <a href="/om" className="underline">Om tjenesten</a>
         </footer>
       </body>
     </html>
