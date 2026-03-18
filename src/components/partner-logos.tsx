@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { trackEvent } from "@/lib/plausible";
 
 export default function PartnerLogos() {
@@ -24,7 +25,13 @@ export default function PartnerLogos() {
         onClick={() => trackEvent("source_logo_clicked", { source: "krescado" })}
         className="hover:opacity-80 transition-opacity"
       >
-        <img src="/krescado-logo.webp" alt="Krescado" className="h-3 w-auto opacity-70" />
+        <Image
+          src="/krescado-logo.webp"
+          alt="Krescado"
+          width={60}
+          height={12}
+          className="h-3 w-auto opacity-70"
+        />
       </a>
     </div>
   );

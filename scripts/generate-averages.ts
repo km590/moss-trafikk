@@ -124,11 +124,7 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchWeek(
-  stationId: string,
-  from: string,
-  to: string
-): Promise<HourNode[]> {
+async function fetchWeek(stationId: string, from: string, to: string): Promise<HourNode[]> {
   const body = buildQuery(stationId, from, to);
 
   const res = await fetch(API_URL, {
@@ -149,9 +145,7 @@ async function fetchWeek(
     );
   }
 
-  return (
-    json.data?.trafficData?.volume?.byHour?.edges?.map((e) => e.node) ?? []
-  );
+  return json.data?.trafficData?.volume?.byHour?.edges?.map((e) => e.node) ?? [];
 }
 
 function addToSamples(samples: SlotSamples, nodes: HourNode[]): void {
@@ -177,9 +171,7 @@ function addToSamples(samples: SlotSamples, nodes: HourNode[]): void {
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
 }
 
 function mean(values: number[]): number {
@@ -210,9 +202,7 @@ function computeAverages(
 
 async function processStation(
   stationId: string
-): Promise<
-  Record<string, Record<string, { mean: number; median: number; sampleCount: number }>>
-> {
+): Promise<Record<string, Record<string, { mean: number; median: number; sampleCount: number }>>> {
   const name = STATION_NAMES[stationId] ?? stationId;
   const samples: SlotSamples = {};
 
@@ -234,7 +224,9 @@ async function processStation(
 }
 
 async function main(): Promise<void> {
-  console.log(`Genererer gjennomsnitt for ${STATION_IDS.length} stasjoner, ${WEEKS_BACK} uker tilbake...\n`);
+  console.log(
+    `Genererer gjennomsnitt for ${STATION_IDS.length} stasjoner, ${WEEKS_BACK} uker tilbake...\n`
+  );
 
   const output: Record<
     string,

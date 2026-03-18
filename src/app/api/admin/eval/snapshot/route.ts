@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   }
 
   const now = new Date();
-  const { hour, dayOfWeek } = getNorwayTime();
+  const { hour } = getNorwayTime();
   const dayType = classifyDate(now);
 
   // Round to current hour in Oslo
@@ -52,9 +52,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const boostedVolume = ferryActive
-      ? Math.round(pred.predicted * ferryFactor)
-      : pred.predicted;
+    const boostedVolume = ferryActive ? Math.round(pred.predicted * ferryFactor) : pred.predicted;
 
     snapshots.push({
       station_id: stationId,

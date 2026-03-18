@@ -14,16 +14,20 @@ import modelWeights from "../src/data/model-weights.json";
 function getNorwayTime(): { hour: number; dayOfWeek: number } {
   const now = new Date();
   const f = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Europe/Oslo", hour: "numeric", hour12: false, weekday: "short"
+    timeZone: "Europe/Oslo",
+    hour: "numeric",
+    hour12: false,
+    weekday: "short",
   });
   const parts = f.formatToParts(now);
-  const hour = parseInt(parts.find(p => p.type === "hour")?.value ?? "0", 10);
+  const hour = parseInt(parts.find((p) => p.type === "hour")?.value ?? "0", 10);
   const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  const dayOfWeek = dayMap[parts.find(p => p.type === "weekday")?.value ?? "Wed"] ?? 3;
+  const dayOfWeek = dayMap[parts.find((p) => p.type === "weekday")?.value ?? "Wed"] ?? 3;
   return { hour, dayOfWeek };
 }
 
 function getBaselineVolume(stationId: string, dow: number, hour: number): number {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const w = modelWeights as any;
   return w.basePatterns[stationId]?.[dow]?.[hour]?.median ?? 0;
 }
@@ -38,7 +42,9 @@ async function main() {
   for (const d of departures) {
     const t = new Date(d.time);
     const min = Math.round((t.getTime() - now) / 60000);
-    console.log(`  ${t.toLocaleTimeString("no-NO", { timeZone: "Europe/Oslo" })} -> ${d.destination} (${min} min)`);
+    console.log(
+      `  ${t.toLocaleTimeString("no-NO", { timeZone: "Europe/Oslo" })} -> ${d.destination} (${min} min)`
+    );
   }
 
   const { hour, dayOfWeek } = getNorwayTime();
@@ -46,16 +52,20 @@ async function main() {
   console.log(`\nNå: ${dayNames[dayOfWeek]} kl ${hour}:00\n`);
 
   // Test ferry factor for key stations
-  const testStations = [
-    KANALBRUA_ID,
-    ...RV19_STATION_IDS.slice(0, 2),
-  ];
+  const testStations = [KANALBRUA_ID, ...RV19_STATION_IDS.slice(0, 2)];
 
-  console.log("Station".padEnd(22), "Baseline".padStart(8), "  +Ferry".padStart(8), "  Delta".padStart(8), "Factor".padStart(8), "Reason");
+  console.log(
+    "Station".padEnd(22),
+    "Baseline".padStart(8),
+    "  +Ferry".padStart(8),
+    "  Delta".padStart(8),
+    "Factor".padStart(8),
+    "Reason"
+  );
   console.log("-".repeat(80));
 
   for (const sid of testStations) {
-    const station = STATIONS.find(s => s.id === sid);
+    const station = STATIONS.find((s) => s.id === sid);
     const name = station?.name ?? sid.slice(0, 10);
     const baseline = getBaselineVolume(sid, dayOfWeek, hour);
     const { factor, reason } = computeFerryFactor(sid, departures, now);
@@ -77,9 +87,18 @@ async function main() {
     const nextDep = departures[0];
     const depTime = new Date(nextDep.time).getTime();
 
-    console.log(`\n=== Ferjesignal-kurve for ${STATIONS.find(s => s.id === KANALBRUA_ID)?.name} ===`);
-    console.log(`Neste avgang: ${new Date(nextDep.time).toLocaleTimeString("no-NO", { timeZone: "Europe/Oslo" })}\n`);
-    console.log("Min før".padStart(8), "Faktor".padStart(8), "Baseline".padStart(10), "Justert".padStart(10));
+    console.log(
+      `\n=== Ferjesignal-kurve for ${STATIONS.find((s) => s.id === KANALBRUA_ID)?.name} ===`
+    );
+    console.log(
+      `Neste avgang: ${new Date(nextDep.time).toLocaleTimeString("no-NO", { timeZone: "Europe/Oslo" })}\n`
+    );
+    console.log(
+      "Min før".padStart(8),
+      "Faktor".padStart(8),
+      "Baseline".padStart(10),
+      "Justert".padStart(10)
+    );
     console.log("-".repeat(40));
 
     for (let minBefore = 60; minBefore >= 0; minBefore -= 5) {

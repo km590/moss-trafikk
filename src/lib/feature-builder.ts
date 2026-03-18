@@ -23,7 +23,7 @@ const DAY_TYPE_ENCODING: Record<string, number> = {
 
 export interface StationLiveData {
   volume: number;
-  ageHours: number;  // hours since measurement
+  ageHours: number; // hours since measurement
   coverage: number;
   // Historical lags (if available)
   lag1h?: number;
@@ -37,7 +37,7 @@ export function buildFeatures(
   date: Date,
   hour: number,
   latestVolumes: Map<string, StationLiveData>,
-  model: ResidualModel,
+  model: ResidualModel
 ): Record<string, number> {
   const dayOfWeek = date.getDay();
   const month = date.getMonth();
@@ -64,10 +64,7 @@ export function buildFeatures(
   const sumRv19 = sumStationVolumes(RV19_IDS, latestVolumes);
   const sumE6 = sumStationVolumes(E6_IDS, latestVolumes);
   const centrumPressure = avgStationVolumes(CENTRUM_IDS, latestVolumes);
-  const neighborAvg = avgStationVolumes(
-    [...latestVolumes.keys()],
-    latestVolumes
-  );
+  const neighborAvg = avgStationVolumes([...latestVolumes.keys()], latestVolumes);
 
   return {
     baseline_prediction: baselinePrediction,

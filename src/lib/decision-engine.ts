@@ -6,8 +6,8 @@
 import type { HourlyPredictionV2, CongestionLevel, BestTimeWindow, TravelDecision } from "./types";
 
 // CALIBRATION constants
-const MUD_VOLUME_THRESHOLD = 0.15;  // 15% improvement needed
-const FLAT_THRESHOLD = 0.10;         // 10% spread = flat profile
+const MUD_VOLUME_THRESHOLD = 0.15; // 15% improvement needed
+const FLAT_THRESHOLD = 0.1; // 10% spread = flat profile
 
 const CONGESTION_ORDER: Record<CongestionLevel, number> = {
   green: 0,
@@ -23,7 +23,7 @@ function congestionOrder(level: CongestionLevel): number {
 export function makeDecision(
   currentPrediction: HourlyPredictionV2,
   futurePredictions: HourlyPredictionV2[],
-  currentCongestion: CongestionLevel,
+  currentCongestion: CongestionLevel
 ): TravelDecision {
   const currentVol = currentPrediction.predicted;
 
@@ -37,11 +37,9 @@ export function makeDecision(
     };
   }
 
-  const bestFuture = futurePredictions.reduce((min, p) =>
-    p.predicted < min.predicted ? p : min
-  );
+  const bestFuture = futurePredictions.reduce((min, p) => (p.predicted < min.predicted ? p : min));
 
-  const allVols = [currentVol, ...futurePredictions.map(p => p.predicted)];
+  const allVols = [currentVol, ...futurePredictions.map((p) => p.predicted)];
   const maxVol = Math.max(...allVols);
   const minVol = Math.min(...allVols);
   const isFlat = maxVol > 0 && (maxVol - minVol) / maxVol < FLAT_THRESHOLD;
@@ -88,9 +86,7 @@ export function makeDecision(
 
   // Rule 3 + 5: Recommend waiting, damped by uncertainty
   const isUncertain = confidence === "low";
-  const headline = isUncertain
-    ? "Det kan lønne seg å vente litt"
-    : "Vent litt hvis du kan";
+  const headline = isUncertain ? "Det kan lønne seg å vente litt" : "Vent litt hvis du kan";
   const hourLabel = bestFuture.label.slice(0, 2);
   const detail = `Roligere fra ca. kl. ${hourLabel}`;
 

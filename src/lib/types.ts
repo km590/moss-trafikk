@@ -83,7 +83,7 @@ export interface HourlyPrediction {
 
 export interface FerryBoost {
   active: boolean;
-  factor: number;          // 1.0 = no effect, 1.15 = +15%
+  factor: number; // 1.0 = no effect, 1.15 = +15%
   nextDepartureMin: number | null; // minutes until next ferry
   reason: string;
 }
@@ -101,11 +101,11 @@ export interface PredictionResult {
 // V2 prediction types (residual model)
 
 export interface HourlyPredictionV2 extends HourlyPrediction {
-  predictedLow: number;     // p10 (baseline + residual_p10)
-  predictedHigh: number;    // p90 (baseline + residual_p90)
-  residual: number;         // p50 residual from tree-walker
+  predictedLow: number; // p10 (baseline + residual_p10)
+  predictedHigh: number; // p90 (baseline + residual_p90)
+  residual: number; // p50 residual from tree-walker
   modelVersion: "v1" | "v2";
-  explanation?: string;     // signal-based explanation
+  explanation?: string; // signal-based explanation
   confidenceBucket: "high" | "medium" | "low"; // from band width
 }
 

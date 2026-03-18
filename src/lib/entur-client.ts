@@ -35,14 +35,16 @@ export async function fetchFerryDepartures(count = 3): Promise<FerryDeparture[]>
 
     const now = Date.now();
 
-    return calls.map((call: { expectedDepartureTime: string; destinationDisplay: { frontText: string } }) => {
-      const time = new Date(call.expectedDepartureTime);
-      return {
-        time: call.expectedDepartureTime,
-        destination: call.destinationDisplay.frontText,
-        minutesUntil: Math.round((time.getTime() - now) / 60000),
-      };
-    });
+    return calls.map(
+      (call: { expectedDepartureTime: string; destinationDisplay: { frontText: string } }) => {
+        const time = new Date(call.expectedDepartureTime);
+        return {
+          time: call.expectedDepartureTime,
+          destination: call.destinationDisplay.frontText,
+          minutesUntil: Math.round((time.getTime() - now) / 60000),
+        };
+      }
+    );
   } catch {
     return [];
   }

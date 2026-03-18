@@ -11,7 +11,11 @@ interface BestTimeWidgetProps {
   decisionMode: DecisionMode;
 }
 
-export default function BestTimeWidget({ kanalbruaResult, corridorResult, decisionMode }: BestTimeWidgetProps) {
+export default function BestTimeWidget({
+  kanalbruaResult,
+  corridorResult,
+  decisionMode,
+}: BestTimeWidgetProps) {
   const [mode, setMode] = useState<"kanalbrua" | "corridor">("kanalbrua");
 
   useEffect(() => {
@@ -66,8 +70,8 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult, decisi
                 {primary.expectedDeviation < 80
                   ? "Vesentlig roligere enn nå"
                   : primary.expectedDeviation < 95
-                  ? "Roligere enn nå"
-                  : "Omtrent som nå"}
+                    ? "Roligere enn nå"
+                    : "Omtrent som nå"}
               </p>
             )}
 

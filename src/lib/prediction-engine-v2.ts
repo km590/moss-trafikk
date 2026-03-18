@@ -26,7 +26,7 @@ export function getV2Predictions(
   date: Date,
   currentHour: number,
   hoursAhead: number,
-  latestVolumes: Map<string, StationLiveData>,
+  latestVolumes: Map<string, StationLiveData>
 ): HourlyPredictionV2[] {
   const dayOfWeek = date.getDay();
   const predictions: HourlyPredictionV2[] = [];
@@ -42,7 +42,12 @@ export function getV2Predictions(
 
     if (!hasResidual || !residualModel) {
       // V1 fallback
-      const congestion = classifyPredictedCongestion(baseline.predicted, stationId, dayOfWeek, hour);
+      const congestion = classifyPredictedCongestion(
+        baseline.predicted,
+        stationId,
+        dayOfWeek,
+        hour
+      );
       predictions.push({
         hour,
         predicted: baseline.predicted,
@@ -65,7 +70,7 @@ export function getV2Predictions(
       date,
       hour,
       latestVolumes,
-      residualModel,
+      residualModel
     );
 
     // Step 4: Predict residual
@@ -80,9 +85,11 @@ export function getV2Predictions(
     const bandWidth = predictedHigh - predictedLow;
     const bandPercent = predicted > 0 ? (bandWidth / predicted) * 100 : 100;
     const confidenceBucket: "high" | "medium" | "low" =
-      bandPercent < 30 ? "high" :    // CALIBRATION
-      bandPercent < 60 ? "medium" :   // CALIBRATION
-      "low";
+      bandPercent < 30
+        ? "high" // CALIBRATION
+        : bandPercent < 60
+          ? "medium" // CALIBRATION
+          : "low";
 
     // Step 7: Uncertainty-informed congestion classification
     // Green only if predictedHigh is also green
@@ -106,7 +113,9 @@ export function getV2Predictions(
     const explanation = generateExplanation(residual.p50, features, baseline.predicted);
 
     // Log v1 vs v2 difference
-    console.log(`[v2] ${stationId} h=${hour}: baseline=${baseline.predicted} v2=${predicted} residual=${residual.p50.toFixed(1)} band=[${predictedLow},${predictedHigh}]`);
+    console.log(
+      `[v2] ${stationId} h=${hour}: baseline=${baseline.predicted} v2=${predicted} residual=${residual.p50.toFixed(1)} band=[${predictedLow},${predictedHigh}]`
+    );
 
     predictions.push({
       hour,
@@ -130,7 +139,7 @@ export function getV2Predictions(
 function generateExplanation(
   residual: number,
   features: Record<string, number>,
-  baseline: number,
+  baseline: number
 ): string | undefined {
   // CALIBRATION: < 5% residual = no explanation needed
   if (Math.abs(residual) < baseline * 0.05) return undefined;

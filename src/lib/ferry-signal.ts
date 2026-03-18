@@ -11,10 +11,7 @@ import { fetchFerryDepartures, type FerryDeparture } from "./entur-client";
 import { RV19_STATION_IDS, KANALBRUA_ID } from "./stations";
 
 /** Stations affected by ferry traffic */
-const FERRY_AFFECTED_STATIONS = new Set([
-  ...RV19_STATION_IDS,
-  KANALBRUA_ID,
-]);
+const FERRY_AFFECTED_STATIONS = new Set([...RV19_STATION_IDS, KANALBRUA_ID]);
 
 /**
  * Time windows where ferry causes traffic increase.
@@ -22,9 +19,9 @@ const FERRY_AFFECTED_STATIONS = new Set([
  * Peak is 25-35 min before (travel time to ferry + queue).
  */
 const FERRY_CURVE: { minBefore: number; maxBefore: number; factor: number }[] = [
-  { minBefore: 15, maxBefore: 25, factor: 1.08 },  // Early arrivals
-  { minBefore: 25, maxBefore: 40, factor: 1.15 },  // Peak surge
-  { minBefore: 40, maxBefore: 55, factor: 1.06 },  // Late stragglers
+  { minBefore: 15, maxBefore: 25, factor: 1.08 }, // Early arrivals
+  { minBefore: 25, maxBefore: 40, factor: 1.15 }, // Peak surge
+  { minBefore: 40, maxBefore: 55, factor: 1.06 }, // Late stragglers
 ];
 
 /**
@@ -61,18 +58,19 @@ export function computeFerryFactor(
     for (const band of FERRY_CURVE) {
       if (minUntil >= band.minBefore && minUntil < band.maxBefore) {
         // Additive stacking: (factor - 1.0) accumulates
-        combinedFactor += (band.factor - 1.0);
+        combinedFactor += band.factor - 1.0;
         break;
       }
     }
   }
 
   // Cap combined surge at +30%
-  combinedFactor = Math.min(combinedFactor, 1.30);
+  combinedFactor = Math.min(combinedFactor, 1.3);
 
-  const reason = combinedFactor > 1.0
-    ? `ferry_surge_${Math.round((combinedFactor - 1) * 100)}pct`
-    : "no_active_surge";
+  const reason =
+    combinedFactor > 1.0
+      ? `ferry_surge_${Math.round((combinedFactor - 1) * 100)}pct`
+      : "no_active_surge";
 
   return { factor: combinedFactor, nextDeparture: closestDeparture, reason };
 }

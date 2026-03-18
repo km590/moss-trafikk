@@ -1,5 +1,11 @@
 import { getTrafficData } from "@/lib/data-fetcher";
-import { findBestCrossingTime, getCongestionLabel, getEstimateCongestionLabel, getNorwayTime, formatNorwayTime } from "@/lib/traffic-logic";
+import {
+  findBestCrossingTime,
+  getCongestionLabel,
+  getEstimateCongestionLabel,
+  getNorwayTime,
+  formatNorwayTime,
+} from "@/lib/traffic-logic";
 import averages from "@/data/averages.json";
 import KpiCard from "@/components/kpi-card";
 import CorridorStepper from "@/components/corridor-stepper";
@@ -24,9 +30,19 @@ function deviationToText(percent: number): string {
 }
 
 export default async function Home() {
-  const { corridor, bestTime, predictions, chartPredictions, normalPattern, ferryDepartures, may17, travelDecision, v2Predictions } = await getTrafficData();
+  const {
+    corridor,
+    bestTime,
+    predictions,
+    chartPredictions,
+    normalPattern,
+    ferryDepartures,
+    may17,
+    travelDecision,
+    v2Predictions,
+  } = await getTrafficData();
 
-  const kanalbrua = corridor.stations.find(s => s.station.id === KANALBRUA_ID);
+  const kanalbrua = corridor.stations.find((s) => s.station.id === KANALBRUA_ID);
 
   const { hour: currentHour, dayOfWeek } = getNorwayTime();
   const corridorBestTime = findBestCrossingTime(
@@ -41,9 +57,9 @@ export default async function Home() {
   const dayLabel = DAY_LABELS[dayOfWeek] ?? "i dag";
 
   const kanalbruaLabel = kanalbrua
-    ? (kanalbrua.isEstimate
-        ? getEstimateCongestionLabel(kanalbrua.congestion)
-        : getCongestionLabel(kanalbrua.congestion))
+    ? kanalbrua.isEstimate
+      ? getEstimateCongestionLabel(kanalbrua.congestion)
+      : getCongestionLabel(kanalbrua.congestion)
     : "Ingen data";
 
   return (
@@ -63,7 +79,8 @@ export default async function Home() {
       {corridor.isStale && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
           <span aria-hidden="true">⚠</span>
-          Vegvesen-data er forsinket akkurat nå. Derfor viser vi et estimat basert på hvordan trafikken vanligvis utvikler seg på dette tidspunktet.
+          Vegvesen-data er forsinket akkurat nå. Derfor viser vi et estimat basert på hvordan
+          trafikken vanligvis utvikler seg på dette tidspunktet.
         </div>
       )}
 
@@ -73,30 +90,36 @@ export default async function Home() {
           title="Kanalbrua nå"
           value={kanalbruaLabel}
           subtitle={
-            v2Predictions?.[0]?.explanation
-              ?? (kanalbrua?.isEstimate
-                ? "Omtrent som vanlig for denne tiden"
-                : kanalbrua?.currentVolume
-                  ? deviationToText(kanalbrua.deviationPercent)
-                  : "Mangler data")
+            v2Predictions?.[0]?.explanation ??
+            (kanalbrua?.isEstimate
+              ? "Omtrent som vanlig for denne tiden"
+              : kanalbrua?.currentVolume
+                ? deviationToText(kanalbrua.deviationPercent)
+                : "Mangler data")
           }
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
           title="Mest belastet nå"
-          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Ser normalt ut" : "Ingen data")}
+          value={
+            corridor.worstPoint
+              ? corridor.worstPoint.station.name
+              : corridor.isStale
+                ? "Ser normalt ut"
+                : "Ingen data"
+          }
           subtitle={
             corridor.worstPoint
               ? "Ser ut til å være tregest i korridoren akkurat nå"
-              : (corridor.isStale ? "Ingen steder skiller seg ut" : "Alt ser normalt ut")
+              : corridor.isStale
+                ? "Ingen steder skiller seg ut"
+                : "Alt ser normalt ut"
           }
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />
         <KpiCard
           title="De neste timene"
-          value={travelDecision.mode === "wait"
-            ? bestTime.primary.label
-            : "Ser greit ut"}
+          value={travelDecision.mode === "wait" ? bestTime.primary.label : "Ser greit ut"}
           subtitle={travelDecision.detail ?? "Ingen tydelig gevinst i å vente"}
           congestion={travelDecision.mode === "wait" ? "yellow" : "green"}
         />
@@ -106,9 +129,7 @@ export default async function Home() {
       <PredictionCard prediction={predictions} stationName="Kanalbrua" />
 
       {/* Ferry countdown */}
-      {ferryDepartures.length > 0 && (
-        <FerryCountdown departures={ferryDepartures} />
-      )}
+      {ferryDepartures.length > 0 && <FerryCountdown departures={ferryDepartures} />}
 
       {/* Corridor stepper */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -122,7 +143,12 @@ export default async function Home() {
       <details className="group">
         <summary className="cursor-pointer text-sm font-semibold text-slate-600 uppercase tracking-wide bg-white rounded-xl border border-slate-200 p-4 list-none flex items-center justify-between">
           I dag vs. en vanlig {dayLabel}
-          <svg className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </summary>
@@ -148,11 +174,19 @@ export default async function Home() {
 
       <TravelAdvice decision={travelDecision} />
 
-      <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} decisionMode={travelDecision.mode} />
+      <BestTimeWidget
+        kanalbruaResult={bestTime}
+        corridorResult={corridorBestTime}
+        decisionMode={travelDecision.mode}
+      />
 
       <p className="text-xs text-slate-400 text-center">
-        Dette er et smart estimat, ikke live trafikk. Anslagene bygger på historiske målinger fra samme ukedag og tidspunkt, justert for sesong og høytider.{" "}
-        <a href="/om" className="underline">Slik fungerer det</a>.
+        Dette er et smart estimat, ikke live trafikk. Anslagene bygger på historiske målinger fra
+        samme ukedag og tidspunkt, justert for sesong og høytider.{" "}
+        <a href="/om" className="underline">
+          Slik fungerer det
+        </a>
+        .
       </p>
     </div>
   );

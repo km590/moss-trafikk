@@ -1,8 +1,13 @@
-import type { ModelWeights, HourlyPrediction, PredictionResult, CongestionLevel, DayType, FerryBoost } from "./types";
+import type {
+  ModelWeights,
+  HourlyPrediction,
+  PredictionResult,
+  CongestionLevel,
+  FerryBoost,
+} from "./types";
 import { classifyDate, shouldAutoActivateMay17 } from "./norwegian-calendar";
-import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, getStationVulnerability } from "./stations";
+import { getStationVulnerability } from "./stations";
 import modelWeightsData from "../data/model-weights.json";
-import type { FerryDeparture } from "./entur-client";
 
 const weights = modelWeightsData as ModelWeights;
 
@@ -58,7 +63,11 @@ export function hasAdequateCoverage(stationId: string): boolean {
  * Vegvesen API has no Monday/Tuesday data for most stations.
  * Falls back to Wednesday (closest weekday with data) when needed.
  */
-function resolveDayOfWeek(stationId: string, dayOfWeek: number, hour: number): { dow: number; isProxy: boolean } {
+function resolveDayOfWeek(
+  stationId: string,
+  dayOfWeek: number,
+  hour: number
+): { dow: number; isProxy: boolean } {
   const base = weights.basePatterns[stationId]?.[dayOfWeek]?.[hour];
   if (base && base.sampleCount >= MIN_SAMPLES_FOR_PREDICTION) {
     return { dow: dayOfWeek, isProxy: false };
@@ -67,7 +76,12 @@ function resolveDayOfWeek(stationId: string, dayOfWeek: number, hour: number): {
   if (dayOfWeek === 1 || dayOfWeek === 2) {
     const wedBase = weights.basePatterns[stationId]?.[3]?.[hour];
     if (wedBase && wedBase.sampleCount >= MIN_SAMPLES_FOR_PREDICTION) {
-      logPredictionEvent("proxy_fallback", { stationId, originalDow: dayOfWeek, proxyDow: 3, hour });
+      logPredictionEvent("proxy_fallback", {
+        stationId,
+        originalDow: dayOfWeek,
+        proxyDow: 3,
+        hour,
+      });
       return { dow: 3, isProxy: true };
     }
   }
@@ -84,7 +98,12 @@ export function predictVolume(
   stationId: string,
   date: Date,
   hour: number
-): { predicted: number; confidence: "high" | "medium" | "low"; sampleCount: number; insufficientData: boolean } {
+): {
+  predicted: number;
+  confidence: "high" | "medium" | "low";
+  sampleCount: number;
+  insufficientData: boolean;
+} {
   const originalDow = date.getDay();
   const month = date.getMonth();
   const dayType = classifyDate(date);
@@ -99,14 +118,22 @@ export function predictVolume(
 
   // Guardrail: minimum sample threshold
   if (base.sampleCount < MIN_SAMPLES_FOR_PREDICTION) {
-    logPredictionEvent("insufficient_samples", { stationId, dayOfWeek, hour, sampleCount: base.sampleCount });
-    return { predicted: base.median, confidence: "low", sampleCount: base.sampleCount, insufficientData: true };
+    logPredictionEvent("insufficient_samples", {
+      stationId,
+      dayOfWeek,
+      hour,
+      sampleCount: base.sampleCount,
+    });
+    return {
+      predicted: base.median,
+      confidence: "low",
+      sampleCount: base.sampleCount,
+      insufficientData: true,
+    };
   }
 
   const monthFactor = weights.monthFactors[month] ?? 1.0;
-  const holidayFactor = dayType !== "normal"
-    ? (weights.holidayFactors[dayType] ?? 1.0)
-    : 1.0;
+  const holidayFactor = dayType !== "normal" ? (weights.holidayFactors[dayType] ?? 1.0) : 1.0;
 
   const rawPredicted = Math.round(base.median * monthFactor * holidayFactor);
   const predicted = clampPrediction(rawPredicted, base);
@@ -197,7 +224,7 @@ export function classifyPredictedCongestion(
     }
     if (medians.length >= 4) {
       medians.sort((a, b) => a - b);
-      const p60 = medians[Math.floor(medians.length * 0.60)]; // CALIBRATION
+      const p60 = medians[Math.floor(medians.length * 0.6)]; // CALIBRATION
       const p85 = medians[Math.floor(medians.length * 0.85)]; // CALIBRATION
       relYellow = predicted >= p60;
       relRed = predicted >= p85;
@@ -206,7 +233,7 @@ export function classifyPredictedCongestion(
 
   // --- Signal 3: Station/time friction ---
   const isRush = EST_RUSH_HOURS.includes(hour);
-  const timeFactor = isRush ? 1.2 : (vuln.dampedHours.includes(hour) ? 0.7 : 1.0); // CALIBRATION
+  const timeFactor = isRush ? 1.2 : vuln.dampedHours.includes(hour) ? 0.7 : 1.0; // CALIBRATION
   const effectiveFriction = vuln.friction * timeFactor;
   const frictionYellow = predicted * effectiveFriction >= vuln.yellowAbsolute;
   const frictionRed = predicted * effectiveFriction >= vuln.redAbsolute;
@@ -221,7 +248,8 @@ export function classifyPredictedCongestion(
   if (redSignals >= 3) {
     if (isDamped) {
       // Damped hours: red still possible but needs extra absolute headroom
-      if (predicted >= vuln.redAbsolute * 1.1) { // CALIBRATION
+      if (predicted >= vuln.redAbsolute * 1.1) {
+        // CALIBRATION
         return "red";
       }
       // Fall through to yellow
@@ -257,7 +285,12 @@ export function getPredictions(
 ): PredictionResult {
   const dayOfWeek = date.getDay();
   const dayType = classifyDate(date);
-  const rawPredictions: { hour: number; predicted: number; confidence: "high" | "medium" | "low"; insufficientData: boolean }[] = [];
+  const rawPredictions: {
+    hour: number;
+    predicted: number;
+    confidence: "high" | "medium" | "low";
+    insufficientData: boolean;
+  }[] = [];
 
   for (let i = 0; i < hoursAhead; i++) {
     const hour = (currentHour + i) % 24;
@@ -267,12 +300,24 @@ export function getPredictions(
     // Future hours use pure baseline - ferry schedule changes too fast to forecast
     if (i === 0 && ferrySignal && ferrySignal.factor > 1.0) {
       const boosted = Math.round(result.predicted * ferrySignal.factor);
-      const clamped = clampPrediction(boosted, weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]);
+      const clamped = clampPrediction(
+        boosted,
+        weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]
+      );
       logPredictionEvent("ferry_boost", {
-        stationId, hour, baseline: result.predicted, boosted: clamped,
-        factor: ferrySignal.factor, reason: ferrySignal.reason,
+        stationId,
+        hour,
+        baseline: result.predicted,
+        boosted: clamped,
+        factor: ferrySignal.factor,
+        reason: ferrySignal.reason,
       });
-      rawPredictions.push({ hour, predicted: clamped, confidence: result.confidence, insufficientData: result.insufficientData });
+      rawPredictions.push({
+        hour,
+        predicted: clamped,
+        confidence: result.confidence,
+        insufficientData: result.insufficientData,
+      });
     } else {
       rawPredictions.push({ hour, ...result });
     }
@@ -292,29 +337,37 @@ export function getPredictions(
     }
   }
 
-  const predictions: HourlyPrediction[] = rawPredictions.map(({ hour, predicted, confidence, insufficientData }) => {
-    const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek, hour);
-    const finalConfidence = insufficientData ? "low" : confidence;
+  const predictions: HourlyPrediction[] = rawPredictions.map(
+    ({ hour, predicted, confidence, insufficientData }) => {
+      const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek, hour);
+      const finalConfidence = insufficientData ? "low" : confidence;
 
-    return {
-      hour,
-      predicted,
-      congestion,
-      confidence: finalConfidence,
-      label: `${String(hour).padStart(2, "0")}:00`,
-    };
-  });
+      return {
+        hour,
+        predicted,
+        congestion,
+        confidence: finalConfidence,
+        label: `${String(hour).padStart(2, "0")}:00`,
+      };
+    }
+  );
 
   // Find peak and quietest within 4-hour window
   const fourHour = predictions.slice(0, Math.min(4, predictions.length));
-  const peakHour = fourHour.reduce((max, p) => p.predicted > max.predicted ? p : max, fourHour[0]).hour;
-  const quietestHour = fourHour.reduce((min, p) => p.predicted < min.predicted ? p : min, fourHour[0]).hour;
+  const peakHour = fourHour.reduce(
+    (max, p) => (p.predicted > max.predicted ? p : max),
+    fourHour[0]
+  ).hour;
+  const quietestHour = fourHour.reduce(
+    (min, p) => (p.predicted < min.predicted ? p : min),
+    fourHour[0]
+  ).hour;
 
   const peakLabel = `${String(peakHour).padStart(2, "0")}`;
   const quietLabel = `${String(quietestHour).padStart(2, "0")}`;
 
-  const peakVol = fourHour.find(p => p.hour === peakHour)?.predicted ?? 0;
-  const quietVol = fourHour.find(p => p.hour === quietestHour)?.predicted ?? 0;
+  const peakVol = fourHour.find((p) => p.hour === peakHour)?.predicted ?? 0;
+  const quietVol = fourHour.find((p) => p.hour === quietestHour)?.predicted ?? 0;
 
   let summary: string;
   if (peakVol - quietVol < 50) {
@@ -324,14 +377,15 @@ export function getPredictions(
   }
 
   // Ferry boost metadata
-  const ferry: FerryBoost = ferrySignal && ferrySignal.factor > 1.0
-    ? {
-        active: true,
-        factor: ferrySignal.factor,
-        nextDepartureMin: ferrySignal.nextDepartureMin,
-        reason: ferrySignal.reason,
-      }
-    : { active: false, factor: 1.0, nextDepartureMin: null, reason: "no_ferry_signal" };
+  const ferry: FerryBoost =
+    ferrySignal && ferrySignal.factor > 1.0
+      ? {
+          active: true,
+          factor: ferrySignal.factor,
+          nextDepartureMin: ferrySignal.nextDepartureMin,
+          reason: ferrySignal.reason,
+        }
+      : { active: false, factor: 1.0, nextDepartureMin: null, reason: "no_ferry_signal" };
 
   return {
     stationId,
@@ -367,13 +421,11 @@ export function getMay17Comparison(
   year: number
 ): { normalDay: HourlyPrediction[]; may17Day: HourlyPrediction[] } {
   // Find a Wednesday in May for "normal day" reference (Wednesday = day 3, always has data)
-  let normalDate = new Date(year, 4, 1);
+  const normalDate = new Date(year, 4, 1);
   while (normalDate.getDay() !== 3) normalDate.setDate(normalDate.getDate() + 1);
 
   // For May 17 prediction: use Wednesday base pattern with holiday factor applied
   // This avoids the issue of May 17 falling on a day-of-week with sparse data
-  const may17Date = new Date(year, 4, 17);
-
   const normalDay: HourlyPrediction[] = [];
   const may17Day: HourlyPrediction[] = [];
 

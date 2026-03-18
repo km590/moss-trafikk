@@ -8,7 +8,10 @@ import path from "path";
 import fs from "fs";
 
 // Load model weights directly (avoid tsx import issues with src/lib)
-const WEIGHTS_PATH = path.join(path.dirname(new URL(import.meta.url).pathname), "../src/data/model-weights.json");
+const WEIGHTS_PATH = path.join(
+  path.dirname(new URL(import.meta.url).pathname),
+  "../src/data/model-weights.json"
+);
 const weights = JSON.parse(fs.readFileSync(WEIGHTS_PATH, "utf-8"));
 
 // --- Inline minimal prediction logic (matches prediction-engine.ts) ---
@@ -38,13 +41,27 @@ function dateKey(d: Date): string {
 function getPublicHolidayKeys(year: number): Set<string> {
   const [em, ed] = computeEasterSunday(year);
   const easter = new Date(year, em, ed);
-  const offset = (base: Date, days: number) => { const d = new Date(base); d.setDate(d.getDate() + days); return d; };
-  return new Set([
-    new Date(year, 0, 1), offset(easter, -3), offset(easter, -2),
-    easter, offset(easter, 1), new Date(year, 4, 1), new Date(year, 4, 17),
-    offset(easter, 39), offset(easter, 49), offset(easter, 50),
-    new Date(year, 11, 25), new Date(year, 11, 26),
-  ].map(d => dateKey(d)));
+  const offset = (base: Date, days: number) => {
+    const d = new Date(base);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
+  return new Set(
+    [
+      new Date(year, 0, 1),
+      offset(easter, -3),
+      offset(easter, -2),
+      easter,
+      offset(easter, 1),
+      new Date(year, 4, 1),
+      new Date(year, 4, 17),
+      offset(easter, 39),
+      offset(easter, 49),
+      offset(easter, 50),
+      new Date(year, 11, 25),
+      new Date(year, 11, 26),
+    ].map((d) => dateKey(d))
+  );
 }
 
 type DayType = "public_holiday" | "pre_holiday" | "school_break" | "normal";
@@ -57,7 +74,8 @@ function classifyDayType(date: Date): DayType {
   // Simplified: just check public holidays for golden tests
   const month = date.getMonth();
   const day = date.getDate();
-  if ((month === 5 && day >= 20) || month === 6 || (month === 7 && day <= 18)) return "school_break";
+  if ((month === 5 && day >= 20) || month === 6 || (month === 7 && day <= 18))
+    return "school_break";
   if (month === 11 && day >= 21) return "school_break";
   return "normal";
 }
@@ -240,11 +258,15 @@ function main(): void {
     if (pass) {
       passed++;
       console.log(`  PASS  ${t.name}`);
-      console.log(`        predicted=${predicted}, range=[${t.expectMin}-${t.expectMax}], samples=${samples}`);
+      console.log(
+        `        predicted=${predicted}, range=[${t.expectMin}-${t.expectMax}], samples=${samples}`
+      );
     } else {
       failed++;
       console.log(`  FAIL  ${t.name}`);
-      console.log(`        predicted=${predicted}, range=[${t.expectMin}-${t.expectMax}], samples=${samples}`);
+      console.log(
+        `        predicted=${predicted}, range=[${t.expectMin}-${t.expectMax}], samples=${samples}`
+      );
       if (!inRange) console.log(`        OUT OF RANGE`);
       if (!enoughSamples) console.log(`        INSUFFICIENT SAMPLES (need ${t.expectMinSamples})`);
     }
@@ -260,7 +282,7 @@ function main(): void {
     if (prev > 0 && curr > 0) {
       const ratio = curr / prev;
       // Allow steeper ratio during dawn transition (hours 4-7)
-      const maxRatio = (h >= 4 && h <= 7) ? 6.0 : 3.0;
+      const maxRatio = h >= 4 && h <= 7 ? 6.0 : 3.0;
       if (ratio > maxRatio || ratio < 1 / maxRatio) {
         console.log(`  FAIL  Hour ${h - 1}->${h}: ratio=${ratio.toFixed(2)} (${prev}->${curr})`);
         ratioFails++;
@@ -282,7 +304,11 @@ function main(): void {
   ];
   for (const s of keyStations) {
     const data = weights.basePatterns[s.id];
-    if (!data) { console.log(`  FAIL  ${s.name}: no data`); failed++; continue; }
+    if (!data) {
+      console.log(`  FAIL  ${s.name}: no data`);
+      failed++;
+      continue;
+    }
     let daysWithData = 0;
     for (const dow of Object.keys(data)) {
       const hours = Object.keys(data[parseInt(dow)]);

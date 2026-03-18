@@ -16,15 +16,17 @@ Moss Trafikk er bygget med åpne data, åpne API-er og prediksjonsmodeller for �
 
 ## Hva
 
-Avviksbasert trengselsanalyse og prediksjoner for 10 tellepunkter langs korridoren fra Våler/E6 til Kanalbrua/Jeløya. Baseline-modell med 2 års historikk (89 000 timer), sanntids ferjesignal fra Entur, og estimert korridorstatus når Vegvesen-data er forsinket.
+Avviksbasert trengselsanalyse og prediksjoner for 10 tellepunkter langs korridoren fra Våler/E6 til Kanalbrua/Jeløya. Baseline-modell (v1) med 2 års historikk (89 000 timer), fergekontekst fra Entur, og estimert korridorstatus når Vegvesen-data er forsinket.
+
+> **Status:** Produksjon kjører baseline (v1). En eksperimentell v2 med residualkorreksjon er under utvikling, men ikke aktiv i prod.
 
 ## Prediksjonstreffsikkerhet
 
 Modellen evalueres fortløpende mot faktiske målinger fra Statens vegvesen.
 
-| Stasjon | Metode | MAPE (typisk hverdag) |
-|---------|--------|-----------------------|
-| Kanalbrua | Baseline (v1) | ~5-7% |
+| Stasjon   | Metode        | MAPE (typisk hverdag) |
+| --------- | ------------- | --------------------- |
+| Kanalbrua | Baseline (v1) | ~5-7%                 |
 
 MAPE (Mean Absolute Percentage Error) måler gjennomsnittlig avvik mellom predikert og faktisk trafikk. Modellen treffer best på vanlige hverdager og er mindre presis på helligdager, skoleferier og ved uventede hendelser.
 
@@ -34,9 +36,9 @@ MAPE (Mean Absolute Percentage Error) måler gjennomsnittlig avvik mellom predik
 src/
   lib/
     prediction-engine.ts     # Baseline: multiplikativ dekomponering
-    prediction-engine-v2.ts  # V2: baseline + LightGBM residualkorreksjon
+    prediction-engine-v2.ts  # V2 (eksperimentell): baseline + LightGBM residualkorreksjon
     decision-engine.ts       # "Kjøre nå eller vente?" beslutningslogikk
-    ferry-signal.ts          # Sanntids ferje-boost for RV19/Kanalbrua (Entur API)
+    ferry-signal.ts          # Ferjesignal: avgangstider påvirker RV19/Kanalbrua (Entur API)
     traffic-logic.ts         # Congestion-klassifisering og beste-tid
     data-fetcher.ts          # Orkestrerer Vegvesen + prediksjon + ferje
     norwegian-calendar.ts    # Helligdager, skoleferie, 17. mai
@@ -59,7 +61,7 @@ scripts/
 
 - [Statens vegvesen Trafikkdata API](https://trafikkdata.atlas.vegvesen.no/) (åpent GraphQL API, ingen auth)
 - [Entur Journey Planner API](https://developer.entur.org/) (fergeavganger Moss-Horten)
-- Prediksjonsmodell: median per (stasjon, ukedag, time) med sesong- og helligdagsfaktorer
+- Prediksjonsmodell: baseline (v1) bruker median per (stasjon, ukedag, time) med sesong- og helligdagsfaktorer
 
 ## Tech
 
@@ -96,5 +98,6 @@ Se [.env.example](.env.example). Alle er valgfrie - appen fungerer uten Supabase
 Kode: [MIT](LICENSE)
 
 Datakilder følger egne vilkår:
+
 - Trafikkdata: Statens vegvesen, [NLOD](https://data.norge.no/nlod)
 - Fergeavganger: Entur, [NLOD](https://developer.entur.org/pages-intro-setup-and-access)

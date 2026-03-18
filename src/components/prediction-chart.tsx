@@ -1,6 +1,15 @@
 "use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 import type { HourlyPrediction } from "@/lib/types";
 
 interface PredictionChartProps {
@@ -19,8 +28,8 @@ export default function PredictionChart({
   // Build chart data: 6-22 for readable range
   const chartData = [];
   for (let hour = 6; hour <= 22; hour++) {
-    const normal = normalPattern.find(n => n.hour === hour)?.volume ?? 0;
-    const prediction = todayPredictions.find(p => p.hour === hour);
+    const normal = normalPattern.find((n) => n.hour === hour)?.volume ?? 0;
+    const prediction = todayPredictions.find((p) => p.hour === hour);
 
     chartData.push({
       hour,
@@ -39,18 +48,8 @@ export default function PredictionChart({
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis
-              dataKey="label"
-              tick={{ fontSize: 11 }}
-              tickLine={false}
-              interval={1}
-            />
-            <YAxis
-              tick={{ fontSize: 11 }}
-              tickLine={false}
-              axisLine={false}
-              width={50}
-            />
+            <XAxis dataKey="label" tick={{ fontSize: 11 }} tickLine={false} interval={1} />
+            <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={50} />
             <Tooltip
               contentStyle={{
                 fontSize: 12,
@@ -89,7 +88,10 @@ export default function PredictionChart({
       </div>
       <div className="flex items-center justify-center gap-4 mt-2 text-xs text-slate-500">
         <span className="flex items-center gap-1">
-          <span className="w-4 h-0.5 bg-slate-400 inline-block" style={{ borderTop: "1.5px dashed #94a3b8" }} />
+          <span
+            className="w-4 h-0.5 bg-slate-400 inline-block"
+            style={{ borderTop: "1.5px dashed #94a3b8" }}
+          />
           Vanlig {dayLabel}
         </span>
         <span className="flex items-center gap-1">

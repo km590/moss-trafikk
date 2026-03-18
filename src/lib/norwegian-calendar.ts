@@ -36,16 +36,16 @@ export function getPublicHolidays(year: number): Date[] {
   };
 
   return [
-    new Date(year, 0, 1),   // Nyttårsdag
-    offsetDay(easter, -3),   // Skjærtorsdag
-    offsetDay(easter, -2),   // Langfredag
-    easter,                  // 1. påskedag
-    offsetDay(easter, 1),    // 2. påskedag
-    new Date(year, 4, 1),   // Arbeidernes dag
-    new Date(year, 4, 17),  // Grunnlovsdag
-    offsetDay(easter, 39),   // Kristi himmelfartsdag
-    offsetDay(easter, 49),   // 1. pinsedag
-    offsetDay(easter, 50),   // 2. pinsedag
+    new Date(year, 0, 1), // Nyttårsdag
+    offsetDay(easter, -3), // Skjærtorsdag
+    offsetDay(easter, -2), // Langfredag
+    easter, // 1. påskedag
+    offsetDay(easter, 1), // 2. påskedag
+    new Date(year, 4, 1), // Arbeidernes dag
+    new Date(year, 4, 17), // Grunnlovsdag
+    offsetDay(easter, 39), // Kristi himmelfartsdag
+    offsetDay(easter, 49), // 1. pinsedag
+    offsetDay(easter, 50), // 2. pinsedag
     new Date(year, 11, 25), // 1. juledag
     new Date(year, 11, 26), // 2. juledag
   ];
@@ -54,7 +54,7 @@ export function getPublicHolidays(year: number): Date[] {
 /** Get pre-holiday dates (day before a public holiday, if it's a workday) */
 export function getPreHolidays(year: number): Date[] {
   const holidays = getPublicHolidays(year);
-  const holidaySet = new Set(holidays.map(d => dateKey(d)));
+  const holidaySet = new Set(holidays.map((d) => dateKey(d)));
   const preHolidays: Date[] = [];
 
   for (const h of holidays) {
@@ -69,7 +69,7 @@ export function getPreHolidays(year: number): Date[] {
 
   // Deduplicate
   const seen = new Set<string>();
-  return preHolidays.filter(d => {
+  return preHolidays.filter((d) => {
     const k = dateKey(d);
     if (seen.has(k)) return false;
     seen.add(k);
@@ -86,7 +86,7 @@ export function getSchoolBreakRanges(year: number): Array<{ from: Date; to: Date
   const jan1 = new Date(year, 0, 1);
   const jan1Dow = jan1.getDay();
   // ISO week 8: find the Monday of week 8
-  const daysToWeek8Mon = (1 - jan1Dow + 7) % 7 + 7 * 7; // 7 weeks after first Monday
+  const daysToWeek8Mon = ((1 - jan1Dow + 7) % 7) + 7 * 7; // 7 weeks after first Monday
   const week8Mon = new Date(year, 0, 1 + daysToWeek8Mon);
   const week8Fri = new Date(week8Mon);
   week8Fri.setDate(week8Mon.getDate() + 4);
@@ -102,7 +102,7 @@ export function getSchoolBreakRanges(year: number): Array<{ from: Date; to: Date
   const summerEnd = new Date(year, 7, 18);
 
   // Autumn break: week 40 (Mon-Fri)
-  const daysToWeek40Mon = (1 - jan1Dow + 7) % 7 + 7 * 39;
+  const daysToWeek40Mon = ((1 - jan1Dow + 7) % 7) + 7 * 39;
   const week40Mon = new Date(year, 0, 1 + daysToWeek40Mon);
   const week40Fri = new Date(week40Mon);
   week40Fri.setDate(week40Mon.getDate() + 4);
@@ -131,13 +131,13 @@ export function classifyDate(date: Date): DayType {
 
   // Check public holidays
   const holidays = getPublicHolidays(year);
-  if (holidays.some(h => dateKey(h) === key)) {
+  if (holidays.some((h) => dateKey(h) === key)) {
     return "public_holiday";
   }
 
   // Check pre-holidays
   const preHolidays = getPreHolidays(year);
-  if (preHolidays.some(h => dateKey(h) === key)) {
+  if (preHolidays.some((h) => dateKey(h) === key)) {
     return "pre_holiday";
   }
 

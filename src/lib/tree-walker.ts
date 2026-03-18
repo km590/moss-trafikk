@@ -4,12 +4,12 @@
  */
 
 export interface TreeNode {
-  sf?: number;      // split_feature index
-  th?: number;      // threshold (numerical split)
-  lc?: TreeNode;    // left child (<= threshold)
-  rc?: TreeNode;    // right child (> threshold)
-  lv?: number;      // leaf value (terminal node)
-  cat?: number[];   // categorical values that go left
+  sf?: number; // split_feature index
+  th?: number; // threshold (numerical split)
+  lc?: TreeNode; // left child (<= threshold)
+  rc?: TreeNode; // right child (> threshold)
+  lv?: number; // leaf value (terminal node)
+  cat?: number[]; // categorical values that go left
 }
 
 export interface QuantileModel {
@@ -46,9 +46,7 @@ function walkTree(node: TreeNode, featureValues: number[]): number {
   }
 
   // Numerical split
-  return value <= node.th!
-    ? walkTree(node.lc!, featureValues)
-    : walkTree(node.rc!, featureValues);
+  return value <= node.th! ? walkTree(node.lc!, featureValues) : walkTree(node.rc!, featureValues);
 }
 
 function predictQuantile(model: QuantileModel, featureValues: number[]): number {
@@ -65,7 +63,7 @@ export function predictResidual(
   features: Record<string, number>
 ): { p10: number; p50: number; p90: number } {
   // Convert named features to ordered array matching model.features
-  const featureValues = model.features.map(name => features[name] ?? -1);
+  const featureValues = model.features.map((name) => features[name] ?? -1);
 
   return {
     p10: predictQuantile(model.quantiles.p10, featureValues),

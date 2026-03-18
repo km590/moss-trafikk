@@ -5,7 +5,7 @@ export const revalidate = 0; // Always fresh
 export const dynamic = "force-dynamic";
 
 function stationName(id: string): string {
-  return STATIONS.find(s => s.id === id)?.name ?? id.slice(0, 12);
+  return STATIONS.find((s) => s.id === id)?.name ?? id.slice(0, 12);
 }
 
 function errorColor(pct: number | null): string {
@@ -57,26 +57,37 @@ export default async function EvalPage() {
   }
 
   const evalRows = (rows ?? []) as EvalRow[];
-  const withActuals = evalRows.filter(r => r.actual_volume !== null);
-  const pending = evalRows.filter(r => r.actual_volume === null);
+  const withActuals = evalRows.filter((r) => r.actual_volume !== null);
+  const pending = evalRows.filter((r) => r.actual_volume === null);
 
   // Summary stats
-  const mape = withActuals.length > 0
-    ? (withActuals.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / withActuals.length).toFixed(1)
-    : "n/a";
-  const ferryRows = withActuals.filter(r => r.ferry_boost_active);
-  const baselineRows = withActuals.filter(r => !r.ferry_boost_active);
-  const ferryMape = ferryRows.length > 0
-    ? (ferryRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / ferryRows.length).toFixed(1)
-    : "n/a";
-  const baselineMape = baselineRows.length > 0
-    ? (baselineRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / baselineRows.length).toFixed(1)
-    : "n/a";
+  const mape =
+    withActuals.length > 0
+      ? (
+          withActuals.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / withActuals.length
+        ).toFixed(1)
+      : "n/a";
+  const ferryRows = withActuals.filter((r) => r.ferry_boost_active);
+  const baselineRows = withActuals.filter((r) => !r.ferry_boost_active);
+  const ferryMape =
+    ferryRows.length > 0
+      ? (ferryRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / ferryRows.length).toFixed(
+          1
+        )
+      : "n/a";
+  const baselineMape =
+    baselineRows.length > 0
+      ? (
+          baselineRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / baselineRows.length
+        ).toFixed(1)
+      : "n/a";
 
   return (
     <div className="max-w-6xl mx-auto p-6 font-mono text-sm">
       <h1 className="text-xl font-bold mb-1">Prediction Eval</h1>
-      <p className="text-xs text-slate-400 mb-6">Intern kalibrering. Predicted vs actual for Kanalbrua + RV19.</p>
+      <p className="text-xs text-slate-400 mb-6">
+        Intern kalibrering. Predicted vs actual for Kanalbrua + RV19.
+      </p>
 
       {/* Summary */}
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -133,17 +144,27 @@ export default async function EvalPage() {
                   <td className="py-1.5 pr-2 text-right">{row.predicted_volume}</td>
                   <td className="py-1.5 pr-2 text-right text-slate-400">{row.baseline_volume}</td>
                   <td className="py-1.5 pr-2 text-right">
-                    {row.actual_volume !== null ? row.actual_volume : <span className="text-slate-300">venter</span>}
+                    {row.actual_volume !== null ? (
+                      row.actual_volume
+                    ) : (
+                      <span className="text-slate-300">venter</span>
+                    )}
                   </td>
-                  <td className={`py-1.5 pr-2 text-right font-medium ${errorColor(row.signed_error_pct)}`}>
+                  <td
+                    className={`py-1.5 pr-2 text-right font-medium ${errorColor(row.signed_error_pct)}`}
+                  >
                     {row.signed_error_pct !== null
                       ? `${row.signed_error_pct > 0 ? "+" : ""}${row.signed_error_pct}%`
                       : ""}
                   </td>
                   <td className="py-1.5 pr-2">
-                    {row.ferry_boost_active
-                      ? <span className="text-blue-500">+{Math.round((row.ferry_boost_factor - 1) * 100)}%</span>
-                      : <span className="text-slate-300">-</span>}
+                    {row.ferry_boost_active ? (
+                      <span className="text-blue-500">
+                        +{Math.round((row.ferry_boost_factor - 1) * 100)}%
+                      </span>
+                    ) : (
+                      <span className="text-slate-300">-</span>
+                    )}
                   </td>
                   <td className="py-1.5 pr-2 text-slate-400">{row.confidence}</td>
                   <td className="py-1.5 text-slate-400">{row.day_type}</td>

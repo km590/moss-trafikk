@@ -35,9 +35,7 @@ export default function KpiCard({ title, value, subtitle, congestion, icon }: Kp
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground mb-1">{title}</p>
           <p className="text-2xl font-bold leading-none">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
         </div>
         <div
           className={`mt-1 h-2.5 w-2.5 rounded-full shrink-0 ${dotColor}`}

@@ -26,9 +26,22 @@ interface StationHistory {
 }
 
 interface ModelWeights {
-  basePatterns: Record<string, Record<number, Record<number, {
-    median: number; mean: number; sampleCount: number; p25: number; p75: number;
-  }>>>;
+  basePatterns: Record<
+    string,
+    Record<
+      number,
+      Record<
+        number,
+        {
+          median: number;
+          mean: number;
+          sampleCount: number;
+          p25: number;
+          p75: number;
+        }
+      >
+    >
+  >;
   monthFactors: Record<number, number>;
   holidayFactors: Record<string, number>;
 }
@@ -45,7 +58,7 @@ function getOsloTime(isoStr: string): { dayOfWeek: number; hour: number; month: 
     month: "numeric",
   });
   const parts = formatter.formatToParts(date);
-  const get = (type: string) => parts.find(p => p.type === type)?.value ?? "";
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   const hour = parseInt(get("hour"), 10);
   const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
   const dayOfWeek = dayMap[get("weekday")] ?? 1;
@@ -87,18 +100,30 @@ function dateKey(d: Date): string {
 function getPublicHolidays(year: number): Date[] {
   const [em, ed] = computeEasterSunday(year);
   const easter = new Date(year, em, ed);
-  const offset = (base: Date, days: number) => { const d = new Date(base); d.setDate(d.getDate() + days); return d; };
+  const offset = (base: Date, days: number) => {
+    const d = new Date(base);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
   return [
-    new Date(year, 0, 1), offset(easter, -3), offset(easter, -2),
-    easter, offset(easter, 1), new Date(year, 4, 1), new Date(year, 4, 17),
-    offset(easter, 39), offset(easter, 49), offset(easter, 50),
-    new Date(year, 11, 25), new Date(year, 11, 26),
+    new Date(year, 0, 1),
+    offset(easter, -3),
+    offset(easter, -2),
+    easter,
+    offset(easter, 1),
+    new Date(year, 4, 1),
+    new Date(year, 4, 17),
+    offset(easter, 39),
+    offset(easter, 49),
+    offset(easter, 50),
+    new Date(year, 11, 25),
+    new Date(year, 11, 26),
   ];
 }
 
 function getPreHolidayKeys(year: number): Set<string> {
   const holidays = getPublicHolidays(year);
-  const holidaySet = new Set(holidays.map(d => dateKey(d)));
+  const holidaySet = new Set(holidays.map((d) => dateKey(d)));
   const keys = new Set<string>();
   for (const h of holidays) {
     const prev = new Date(h);
@@ -133,7 +158,7 @@ function classifyDayType(isoStr: string): DayType {
   const year = osloDate.getFullYear();
 
   const holidays = getPublicHolidays(year);
-  if (holidays.some(h => dateKey(h) === key)) return "public_holiday";
+  if (holidays.some((h) => dateKey(h) === key)) return "public_holiday";
 
   const preKeys = getPreHolidayKeys(year);
   if (preKeys.has(key)) return "pre_holiday";
@@ -207,7 +232,7 @@ function computeMedianAPE(actual: number[], predicted: number[]): number {
   const apes: number[] = [];
   for (let i = 0; i < actual.length; i++) {
     if (actual[i] < 10 || predicted[i] === 0) continue;
-    apes.push(Math.abs(actual[i] - predicted[i]) / actual[i] * 100);
+    apes.push((Math.abs(actual[i] - predicted[i]) / actual[i]) * 100);
   }
   if (apes.length === 0) return 0;
   apes.sort((a, b) => a - b);
@@ -227,8 +252,8 @@ async function main(): Promise<void> {
 
   const weights: ModelWeights = JSON.parse(fs.readFileSync(WEIGHTS_PATH, "utf-8"));
 
-  const files = fs.readdirSync(RAW_DIR).filter(f => f.endsWith(".json"));
-  const allStations: StationHistory[] = files.map(f =>
+  const files = fs.readdirSync(RAW_DIR).filter((f) => f.endsWith(".json"));
+  const allStations: StationHistory[] = files.map((f) =>
     JSON.parse(fs.readFileSync(path.join(RAW_DIR, f), "utf-8"))
   );
 
@@ -238,8 +263,12 @@ async function main(): Promise<void> {
   const cutoff = cutoffDate.toISOString();
 
   const allSegments: Segment[] = [
-    "weekday_daytime", "weekday_evening", "weekend",
-    "public_holiday", "pre_holiday", "school_break",
+    "weekday_daytime",
+    "weekday_evening",
+    "weekend",
+    "public_holiday",
+    "pre_holiday",
+    "school_break",
   ];
 
   const segments: Record<Segment, { actual: number[]; predicted: number[] }> = {} as never;
@@ -250,12 +279,15 @@ async function main(): Promise<void> {
   let skippedNoBase = 0;
 
   for (const station of allStations) {
-    const testRecords = station.records.filter(r => r.from >= cutoff);
+    const testRecords = station.records.filter((r) => r.from >= cutoff);
     stationData[station.stationId] = { name: station.stationName, actual: [], predicted: [] };
 
     for (const rec of testRecords) {
       const predicted = predictVolume(weights, station.stationId, rec.from);
-      if (predicted === 0) { skippedNoBase++; continue; }
+      if (predicted === 0) {
+        skippedNoBase++;
+        continue;
+      }
 
       const segment = classifySegment(rec.from);
 
@@ -287,7 +319,9 @@ async function main(): Promise<void> {
   };
 
   console.log("=== Segment-MAPE ===\n");
-  console.log(`${"Segment".padEnd(24)} ${"N".padStart(6)} ${"MAPE%".padStart(7)} ${"MdAPE%".padStart(8)} ${"MAE".padStart(6)} ${"Mål%".padStart(6)} Status`);
+  console.log(
+    `${"Segment".padEnd(24)} ${"N".padStart(6)} ${"MAPE%".padStart(7)} ${"MdAPE%".padStart(8)} ${"MAE".padStart(6)} ${"Mål%".padStart(6)} Status`
+  );
   console.log("-".repeat(72));
 
   let allPass = true;
@@ -295,7 +329,9 @@ async function main(): Promise<void> {
   for (const segment of allSegments) {
     const data = segments[segment];
     if (data.actual.length === 0) {
-      console.log(`${segmentNames[segment].padEnd(24)} ${String(0).padStart(6)}       -        -      -      - N/A`);
+      console.log(
+        `${segmentNames[segment].padEnd(24)} ${String(0).padStart(6)}       -        -      -      - N/A`
+      );
       continue;
     }
 
@@ -314,14 +350,16 @@ async function main(): Promise<void> {
   console.log(`\nSkipped (no base pattern): ${skippedNoBase}`);
 
   console.log("\n=== Per-stasjon MAPE ===\n");
-  for (const [id, data] of Object.entries(stationData)) {
+  for (const [, data] of Object.entries(stationData)) {
     if (data.actual.length === 0) {
       console.log(`  ${data.name.padEnd(20)} N=    0  (ingen testdata)`);
       continue;
     }
     const mape = computeMAPE(data.actual, data.predicted);
     const mdape = computeMedianAPE(data.actual, data.predicted);
-    console.log(`  ${data.name.padEnd(20)} N=${String(data.actual.length).padStart(5)}  MAPE=${mape.toFixed(1).padStart(5)}%  MdAPE=${mdape.toFixed(1).padStart(5)}%`);
+    console.log(
+      `  ${data.name.padEnd(20)} N=${String(data.actual.length).padStart(5)}  MAPE=${mape.toFixed(1).padStart(5)}%  MdAPE=${mdape.toFixed(1).padStart(5)}%`
+    );
   }
 
   // Sample size warnings
@@ -335,12 +373,12 @@ async function main(): Promise<void> {
 
   console.log(`\n=== Samlet resultat: ${allPass ? "PASS" : "FAIL"} ===`);
   if (!allPass) {
-    const fails = allSegments.filter(s => {
+    const fails = allSegments.filter((s) => {
       const d = segments[s];
       if (d.actual.length === 0) return false;
       return computeMAPE(d.actual, d.predicted) > thresholds[s];
     });
-    console.log(`Segmenter over mål: ${fails.map(s => segmentNames[s]).join(", ")}`);
+    console.log(`Segmenter over mål: ${fails.map((s) => segmentNames[s]).join(", ")}`);
   }
 }
 

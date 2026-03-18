@@ -14,9 +14,7 @@ export default function DirectionToggle({ options, value, onChange }: DirectionT
           key={option}
           onClick={() => onChange(option)}
           className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-            value === option
-              ? "bg-slate-800 text-white"
-              : "text-slate-600 hover:text-slate-800"
+            value === option ? "bg-slate-800 text-white" : "text-slate-600 hover:text-slate-800"
           }`}
         >
           {option}

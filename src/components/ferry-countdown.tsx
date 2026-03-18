@@ -15,7 +15,7 @@ function formatCountdown(ms: number): string {
 }
 
 export default function FerryCountdown({ departures }: FerryCountdownProps) {
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -24,12 +24,12 @@ export default function FerryCountdown({ departures }: FerryCountdownProps) {
 
   // Find the next departure that hasn't passed
   const next = departures
-    .map(d => ({ ...d, ms: new Date(d.time).getTime() - now }))
-    .find(d => d.ms > 0);
+    .map((d) => ({ ...d, ms: new Date(d.time).getTime() - now }))
+    .find((d) => d.ms > 0);
 
   const upcoming = departures
-    .map(d => ({ ...d, ms: new Date(d.time).getTime() - now }))
-    .filter(d => d.ms > 0)
+    .map((d) => ({ ...d, ms: new Date(d.time).getTime() - now }))
+    .filter((d) => d.ms > 0)
     .slice(1, 3);
 
   if (!next) return null;
@@ -48,7 +48,8 @@ export default function FerryCountdown({ departures }: FerryCountdownProps) {
           {formatCountdown(next.ms)}
         </div>
         <div className="text-sm text-slate-500">
-          kl {new Date(next.time).toLocaleTimeString("no-NO", {
+          kl{" "}
+          {new Date(next.time).toLocaleTimeString("no-NO", {
             timeZone: "Europe/Oslo",
             hour: "2-digit",
             minute: "2-digit",
@@ -60,7 +61,8 @@ export default function FerryCountdown({ departures }: FerryCountdownProps) {
         <div className="flex gap-3 mt-2 text-xs text-slate-400">
           {upcoming.map((d, i) => (
             <span key={i}>
-              Deretter {new Date(d.time).toLocaleTimeString("no-NO", {
+              Deretter{" "}
+              {new Date(d.time).toLocaleTimeString("no-NO", {
                 timeZone: "Europe/Oslo",
                 hour: "2-digit",
                 minute: "2-digit",

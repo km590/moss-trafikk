@@ -48,19 +48,23 @@ export async function POST(request: Request) {
 
   for (const [stationId, rows] of byStation) {
     // Find time range needed
-    const hours = rows.map(r => new Date(r.target_hour));
-    const earliest = new Date(Math.min(...hours.map(h => h.getTime())));
-    const latest = new Date(Math.max(...hours.map(h => h.getTime())));
+    const hours = rows.map((r) => new Date(r.target_hour));
+    const earliest = new Date(Math.min(...hours.map((h) => h.getTime())));
+    const latest = new Date(Math.max(...hours.map((h) => h.getTime())));
     earliest.setHours(earliest.getHours() - 1);
     latest.setHours(latest.getHours() + 2);
 
     try {
-      const volumes = await fetchHourlyVolume(stationId, earliest.toISOString(), latest.toISOString());
+      const volumes = await fetchHourlyVolume(
+        stationId,
+        earliest.toISOString(),
+        latest.toISOString()
+      );
 
       for (const row of rows) {
         const targetMs = new Date(row.target_hour).getTime();
         // Find the volume record that matches this hour
-        const match = volumes.find(v => {
+        const match = volumes.find((v) => {
           const vStart = new Date(v.from).getTime();
           return Math.abs(vStart - targetMs) < 30 * 60 * 1000; // within 30 min
         });

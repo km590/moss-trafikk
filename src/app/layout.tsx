@@ -11,7 +11,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Moss Trafikk – Kanalbrua og korridoren",
-  description: "Smart trafikkanslag for Moss-korridoren. Er det smart å kjøre nå, eller lønner det seg å vente?",
+  description:
+    "Smart trafikkanslag for Moss-korridoren. Er det smart å kjøre nå, eller lønner det seg å vente?",
   openGraph: {
     title: "Moss Trafikk",
     description: "Er det smart å kjøre nå?",
@@ -33,11 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${poppins.className} bg-slate-50 text-slate-900 antialiased`}>
         <Nav />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <main className="min-h-screen">{children}</main>
         <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-          Data: Statens vegvesen og Entur · <a href="/om" className="underline">Slik fungerer det</a>
+          Data: Statens vegvesen og Entur ·{" "}
+          <a href="/om" className="underline">
+            Slik fungerer det
+          </a>
         </footer>
       </body>
     </html>

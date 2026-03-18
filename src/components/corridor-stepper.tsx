@@ -17,21 +17,31 @@ function worstCongestion(levels: CongestionLevel[]): CongestionLevel {
 
 function circleColor(level: CongestionLevel | null): string {
   switch (level) {
-    case "green": return "bg-emerald-500";
-    case "yellow": return "bg-amber-400";
-    case "red": return "bg-red-500";
-    case "unknown": return "bg-slate-300";
-    default: return "bg-slate-300";
+    case "green":
+      return "bg-emerald-500";
+    case "yellow":
+      return "bg-amber-400";
+    case "red":
+      return "bg-red-500";
+    case "unknown":
+      return "bg-slate-300";
+    default:
+      return "bg-slate-300";
   }
 }
 
 function lineColor(level: CongestionLevel | null): string {
   switch (level) {
-    case "green": return "bg-emerald-500";
-    case "yellow": return "bg-amber-400";
-    case "red": return "bg-red-500";
-    case "unknown": return "bg-slate-300";
-    default: return "bg-slate-300";
+    case "green":
+      return "bg-emerald-500";
+    case "yellow":
+      return "bg-amber-400";
+    case "red":
+      return "bg-red-500";
+    case "unknown":
+      return "bg-slate-300";
+    default:
+      return "bg-slate-300";
   }
 }
 
@@ -40,10 +50,14 @@ function getLabelForLevel(level: CongestionLevel | null, isEstimate: boolean): s
   if (!isEstimate) return getCongestionLabel(level);
   // Estimate mode: passability labels
   switch (level) {
-    case "green": return "Ser rolig ut";
-    case "yellow": return "Ser travelt ut";
-    case "red": return "Kø sannsynlig";
-    default: return "Ukjent";
+    case "green":
+      return "Ser rolig ut";
+    case "yellow":
+      return "Ser travelt ut";
+    case "red":
+      return "Kø sannsynlig";
+    default:
+      return "Ukjent";
   }
 }
 
@@ -76,13 +90,13 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
                   aria-label={statusLabel}
                 />
                 <span className="text-sm font-medium text-slate-800 flex-1">{node.label}</span>
-                <span className={`text-xs ${node.isEstimate ? "text-slate-400 italic" : "text-muted-foreground"}`}>
+                <span
+                  className={`text-xs ${node.isEstimate ? "text-slate-400 italic" : "text-muted-foreground"}`}
+                >
                   {statusLabel}
                 </span>
               </div>
-              {!isLast && (
-                <div className="ml-3 w-px h-4 bg-slate-200 my-0.5" />
-              )}
+              {!isLast && <div className="ml-3 w-px h-4 bg-slate-200 my-0.5" />}
             </div>
           );
         })}
@@ -118,7 +132,14 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
                   className={`mt-3.5 h-1 flex-1 min-w-2 mx-1 ${lineColor(connectorLevel)} ${
                     connectorEstimate ? "opacity-40" : ""
                   }`}
-                  style={connectorEstimate ? { backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 4px, white 4px, white 8px)" } : undefined}
+                  style={
+                    connectorEstimate
+                      ? {
+                          backgroundImage:
+                            "repeating-linear-gradient(90deg, transparent, transparent 4px, white 4px, white 8px)",
+                        }
+                      : undefined
+                  }
                 />
               )}
             </div>
@@ -127,7 +148,7 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
       </div>
 
       {/* Estimate notice */}
-      {nodeData.some(n => n.isEstimate) && (
+      {nodeData.some((n) => n.isEstimate) && (
         <p className="text-[11px] text-slate-400 text-center -mt-2 mb-1">
           Estimert ut fra hvordan trafikken vanligvis er på dette tidspunktet
         </p>

@@ -1,7 +1,6 @@
 "use client";
 
 import type { HourlyPrediction, PredictionResult } from "@/lib/types";
-import { getCongestionColor, getCongestionLabel } from "@/lib/traffic-logic";
 
 interface PredictionCardProps {
   prediction: PredictionResult;
@@ -23,7 +22,6 @@ function ConfidenceBadge({ confidence }: { confidence: "high" | "medium" | "low"
 }
 
 function HourBar({ prediction }: { prediction: HourlyPrediction }) {
-  const maxHeight = 48; // px
   const minHeight = 8;
   // Normalize: scale relative to max in the set (handled by parent)
   const height = prediction.predicted;
@@ -42,32 +40,34 @@ function HourBar({ prediction }: { prediction: HourlyPrediction }) {
         style={{ height: `${Math.max(minHeight, height)}px` }}
         title={`${prediction.predicted} kjt/t`}
       />
-      <span className="text-[11px] text-slate-500 font-medium">
-        {prediction.label.slice(0, 2)}
-      </span>
+      <span className="text-[11px] text-slate-500 font-medium">{prediction.label.slice(0, 2)}</span>
     </div>
   );
 }
 
 export default function PredictionCard({ prediction, stationName }: PredictionCardProps) {
-  const maxVol = Math.max(...prediction.predictions.map(p => p.predicted), 1);
+  const maxVol = Math.max(...prediction.predictions.map((p) => p.predicted), 1);
 
   // Normalize heights relative to max
-  const normalizedPredictions = prediction.predictions.map(p => ({
+  const normalizedPredictions = prediction.predictions.map((p) => ({
     ...p,
     predicted: Math.round((p.predicted / maxVol) * 48),
   }));
 
   // Average confidence
   const confidenceCounts = prediction.predictions.reduce(
-    (acc, p) => { acc[p.confidence]++; return acc; },
+    (acc, p) => {
+      acc[p.confidence]++;
+      return acc;
+    },
     { high: 0, medium: 0, low: 0 } as Record<string, number>
   );
-  const avgConfidence = confidenceCounts.high >= prediction.predictions.length / 2
-    ? "high" as const
-    : confidenceCounts.low >= prediction.predictions.length / 2
-      ? "low" as const
-      : "medium" as const;
+  const avgConfidence =
+    confidenceCounts.high >= prediction.predictions.length / 2
+      ? ("high" as const)
+      : confidenceCounts.low >= prediction.predictions.length / 2
+        ? ("low" as const)
+        : ("medium" as const);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4">
@@ -87,9 +87,7 @@ export default function PredictionCard({ prediction, stationName }: PredictionCa
         ))}
       </div>
 
-      <p className="text-sm text-slate-700 font-medium text-center">
-        {prediction.summary}
-      </p>
+      <p className="text-sm text-slate-700 font-medium text-center">{prediction.summary}</p>
 
       {prediction.dayType !== "normal" && (
         <p className="text-xs text-amber-600 text-center mt-1">

@@ -59,10 +59,18 @@ function getPublicHolidays(year: number): Date[] {
     return d;
   };
   return [
-    new Date(year, 0, 1), offset(easter, -3), offset(easter, -2),
-    easter, offset(easter, 1), new Date(year, 4, 1), new Date(year, 4, 17),
-    offset(easter, 39), offset(easter, 49), offset(easter, 50),
-    new Date(year, 11, 25), new Date(year, 11, 26),
+    new Date(year, 0, 1),
+    offset(easter, -3),
+    offset(easter, -2),
+    easter,
+    offset(easter, 1),
+    new Date(year, 4, 1),
+    new Date(year, 4, 17),
+    offset(easter, 39),
+    offset(easter, 49),
+    offset(easter, 50),
+    new Date(year, 11, 25),
+    new Date(year, 11, 26),
   ];
 }
 
@@ -72,7 +80,7 @@ function dateKey(d: Date): string {
 
 function getPreHolidayKeys(year: number): Set<string> {
   const holidays = getPublicHolidays(year);
-  const holidaySet = new Set(holidays.map(d => dateKey(d)));
+  const holidaySet = new Set(holidays.map((d) => dateKey(d)));
   const keys = new Set<string>();
   for (const h of holidays) {
     const prev = new Date(h);
@@ -119,7 +127,7 @@ function classifyDateFromTimestamp(isoStr: string): DayType {
   const year = osloDate.getFullYear();
 
   const holidays = getPublicHolidays(year);
-  if (holidays.some(h => dateKey(h) === key)) return "public_holiday";
+  if (holidays.some((h) => dateKey(h) === key)) return "public_holiday";
 
   const preKeys = getPreHolidayKeys(year);
   if (preKeys.has(key)) return "pre_holiday";
@@ -131,7 +139,12 @@ function classifyDateFromTimestamp(isoStr: string): DayType {
 
 // --- Oslo time parsing ---
 
-function getOsloTime(isoStr: string): { dayOfWeek: number; hour: number; month: number; dateKey: string } {
+function getOsloTime(isoStr: string): {
+  dayOfWeek: number;
+  hour: number;
+  month: number;
+  dateKey: string;
+} {
   const date = new Date(isoStr);
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: "Europe/Oslo",
@@ -143,7 +156,7 @@ function getOsloTime(isoStr: string): { dayOfWeek: number; hour: number; month: 
     year: "numeric",
   });
   const parts = formatter.formatToParts(date);
-  const get = (type: string) => parts.find(p => p.type === type)?.value ?? "";
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
 
   const hour = parseInt(get("hour"), 10);
   const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
@@ -162,9 +175,7 @@ function getOsloTime(isoStr: string): { dayOfWeek: number; hour: number; month: 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
 }
 
 function percentile(values: number[], p: number): number {
@@ -200,22 +211,37 @@ async function main(): Promise<void> {
   console.log("Computing model weights from raw history...\n");
 
   // Load all station data
-  const files = fs.readdirSync(RAW_DIR).filter(f => f.endsWith(".json"));
+  const files = fs.readdirSync(RAW_DIR).filter((f) => f.endsWith(".json"));
   if (files.length === 0) {
     console.error("Ingen rå historikk funnet. Kjør fetch-history.ts først.");
     process.exit(1);
   }
 
-  const allStations: StationHistory[] = files.map(f =>
+  const allStations: StationHistory[] = files.map((f) =>
     JSON.parse(fs.readFileSync(path.join(RAW_DIR, f), "utf-8"))
   );
 
-  console.log(`Laster ${allStations.length} stasjoner, ${allStations.reduce((s, h) => s + h.records.length, 0)} timer totalt.\n`);
+  console.log(
+    `Laster ${allStations.length} stasjoner, ${allStations.reduce((s, h) => s + h.records.length, 0)} timer totalt.\n`
+  );
 
   // Phase 1: Base patterns per (station, dayOfWeek, hour) - only normal days
-  const basePatterns: Record<string, Record<number, Record<number, {
-    median: number; mean: number; sampleCount: number; p25: number; p75: number;
-  }>>> = {};
+  const basePatterns: Record<
+    string,
+    Record<
+      number,
+      Record<
+        number,
+        {
+          median: number;
+          mean: number;
+          sampleCount: number;
+          p25: number;
+          p75: number;
+        }
+      >
+    >
+  > = {};
 
   // Phase 2: Month factors (across all stations)
   const monthBuckets: Record<number, MonthBucket> = {};
@@ -277,10 +303,15 @@ async function main(): Promise<void> {
   }
 
   // Compute month factors
-  const totalAvg = Object.values(monthBuckets).reduce((s, b) => s + (b.count > 0 ? b.totalVolume / b.count : 0), 0) / 12;
+  const totalAvg =
+    Object.values(monthBuckets).reduce(
+      (s, b) => s + (b.count > 0 ? b.totalVolume / b.count : 0),
+      0
+    ) / 12;
   const monthFactors: Record<number, number> = {};
   for (let m = 0; m < 12; m++) {
-    const mAvg = monthBuckets[m].count > 0 ? monthBuckets[m].totalVolume / monthBuckets[m].count : totalAvg;
+    const mAvg =
+      monthBuckets[m].count > 0 ? monthBuckets[m].totalVolume / monthBuckets[m].count : totalAvg;
     monthFactors[m] = parseFloat((mAvg / totalAvg).toFixed(3));
   }
 
@@ -321,7 +352,7 @@ async function main(): Promise<void> {
     holidayFactors,
     metadata: {
       generatedAt: new Date().toISOString(),
-      weeksOfData: Math.max(...allStations.map(s => s.weeksCompleted.length)),
+      weeksOfData: Math.max(...allStations.map((s) => s.weeksCompleted.length)),
       stationCount: allStations.length,
     },
   };

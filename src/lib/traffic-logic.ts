@@ -1,11 +1,31 @@
-import { CongestionLevel, StationStatus, StationAverages, BestTimeWindow, BestTimeResult, ModelWeights } from "./types";
-import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL, RV19_STATION_IDS, E6_STATION_IDS, getStationVulnerability } from "./stations";
+import {
+  CongestionLevel,
+  StationStatus,
+  StationAverages,
+  BestTimeWindow,
+  BestTimeResult,
+  ModelWeights,
+} from "./types";
+import {
+  KANALBRUA_ID,
+  RV19_STATION_IDS,
+  E6_STATION_IDS,
+  getStationVulnerability,
+} from "./stations";
 import modelWeightsData from "../data/model-weights.json";
 
 const modelWeights = modelWeightsData as ModelWeights;
 const FJORDVEIEN_ID = "59044V971518";
 
-const DAY_NAMES = ["søndager", "mandager", "tirsdager", "onsdager", "torsdager", "fredager", "lørdager"];
+const DAY_NAMES = [
+  "søndager",
+  "mandager",
+  "tirsdager",
+  "onsdager",
+  "torsdager",
+  "fredager",
+  "lørdager",
+];
 
 /** Get current hour and dayOfWeek in Europe/Oslo timezone */
 export function getNorwayTime(): { hour: number; dayOfWeek: number } {
@@ -38,8 +58,8 @@ export function formatNorwayTime(date: Date): string {
 
 // --- Congestion thresholds (CALIBRATION V1) ---
 const DEVIATION_YELLOW = 1.15; // CALIBRATION: 115% of normal triggers yellow signal
-const DEVIATION_RED = 1.35;    // CALIBRATION: 135% of normal triggers red signal
-const LEAN_GREEN_DEVIATION = 1.20; // CALIBRATION: below this + below yellowAbs*1.05 = lean green
+const DEVIATION_RED = 1.35; // CALIBRATION: 135% of normal triggers red signal
+const LEAN_GREEN_DEVIATION = 1.2; // CALIBRATION: below this + below yellowAbs*1.05 = lean green
 const LEAN_GREEN_ABS_FACTOR = 1.05; // CALIBRATION
 
 // Rush hours where friction signal is strongest (CALIBRATION)
@@ -82,7 +102,7 @@ export function classifyCongestion(
   // --- Signal 3: Station/time friction ---
   // Combines friction coefficient with time-specific weighting
   const isRush = RUSH_HOURS.includes(hour);
-  const timeFactor = isRush ? 1.2 : (vuln.dampedHours.includes(hour) ? 0.7 : 1.0); // CALIBRATION
+  const timeFactor = isRush ? 1.2 : vuln.dampedHours.includes(hour) ? 0.7 : 1.0; // CALIBRATION
   const effectiveFriction = vuln.friction * timeFactor;
   // Friction signal fires when volume * friction exceeds yellow/red thresholds
   const frictionYellow = currentVolume * effectiveFriction >= vuln.yellowAbsolute;
@@ -104,7 +124,11 @@ export function classifyCongestion(
   // --- Lean green clause ---
   // If deviation is marginal AND absolute is close to but below yellow threshold,
   // lean toward green (doubt between green/yellow -> green)
-  if (yellowSignals >= 1 && deviationRatio < LEAN_GREEN_DEVIATION && currentVolume < vuln.yellowAbsolute * LEAN_GREEN_ABS_FACTOR) {
+  if (
+    yellowSignals >= 1 &&
+    deviationRatio < LEAN_GREEN_DEVIATION &&
+    currentVolume < vuln.yellowAbsolute * LEAN_GREEN_ABS_FACTOR
+  ) {
     return { level: "green", deviationPercent };
   }
 
@@ -150,7 +174,12 @@ function formatTimeWindow(hour: number): string {
   return `${pad(start)}:00 - ${pad(end)}:00`;
 }
 
-function averageVolumes(averages: StationAverages, stationIds: string[], dayOfWeek: number, hour: number): number {
+function averageVolumes(
+  averages: StationAverages,
+  stationIds: string[],
+  dayOfWeek: number,
+  hour: number
+): number {
   const volumes = stationIds
     .map((id) => getNormalVolume(averages, id, dayOfWeek, hour))
     .filter((v) => v > 0);
@@ -174,12 +203,7 @@ function getExpectedScore(
   const e6Normal = averageVolumes(averages, E6_STATION_IDS, dayOfWeek, hour);
   const fjordveiNormal = getNormalVolume(averages, FJORDVEIEN_ID, dayOfWeek, hour);
 
-  return (
-    kanalbruaNormal * 0.4 +
-    rv19Normal * 0.3 +
-    e6Normal * 0.2 +
-    fjordveiNormal * 0.1
-  );
+  return kanalbruaNormal * 0.4 + rv19Normal * 0.3 + e6Normal * 0.2 + fjordveiNormal * 0.1;
 }
 
 export function findBestCrossingTime(
@@ -224,15 +248,16 @@ export function findBestCrossingTime(
     reason,
   };
 
-  const backup: BestTimeWindow | null = backupCandidate && !isLowTraffic
-    ? {
-        startHour: backupCandidate.hour,
-        endHour: (backupCandidate.hour + 1) % 24,
-        expectedDeviation: toDeviation(backupCandidate.score),
-        label: formatTimeWindow(backupCandidate.hour),
-        reason,
-      }
-    : null;
+  const backup: BestTimeWindow | null =
+    backupCandidate && !isLowTraffic
+      ? {
+          startHour: backupCandidate.hour,
+          endHour: (backupCandidate.hour + 1) % 24,
+          expectedDeviation: toDeviation(backupCandidate.score),
+          label: formatTimeWindow(backupCandidate.hour),
+          reason,
+        }
+      : null;
 
   return { primary, backup, mode };
 }

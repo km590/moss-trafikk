@@ -51,7 +51,10 @@ function getIcon(mode: DecisionMode): string {
   }
 }
 
-function getConfidenceLabel(confidence: "high" | "medium" | "low", mode: DecisionMode): string | null {
+function getConfidenceLabel(
+  confidence: "high" | "medium" | "low",
+  mode: DecisionMode
+): string | null {
   if (mode === "go_now") {
     switch (confidence) {
       case "high":
@@ -89,7 +92,9 @@ export default function TravelAdvice({ decision }: TravelAdviceProps) {
         </p>
 
         <div className="flex items-start gap-3">
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${styles.iconBg} text-white text-lg shrink-0`}>
+          <div
+            className={`flex items-center justify-center w-10 h-10 rounded-full ${styles.iconBg} text-white text-lg shrink-0`}
+          >
             {icon}
           </div>
           <div className="flex-1 min-w-0">
@@ -97,30 +102,22 @@ export default function TravelAdvice({ decision }: TravelAdviceProps) {
               {decision.headline}
             </p>
             {decision.detail && (
-              <p className="text-sm text-muted-foreground mt-1">
-                {decision.detail}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">{decision.detail}</p>
             )}
           </div>
         </div>
 
         {decision.bestWindow && decision.mode === "wait" && (
           <div className="flex items-center gap-2 rounded-lg bg-white/60 px-3 py-2 border border-amber-100">
-            <span className="text-lg font-bold text-amber-700">
-              {decision.bestWindow.label}
-            </span>
+            <span className="text-lg font-bold text-amber-700">{decision.bestWindow.label}</span>
             {decision.bestWindow.expectedDeviation < 85 && (
-              <span className="text-xs text-amber-600">
-                Vesentlig roligere
-              </span>
+              <span className="text-xs text-amber-600">Vesentlig roligere</span>
             )}
           </div>
         )}
 
         {confidenceLabel && (
-          <p className="text-[10px] text-muted-foreground/60">
-            {confidenceLabel}
-          </p>
+          <p className="text-[10px] text-muted-foreground/60">{confidenceLabel}</p>
         )}
       </CardContent>
     </Card>
