@@ -59,7 +59,7 @@ type SlotSamples = Record<string, Record<string, number[]>>;
 
 function buildQuery(stationId: string, from: string, to: string): string {
   return JSON.stringify({
-    query: `query StationVolume($id: String!, $from: String!, $to: String!) {
+    query: `query StationVolume($id: String!, $from: ZonedDateTime!, $to: ZonedDateTime!) {
   trafficData(trafficRegistrationPointId: $id) {
     volume {
       byHour(from: $from, to: $to) {
