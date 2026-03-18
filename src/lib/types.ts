@@ -80,6 +80,13 @@ export interface HourlyPrediction {
   label: string; // e.g. "14:00"
 }
 
+export interface FerryBoost {
+  active: boolean;
+  factor: number;          // 1.0 = no effect, 1.15 = +15%
+  nextDepartureMin: number | null; // minutes until next ferry
+  reason: string;
+}
+
 export interface PredictionResult {
   stationId: string;
   predictions: HourlyPrediction[];
@@ -87,6 +94,7 @@ export interface PredictionResult {
   quietestHour: number;
   summary: string; // e.g. "Mest trafikk kl. 16"
   dayType: DayType;
+  ferry: FerryBoost;
 }
 
 export interface ModelWeights {

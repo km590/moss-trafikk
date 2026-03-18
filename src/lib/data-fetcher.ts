@@ -2,6 +2,7 @@ import { STATIONS, KANALBRUA_ID } from "./stations";
 import { fetchLatestHourForAllStations } from "./vegvesen-client";
 import { classifyCongestion, getNormalVolume, getCorridorWorstPoint, findBestCrossingTime, getNorwayTime } from "./traffic-logic";
 import { getPredictions, isMay17ModeActive, getMay17Comparison, getModelNormalVolume } from "./prediction-engine";
+import { getFerrySignal } from "./ferry-signal";
 import averages from "../data/averages.json";
 import type { CorridorStatus, BestTimeResult, StationStatus, StationAverages, PredictionResult, HourlyPrediction } from "./types";
 
@@ -95,8 +96,19 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
 
     const bestTime = findBestCrossingTime(averages as StationAverages, hour, dayOfWeek, "kanalbrua");
 
-    // Predictions
-    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4);
+    // Ferry signal (separate layer, fails gracefully)
+    let ferrySignal: { factor: number; nextDepartureMin: number | null; reason: string } | undefined;
+    try {
+      const fs = await getFerrySignal(KANALBRUA_ID);
+      if (fs.factor > 1.0) {
+        ferrySignal = { factor: fs.factor, nextDepartureMin: fs.nextDeparture?.minutesUntil ?? null, reason: fs.reason };
+      }
+    } catch {
+      // Ferry signal is optional - baseline predictions still work
+    }
+
+    // Predictions (ferry boost only on short-term 4h view, not full-day chart)
+    const predictions = getPredictions(KANALBRUA_ID, now, hour, 4, ferrySignal);
     const fullDayPredictions = getPredictions(KANALBRUA_ID, now, hour, 24);
     const chartPredictions = fullDayPredictions.predictions.filter(p => p.hour >= 6 && p.hour <= 22);
 

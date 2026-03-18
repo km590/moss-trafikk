@@ -1,7 +1,8 @@
-import type { ModelWeights, HourlyPrediction, PredictionResult, CongestionLevel, DayType } from "./types";
+import type { ModelWeights, HourlyPrediction, PredictionResult, CongestionLevel, DayType, FerryBoost } from "./types";
 import { classifyDate, shouldAutoActivateMay17 } from "./norwegian-calendar";
 import { KANALBRUA_ID, KANALBRUA_ABSOLUTE_GUARDRAIL } from "./stations";
 import modelWeightsData from "../data/model-weights.json";
+import type { FerryDeparture } from "./entur-client";
 
 const weights = modelWeightsData as ModelWeights;
 
@@ -173,12 +174,18 @@ function classifyPredictedCongestion(predicted: number, normal: number, stationI
  * Get predictions for a station for the next N hours.
  * Returns 4 hours for UI display, calculates up to 24 for best-time.
  * Includes adjacent-hour smoothing guardrail.
+ *
+ * Ferry signal is an optional separate adjustment layer:
+ * - Only applied to the current hour (real-time signal, not forecast)
+ * - Baseline predictions remain untouched for future hours
+ * - Can be disabled by omitting ferrySignal parameter
  */
 export function getPredictions(
   stationId: string,
   date: Date,
   currentHour: number,
-  hoursAhead: number = 4
+  hoursAhead: number = 4,
+  ferrySignal?: { factor: number; nextDepartureMin: number | null; reason: string }
 ): PredictionResult {
   const dayOfWeek = date.getDay();
   const dayType = classifyDate(date);
@@ -187,7 +194,20 @@ export function getPredictions(
   for (let i = 0; i < hoursAhead; i++) {
     const hour = (currentHour + i) % 24;
     const result = predictVolume(stationId, date, hour);
-    rawPredictions.push({ hour, ...result });
+
+    // Ferry boost: only apply to current hour (i === 0)
+    // Future hours use pure baseline - ferry schedule changes too fast to forecast
+    if (i === 0 && ferrySignal && ferrySignal.factor > 1.0) {
+      const boosted = Math.round(result.predicted * ferrySignal.factor);
+      const clamped = clampPrediction(boosted, weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]);
+      logPredictionEvent("ferry_boost", {
+        stationId, hour, baseline: result.predicted, boosted: clamped,
+        factor: ferrySignal.factor, reason: ferrySignal.reason,
+      });
+      rawPredictions.push({ hour, predicted: clamped, confidence: result.confidence, insufficientData: result.insufficientData });
+    } else {
+      rawPredictions.push({ hour, ...result });
+    }
   }
 
   // Guardrail: smooth adjacent-hour jumps exceeding MAX_HOUR_TO_HOUR_RATIO
@@ -207,7 +227,6 @@ export function getPredictions(
   const predictions: HourlyPrediction[] = rawPredictions.map(({ hour, predicted, confidence, insufficientData }) => {
     const baseNormal = weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]?.median ?? 0;
     const congestion = classifyPredictedCongestion(predicted, baseNormal, stationId);
-    // Degrade confidence if insufficient data
     const finalConfidence = insufficientData ? "low" : confidence;
 
     return {
@@ -237,6 +256,16 @@ export function getPredictions(
     summary = `Trolig mest trafikk kl. ${peakLabel} · Roligst rundt kl. ${quietLabel}`;
   }
 
+  // Ferry boost metadata
+  const ferry: FerryBoost = ferrySignal && ferrySignal.factor > 1.0
+    ? {
+        active: true,
+        factor: ferrySignal.factor,
+        nextDepartureMin: ferrySignal.nextDepartureMin,
+        reason: ferrySignal.reason,
+      }
+    : { active: false, factor: 1.0, nextDepartureMin: null, reason: "no_ferry_signal" };
+
   return {
     stationId,
     predictions,
@@ -244,6 +273,7 @@ export function getPredictions(
     quietestHour,
     summary,
     dayType,
+    ferry,
   };
 }
 

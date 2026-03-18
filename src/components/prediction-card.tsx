@@ -92,6 +92,20 @@ export default function PredictionCard({ prediction, stationName }: PredictionCa
         {prediction.summary}
       </p>
 
+      {prediction.ferry?.active && (
+        <div className="flex items-center justify-center gap-1.5 mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg px-3 py-1.5">
+          <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M2 20l.5-2A6 6 0 0 1 8.5 13h7a6 6 0 0 1 6 5l.5 2" />
+            <path d="M6 12V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" />
+            <path d="M2 20c1.5-1 3.5-1 5 0s3.5 1 5 0 3.5-1 5 0 3.5 1 5 0" />
+          </svg>
+          <span>
+            Fergeavgang om {prediction.ferry.nextDepartureMin} min
+            {" "}· Justert +{Math.round((prediction.ferry.factor - 1) * 100)}%
+          </span>
+        </div>
+      )}
+
       {prediction.dayType !== "normal" && (
         <p className="text-xs text-amber-600 text-center mt-1">
           {prediction.dayType === "public_holiday" && "Helligdag - anslaget er mer usikkert"}
