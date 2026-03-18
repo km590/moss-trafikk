@@ -51,14 +51,24 @@ function getIcon(mode: DecisionMode): string {
   }
 }
 
-function getConfidenceLabel(confidence: "high" | "medium" | "low"): string | null {
+function getConfidenceLabel(confidence: "high" | "medium" | "low", mode: DecisionMode): string | null {
+  if (mode === "go_now") {
+    switch (confidence) {
+      case "high":
+        return null;
+      case "medium":
+        return "Ser greit ut, men uventede hendelser fanges ikke opp";
+      case "low":
+        return "Ser greit ut akkurat nå, men hendelser på veien kan endre bildet";
+    }
+  }
   switch (confidence) {
     case "high":
       return "Rimelig sikkert anslag";
     case "medium":
-      return "Noe usikkerhet";
+      return "Mer usikkert enn vanlig akkurat nå";
     case "low":
-      return "Usikkert anslag";
+      return "Bygger mest på historisk mønster";
   }
 }
 
@@ -69,7 +79,7 @@ export default function TravelAdvice({ decision }: TravelAdviceProps) {
 
   const styles = getDecisionStyles(decision.mode);
   const icon = getIcon(decision.mode);
-  const confidenceLabel = getConfidenceLabel(decision.confidence);
+  const confidenceLabel = getConfidenceLabel(decision.confidence, decision.mode);
 
   return (
     <Card className={`${styles.border} ${styles.bg}`}>
