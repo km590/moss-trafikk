@@ -1,3 +1,6 @@
+// TODO: Legacy - erstattet av fetch-history.ts + compute-model.ts
+// Beholdes midlertidig fordi averages.json brukes som fallback i data-fetcher.ts og traffic-logic.ts
+// Kan fjernes naar model-weights.json har bevist seg stabil i produksjon
 import fs from "fs";
 import path from "path";
 
