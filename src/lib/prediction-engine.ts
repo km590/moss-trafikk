@@ -156,17 +156,45 @@ function predictMay17Volume(
   return { predicted, confidence: "medium", sampleCount: wedBase.sampleCount };
 }
 
-function classifyPredictedCongestion(predicted: number, normal: number, stationId: string): CongestionLevel {
-  if (normal === 0 || normal < 10) return "green";
+/**
+ * Classify predicted congestion using percentile buckets.
+ *
+ * Estimate mode cannot use "deviation from normal" because predicted IS the normal.
+ * Instead, we classify how busy this hour typically is relative to the station's
+ * own daily profile, using percentiles of all 24 hourly medians for this day of week.
+ *
+ * - green:  under p25 (rolig time for denne stasjonen)
+ * - yellow: p25-p50 (normal travelhet)
+ * - orange: p50-p75 (travel time)
+ * - red:    over p75 (blant de travleste timene)
+ */
+function classifyPredictedCongestion(predicted: number, stationId: string, dayOfWeek: number): CongestionLevel {
+  if (predicted < 10) return "green";
 
   if (stationId === KANALBRUA_ID && predicted > KANALBRUA_ABSOLUTE_GUARDRAIL) {
     return "red";
   }
 
-  const ratio = (predicted / normal) * 100;
-  if (ratio < 110) return "green";
-  if (ratio < 125) return "yellow";
-  if (ratio < 145) return "orange";
+  // Collect all hourly medians for this station+day
+  const dayData = weights.basePatterns[stationId]?.[dayOfWeek];
+  if (!dayData) return "green";
+
+  const medians: number[] = [];
+  for (const hour of Object.keys(dayData)) {
+    const med = dayData[parseInt(hour)]?.median;
+    if (med !== undefined && med > 0) medians.push(med);
+  }
+
+  if (medians.length < 4) return "green"; // Too few hours to classify
+
+  medians.sort((a, b) => a - b);
+  const p25 = medians[Math.floor(medians.length * 0.25)];
+  const p50 = medians[Math.floor(medians.length * 0.50)];
+  const p75 = medians[Math.floor(medians.length * 0.75)];
+
+  if (predicted < p25) return "green";
+  if (predicted < p50) return "yellow";
+  if (predicted < p75) return "orange";
   return "red";
 }
 
@@ -225,8 +253,7 @@ export function getPredictions(
   }
 
   const predictions: HourlyPrediction[] = rawPredictions.map(({ hour, predicted, confidence, insufficientData }) => {
-    const baseNormal = weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]?.median ?? 0;
-    const congestion = classifyPredictedCongestion(predicted, baseNormal, stationId);
+    const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek);
     const finalConfidence = insufficientData ? "low" : confidence;
 
     return {
@@ -312,15 +339,13 @@ export function getMay17Comparison(
 
   for (let hour = 6; hour <= 22; hour++) {
     const normalPred = predictVolume(stationId, normalDate, hour);
-    // For May 17: use Wednesday base but apply May 17's holiday factor
     const may17Pred = predictMay17Volume(stationId, hour);
-    const dayOfWeek = normalDate.getDay();
-    const baseNormal = weights.basePatterns[stationId]?.[dayOfWeek]?.[hour]?.median ?? 0;
+    const wedDow = normalDate.getDay();
 
     normalDay.push({
       hour,
       predicted: normalPred.predicted,
-      congestion: classifyPredictedCongestion(normalPred.predicted, baseNormal, stationId),
+      congestion: classifyPredictedCongestion(normalPred.predicted, stationId, wedDow),
       confidence: normalPred.confidence,
       label: `${String(hour).padStart(2, "0")}:00`,
     });
@@ -328,7 +353,7 @@ export function getMay17Comparison(
     may17Day.push({
       hour,
       predicted: may17Pred.predicted,
-      congestion: classifyPredictedCongestion(may17Pred.predicted, baseNormal, stationId),
+      congestion: classifyPredictedCongestion(may17Pred.predicted, stationId, wedDow),
       confidence: may17Pred.confidence,
       label: `${String(hour).padStart(2, "0")}:00`,
     });

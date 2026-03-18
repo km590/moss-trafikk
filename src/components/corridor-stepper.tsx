@@ -39,8 +39,15 @@ function lineColor(level: CongestionLevel | null): string {
 
 function getLabelForLevel(level: CongestionLevel | null, isEstimate: boolean): string {
   if (level === null || level === "unknown") return "Ukjent status";
-  const base = getCongestionLabel(level);
-  return isEstimate ? `${base} (estimert)` : base;
+  if (!isEstimate) return getCongestionLabel(level);
+  // Estimate mode: labels express typical busyness, not live congestion
+  switch (level) {
+    case "green": return "Typisk rolig";
+    case "yellow": return "Typisk moderat";
+    case "orange": return "Typisk travel";
+    case "red": return "Typisk svart travel";
+    default: return "Ukjent";
+  }
 }
 
 export default function CorridorStepper({ statuses }: CorridorStepperProps) {
