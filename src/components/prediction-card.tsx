@@ -75,9 +75,9 @@ export default function PredictionCard({ prediction, stationName }: PredictionCa
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
-            Indikasjon neste 4 timer
+            De neste 4 timene
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">{stationName} · Basert på historiske mønstre</p>
+          <p className="text-xs text-slate-400 mt-0.5">{stationName}</p>
         </div>
         <ConfidenceBadge confidence={avgConfidence} />
       </div>

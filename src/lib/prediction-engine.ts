@@ -278,9 +278,9 @@ export function getPredictions(
 
   let summary: string;
   if (peakVol - quietVol < 50) {
-    summary = "Trolig jevn trafikk de neste timene";
+    summary = "Jevn trafikk de neste timene";
   } else {
-    summary = `Trolig mest trafikk kl. ${peakLabel} · Roligst rundt kl. ${quietLabel}`;
+    summary = `Mest trafikk rundt kl. ${peakLabel}. Det ser roligere ut fra kl. ${quietLabel}.`;
   }
 
   // Ferry boost metadata

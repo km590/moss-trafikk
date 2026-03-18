@@ -1,5 +1,5 @@
 import { getTrafficData } from "@/lib/data-fetcher";
-import { findBestCrossingTime, getCongestionLabel, getNorwayTime, formatNorwayTime } from "@/lib/traffic-logic";
+import { findBestCrossingTime, getCongestionLabel, getEstimateCongestionLabel, getNorwayTime, formatNorwayTime } from "@/lib/traffic-logic";
 import averages from "@/data/averages.json";
 import KpiCard from "@/components/kpi-card";
 import CorridorStepper from "@/components/corridor-stepper";
@@ -13,11 +13,11 @@ import type { StationAverages } from "@/lib/types";
 
 export const revalidate = 300;
 
-const DAY_LABELS = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
+const DAY_LABELS = ["sondag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lordag"];
 
 function deviationToText(percent: number): string {
   if (percent <= 95) return "Roligere enn vanlig";
-  if (percent <= 110) return "Som vanlig";
+  if (percent <= 110) return "Omtrent som vanlig for denne tiden";
   return `${percent - 100}% mer enn vanlig`;
 }
 
@@ -38,15 +38,21 @@ export default async function Home() {
   const timeStr = formatNorwayTime(updatedAt);
   const dayLabel = DAY_LABELS[dayOfWeek] ?? "i dag";
 
+  const kanalbruaLabel = kanalbrua
+    ? (kanalbrua.isEstimate
+        ? getEstimateCongestionLabel(kanalbrua.congestion)
+        : getCongestionLabel(kanalbrua.congestion))
+    : "Ingen data";
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Bør du kjøre nå?</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Er det smart a kjore na?</h1>
         <p className="text-sm text-slate-500 mt-1">
           {corridor.isStale ? (
-            <>Estimert nå · Siste måling {corridor.dataAge}</>
+            <>Estimert na · Sist malt for {corridor.dataAge}</>
           ) : (
-            <>Målt siste time · Oppdatert kl. {timeStr}</>
+            <>Malt siste time · Oppdatert kl. {timeStr}</>
           )}
         </p>
       </div>
@@ -54,18 +60,18 @@ export default async function Home() {
       {corridor.isStale && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800 flex items-center gap-2">
           <span aria-hidden="true">⚠</span>
-          Vegvesen-data er forsinket. Viser estimert status basert på historisk mønster for dette tidspunktet.
+          Vegvesen-data er forsinket akkurat na. Derfor viser vi et estimat basert pa hvordan trafikken vanligvis utvikler seg pa dette tidspunktet.
         </div>
       )}
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
-          title={kanalbrua?.isEstimate ? "Kanalbrua estimert nå" : "Kanalbrua nå"}
-          value={kanalbrua ? getCongestionLabel(kanalbrua.congestion) : "Ingen data"}
+          title="Kanalbrua na"
+          value={kanalbruaLabel}
           subtitle={
             kanalbrua?.isEstimate
-              ? "Typisk for dette tidspunktet"
+              ? "Omtrent som vanlig for denne tiden"
               : kanalbrua?.currentVolume
                 ? deviationToText(kanalbrua.deviationPercent)
                 : "Mangler data"
@@ -73,19 +79,19 @@ export default async function Home() {
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
-          title={corridor.isStale ? "Korridoren estimert" : "Korridoren"}
-          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Trolig normal" : "Ingen data")}
+          title="Mest belastet na"
+          value={corridor.worstPoint ? corridor.worstPoint.station.name : (corridor.isStale ? "Ser normalt ut" : "Ingen data")}
           subtitle={
             corridor.worstPoint
-              ? `Verste punkt – ${deviationToText(corridor.worstPoint.deviationPercent)}`
-              : (corridor.isStale ? "Typisk for dette tidspunktet" : "Alt ser normalt ut")
+              ? "Ser ut til a vare tregest i korridoren akkurat na"
+              : (corridor.isStale ? "Ingen steder skiller seg ut" : "Alt ser normalt ut")
           }
           congestion={corridor.worstPoint?.congestion ?? "green"}
         />
         <KpiCard
-          title="Beste kryssing"
+          title="Roligst senere i dag"
           value={bestTime.primary.label}
-          subtitle={bestTime.primary.reason}
+          subtitle="Vanligvis roligere enn na"
           congestion="green"
         />
       </div>
@@ -101,7 +107,7 @@ export default async function Home() {
       {/* Corridor stepper */}
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <h2 className="text-sm font-semibold text-slate-600 mb-4 uppercase tracking-wide">
-          Korridorstatus
+          Slik ser det ut i korridoren
         </h2>
         <CorridorStepper statuses={corridor.stations} />
       </div>
@@ -109,7 +115,7 @@ export default async function Home() {
       {/* Prediction chart (collapsible) */}
       <details className="group">
         <summary className="cursor-pointer text-sm font-semibold text-slate-600 uppercase tracking-wide bg-white rounded-xl border border-slate-200 p-4 list-none flex items-center justify-between">
-          Trafikkmønster
+          I dag vs. en vanlig {dayLabel}
           <svg className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
@@ -137,8 +143,8 @@ export default async function Home() {
       <BestTimeWidget kanalbruaResult={bestTime} corridorResult={corridorBestTime} />
 
       <p className="text-xs text-slate-400 text-center">
-        Trengselslogikk basert på historisk avvik per ukedag og time. Anslag bruker median fra 2 år + sesong- og helligdagsfaktorer. Ikke en garanti.{" "}
-        <a href="/om" className="underline">Les mer om metoden</a>.
+        Dette er et smart estimat, ikke live trafikk. Anslagene bygger pa historiske malinger fra samme ukedag og tidspunkt, justert for sesong og hoytider.{" "}
+        <a href="/om" className="underline">Slik fungerer det</a>.
       </p>
     </div>
   );

@@ -204,14 +204,29 @@ export function getCongestionColor(level: CongestionLevel): string {
 export function getCongestionLabel(level: CongestionLevel): string {
   switch (level) {
     case "green":
-      return "Normal trafikk";
+      return "Rolig";
     case "yellow":
-      return "Noe kø";
+      return "Noe trafikk";
     case "orange":
-      return "Mye kø";
+      return "Travel";
     case "red":
-      return "Svært mye kø";
+      return "Svart travel";
     case "unknown":
-      return "Ukjent status";
+      return "Ukjent";
+  }
+}
+
+export function getEstimateCongestionLabel(level: CongestionLevel): string {
+  switch (level) {
+    case "green":
+      return "Rolig";
+    case "yellow":
+      return "Noe trafikk";
+    case "orange":
+      return "Travel";
+    case "red":
+      return "Svart travel";
+    case "unknown":
+      return "Ukjent";
   }
 }

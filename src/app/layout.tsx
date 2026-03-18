@@ -11,10 +11,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Moss Trafikk – Kanalbrua og korridoren",
-  description: "Trafikkstatus for Kanalbrua, Rv19 og E6 i Moss. Historisk avviksbasert analyse for pendlere.",
+  description: "Smart trafikkanslag for Moss-korridoren. Er det smart a kjore na, eller loner det seg a vente?",
   openGraph: {
     title: "Moss Trafikk",
-    description: "Bør du kjøre nå eller vente?",
+    description: "Er det smart a kjore na?",
     type: "website",
   },
 };
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-          Data: Statens vegvesen Trafikkdata API · Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeløy Trafikk</a> av Synaro · <a href="/om" className="underline">Om tjenesten</a>
+          Inspirert av <a href="https://synaro.no/jeloytrafikk" className="underline" target="_blank" rel="noopener">Jeloy Trafikk</a> av Synaro · Data: Statens vegvesen og Entur · <a href="/om" className="underline">Slik fungerer det</a>
         </footer>
       </body>
     </html>

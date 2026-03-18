@@ -42,10 +42,10 @@ function getLabelForLevel(level: CongestionLevel | null, isEstimate: boolean): s
   if (!isEstimate) return getCongestionLabel(level);
   // Estimate mode: labels express typical busyness, not live congestion
   switch (level) {
-    case "green": return "Typisk rolig";
-    case "yellow": return "Typisk moderat";
-    case "orange": return "Typisk travel";
-    case "red": return "Typisk svart travel";
+    case "green": return "Vanligvis rolig";
+    case "yellow": return "Vanligvis noe trafikk";
+    case "orange": return "Vanligvis travel";
+    case "red": return "Vanligvis svart travel";
     default: return "Ukjent";
   }
 }
@@ -132,7 +132,7 @@ export default function CorridorStepper({ statuses }: CorridorStepperProps) {
       {/* Estimate notice */}
       {nodeData.some(n => n.isEstimate) && (
         <p className="text-[11px] text-slate-400 text-center -mt-2 mb-1">
-          Estimert basert på typisk mønster for dette tidspunktet
+          Estimert ut fra hvordan trafikken vanligvis er pa dette tidspunktet
         </p>
       )}
     </>

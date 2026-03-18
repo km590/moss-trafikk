@@ -69,6 +69,10 @@ export default function FerryCountdown({ departures }: FerryCountdownProps) {
           ))}
         </div>
       )}
+
+      <p className="text-[11px] text-slate-400 mt-2">
+        Fergeavgangene kan pavirke trafikken rundt sentrum og Rv19.
+      </p>
     </div>
   );
 }

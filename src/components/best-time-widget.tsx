@@ -19,7 +19,7 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult }: Best
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-            Beste tidspunkt
+            Nar er det smartest a kjore?
           </p>
           <div className="flex rounded-full bg-slate-100 p-0.5 text-xs">
             <button
@@ -67,7 +67,7 @@ export default function BestTimeWidget({ kanalbruaResult, corridorResult }: Best
 
         <p className="text-xs italic text-muted-foreground">{primary.reason}</p>
         <p className="text-[10px] text-muted-foreground/60 pt-1">
-          Basert på historiske snitt, ikke sanntidsdata
+          Basert pa historiske monstre, ikke sanntidsdata
         </p>
       </CardContent>
     </Card>
