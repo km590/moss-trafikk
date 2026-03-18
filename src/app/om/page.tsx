@@ -29,7 +29,7 @@ export default function OmPage() {
           <a href="https://www.krescado.no/" className="underline text-blue-600" target="_blank" rel="noopener noreferrer">Krescado</a>.
         </p>
         <p className="text-slate-600">
-          Bak prosjektet står Jørgen i Synaro og Kenneth i Krescado. Vi er to tidligere kollegaer med felles interesse for teknologi, data og produktutvikling, og begge har en nær relasjon til Moss og Jeløya. Jørgen er oppvokst på Jeløya, har familie der og bor i dag på Ekholt. Kenneth bor på Verket og har venner og turområder på øya.
+          Bak prosjektet står Jørgen Simensen i Synaro og Kenneth Madsø i Krescado. Vi er to tidligere kollegaer med felles interesse for teknologi, data og produktutvikling, og begge har en nær relasjon til Moss og Jeløya. Jørgen er oppvokst på Jeløya, har familie der og bor i dag på Ekholt. Kenneth bor på Verket og har venner og turområder på øya.
         </p>
         <p className="text-slate-600">
           Vi pendler begge til Oslo og kjenner godt på spørsmålet mange i Moss stiller seg: Er det smart å kjøre nå, eller lønner det seg å vente litt? Slik startet prosjektet.

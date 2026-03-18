@@ -8,7 +8,7 @@ Et samarbeidsprosjekt mellom [Synaro](https://synaro.no/) og [Krescado](https://
 
 ## Hvem står bak?
 
-Bak prosjektet står Jørgen i Synaro og Kenneth i Krescado. Vi er to tidligere kollegaer med felles interesse for teknologi, data og produktutvikling, og begge har en nær relasjon til Moss og Jeløya.
+Bak prosjektet står Jørgen Simensen i Synaro og Kenneth Madsø i Krescado. Vi er to tidligere kollegaer med felles interesse for teknologi, data og produktutvikling, og begge har en nær relasjon til Moss og Jeløya.
 
 Jørgen er oppvokst på Jeløya, har familie der og bor i dag på Ekholt. Kenneth bor på Verket og har venner og turområder på øya. Vi pendler begge til Oslo og kjenner godt på spørsmålet mange i Moss stiller seg: er det smart å kjøre nå, eller lønner det seg å vente litt?
 
@@ -68,7 +68,7 @@ scripts/
 - Tailwind CSS + shadcn/ui + Recharts
 - Supabase (eval/kalibrering)
 - Vercel
-- Plausible Analytics
+- Plausible Analytics (implementert, aktiveres når produksjonsdomenet mosstrafikk.no er på plass)
 
 ## Kjør lokalt
 
