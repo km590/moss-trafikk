@@ -1,0 +1,32 @@
+name: Eval collect
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Snapshot predictions
+        run: |
+          echo "Kaller snapshot-endepunkt..."
+          response=$(curl --silent --show-error --fail-with-body \
+            --max-time 30 \
+            --request POST \
+            --header "Authorization: Bearer ${{ secrets.ADMIN_API_KEY }}" \
+            --header "Content-Type: application/json" \
+            "${{ secrets.EVAL_API_URL }}/api/admin/eval/snapshot")
+          echo "Snapshot-respons: $response"
+
+      - name: Backfill actuals
+        run: |
+          echo "Kaller backfill-endepunkt..."
+          response=$(curl --silent --show-error --fail-with-body \
+            --max-time 60 \
+            --request POST \
+            --header "Authorization: Bearer ${{ secrets.ADMIN_API_KEY }}" \
+            --header "Content-Type: application/json" \
+            "${{ secrets.EVAL_API_URL }}/api/admin/eval/backfill")
+          echo "Backfill-respons: $response"
