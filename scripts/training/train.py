@@ -16,8 +16,8 @@ RAW_DIR = os.path.join(SCRIPT_DIR, "..", "raw-history")
 WEIGHTS_PATH = os.path.join(SCRIPT_DIR, "..", "..", "src", "data", "model-weights.json")
 OUTPUT_PATH = os.path.join(SCRIPT_DIR, "..", "..", "src", "data", "residual-model.json")
 
-from features import build_dataset
-from config import LGBM_PARAMS, N_ESTIMATORS, QUANTILE_ALPHAS, QUANTILE_LABELS, FEATURE_NAMES
+from features import build_dataset_ablation
+from config import LGBM_PARAMS, N_ESTIMATORS, QUANTILE_ALPHAS, QUANTILE_LABELS, PROD_FEATURE_NAMES
 from export_model import export_model
 
 
@@ -31,9 +31,10 @@ def _compute_mape(actuals: np.ndarray, preds: np.ndarray) -> float:
 def main() -> None:
     print("=== Moss Trafikk v2 Training Pipeline ===\n")
 
-    X_train, y_train, X_test, y_test, feature_names = build_dataset(
+    X_train, y_train, X_test, y_test, feature_names = build_dataset_ablation(
         raw_dir=RAW_DIR,
         weights_path=WEIGHTS_PATH,
+        feature_names=PROD_FEATURE_NAMES,
     )
 
     print(f"\nTraining set: {len(X_train)} samples")

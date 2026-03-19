@@ -80,9 +80,10 @@ from features import (
     compute_baseline,
     build_timestamp_lookup,
     build_lag_index,
-    build_feature_row,
+    build_feature_row_extended,
+    build_signal_lag_indexes,
 )
-from config import FEATURE_NAMES, MIN_COVERAGE, MIN_VOLUME, TEST_MONTHS
+from config import FEATURE_NAMES, SIGNAL_STATION_IDS, MIN_COVERAGE, MIN_VOLUME, TEST_MONTHS
 
 
 def _compute_mape(actuals: list, preds: list) -> float:
@@ -149,6 +150,7 @@ def main() -> None:
 
     ts_lookup = build_timestamp_lookup(station_records)
     lag_indexes = {sid: build_lag_index(recs) for sid, recs in station_records.items()}
+    signal_lag_indexes = build_signal_lag_indexes(station_records)
 
     from datetime import timedelta
     now = datetime.now(OSLO)
@@ -188,6 +190,9 @@ def main() -> None:
     per_station: dict[str, list] = {}
 
     for station_id, records in station_records.items():
+        # Skip signal stations (they are features, not targets)
+        if station_id in SIGNAL_STATION_IDS:
+            continue
         for rec in records:
             if rec["from"] < cutoff_iso:
                 continue
@@ -205,9 +210,10 @@ def main() -> None:
             if baseline <= 0:
                 continue
 
-            row = build_feature_row(
+            row = build_feature_row_extended(
                 station_id, rec, baseline,
                 station_records, weights, ts_lookup, lag_indexes,
+                signal_lag_indexes,
                 freshness=0.0, mask_lags=False, mask_latest=False,
             )
             features = [row[f] for f in feature_names]

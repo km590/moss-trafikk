@@ -5,7 +5,7 @@
 
 import { predictVolume, classifyPredictedCongestion } from "./prediction-engine";
 import { predictResidual, type ResidualModel } from "./tree-walker";
-import { buildFeatures, type StationLiveData } from "./feature-builder";
+import { buildFeatures, type StationLiveData, type SignalHourlyData } from "./feature-builder";
 import type { HourlyPredictionV2, CongestionLevel } from "./types";
 
 // Try to load residual model - may not exist yet
@@ -13,6 +13,9 @@ let residualModel: ResidualModel | null = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   residualModel = require("../data/residual-model.json") as ResidualModel;
+  console.log(
+    `[v2] residual model loaded: v${residualModel.version}, ${residualModel.features.length} features, trained ${residualModel.trainedAt.slice(0, 10)}`
+  );
 } catch {
   // Model not yet trained - v2 falls back to v1
 }
@@ -26,7 +29,8 @@ export function getV2Predictions(
   date: Date,
   currentHour: number,
   hoursAhead: number,
-  latestVolumes: Map<string, StationLiveData>
+  latestVolumes: Map<string, StationLiveData>,
+  signalHourly?: SignalHourlyData
 ): HourlyPredictionV2[] {
   const dayOfWeek = date.getDay();
   const predictions: HourlyPredictionV2[] = [];
@@ -70,7 +74,8 @@ export function getV2Predictions(
       date,
       hour,
       latestVolumes,
-      residualModel
+      residualModel,
+      signalHourly
     );
 
     // Step 4: Predict residual

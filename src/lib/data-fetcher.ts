@@ -1,5 +1,5 @@
 import { STATIONS, KANALBRUA_ID } from "./stations";
-import { fetchLatestHourForAllStations } from "./vegvesen-client";
+import { fetchLatestHourForAllStations, fetchHourlyVolume, getRecentHoursRange } from "./vegvesen-client";
 import {
   classifyCongestion,
   getNormalVolume,
@@ -17,7 +17,7 @@ import {
 } from "./prediction-engine";
 import { isV2Enabled, getV2Predictions } from "./prediction-engine-v2";
 import { makeDecision } from "./decision-engine";
-import type { StationLiveData } from "./feature-builder";
+import { SIGNAL_STATION_IDS, type StationLiveData, type SignalHourlyData } from "./feature-builder";
 import { fetchFerryDepartures, type FerryDeparture } from "./entur-client";
 import averages from "../data/averages.json";
 import type {
@@ -32,6 +32,52 @@ import type {
 } from "./types";
 
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+async function fetchSignalHourlyData(): Promise<{ data: SignalHourlyData; stats: SignalFetchStats }> {
+  const { from, to } = getRecentHoursRange();
+  const hourlyData: SignalHourlyData = new Map();
+  const t0 = Date.now();
+  let fetched = 0;
+  let failed = 0;
+
+  await Promise.all(
+    SIGNAL_STATION_IDS.map(async (stationId) => {
+      try {
+        const volumes = await fetchHourlyVolume(stationId, from, to);
+        fetched++;
+        for (const v of volumes) {
+          if (v.coverage <= 50) continue;
+          const hourKey = new Date(v.from).getTime();
+          if (!hourlyData.has(hourKey)) {
+            hourlyData.set(hourKey, []);
+          }
+          hourlyData.get(hourKey)!.push({ stationId, volume: v.total });
+        }
+      } catch {
+        failed++;
+      }
+    })
+  );
+
+  const durationMs = Date.now() - t0;
+  const stats: SignalFetchStats = {
+    fetched,
+    failed,
+    totalStations: SIGNAL_STATION_IDS.length,
+    durationMs,
+    hourlyKeys: hourlyData.size,
+  };
+
+  return { data: hourlyData, stats };
+}
+
+interface SignalFetchStats {
+  fetched: number;
+  failed: number;
+  totalStations: number;
+  durationMs: number;
+  hourlyKeys: number;
+}
 
 function formatDataAge(ms: number): string {
   const minutes = Math.round(ms / 60000);
@@ -208,7 +254,20 @@ export async function getTrafficData(): Promise<TrafficDataResult> {
         }
       }
 
-      v2Predictions = getV2Predictions(KANALBRUA_ID, now, hour, 5, latestVolumes);
+      // Fetch signal station hourly data for corridor lag features
+      let signalHourly: SignalHourlyData | undefined;
+      try {
+        const signalResult = await fetchSignalHourlyData();
+        signalHourly = signalResult.data;
+        const s = signalResult.stats;
+        console.log(
+          `[v2.1] signal fetch: ${s.fetched}/${s.totalStations} ok, ${s.failed} failed, ${s.hourlyKeys} hours, ${s.durationMs}ms`
+        );
+      } catch {
+        console.log("[v2.1] signal fetch: complete failure, using fallback (-1)");
+      }
+
+      v2Predictions = getV2Predictions(KANALBRUA_ID, now, hour, 5, latestVolumes, signalHourly);
 
       // Decision engine: current + next 4 hours
       const currentV2 = v2Predictions[0];

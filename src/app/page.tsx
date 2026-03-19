@@ -100,7 +100,7 @@ export default async function Home() {
           congestion={kanalbrua?.congestion ?? "green"}
         />
         <KpiCard
-          title="Mest belastet nå"
+          title="Tregeste punkt nå"
           value={
             corridor.worstPoint
               ? corridor.worstPoint.station.name
@@ -110,7 +110,7 @@ export default async function Home() {
           }
           subtitle={
             corridor.worstPoint
-              ? "Ser ut til å være tregest i korridoren akkurat nå"
+              ? "Her begrenses flyten mest akkurat nå"
               : corridor.isStale
                 ? "Ingen steder skiller seg ut"
                 : "Alt ser normalt ut"

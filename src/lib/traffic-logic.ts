@@ -140,13 +140,38 @@ export function classifyCongestion(
   return { level: "green", deviationPercent };
 }
 
+/**
+ * Find the point with most friction / worst passability.
+ * Ranks by congestion level first (red > yellow > green),
+ * then by friction-weighted pressure within same level.
+ * This ensures Kanalbrua with lower volume but high friction
+ * can beat an E6 station with higher raw volume.
+ */
 export function getCorridorWorstPoint(statuses: StationStatus[]): StationStatus | null {
-  const valid = statuses.filter((s) => s.currentVolume !== null);
+  const valid = statuses.filter((s) => s.currentVolume !== null && s.congestion !== "unknown");
   if (valid.length === 0) return null;
 
-  return valid.reduce((worst, current) =>
-    current.deviationPercent > worst.deviationPercent ? current : worst
-  );
+  const congestionRank: Record<string, number> = { green: 0, yellow: 1, red: 2 };
+
+  return valid.reduce((worst, current) => {
+    const worstRank = congestionRank[worst.congestion] ?? 0;
+    const currentRank = congestionRank[current.congestion] ?? 0;
+
+    // Higher congestion level always wins
+    if (currentRank !== worstRank) {
+      return currentRank > worstRank ? current : worst;
+    }
+
+    // Same congestion level: compare friction-weighted pressure
+    const worstVuln = getStationVulnerability(worst.station.id);
+    const currentVuln = getStationVulnerability(current.station.id);
+
+    // Pressure = how close to capacity, weighted by friction
+    const worstPressure = worst.currentVolume! * worstVuln.friction / worstVuln.yellowAbsolute;
+    const currentPressure = current.currentVolume! * currentVuln.friction / currentVuln.yellowAbsolute;
+
+    return currentPressure > worstPressure ? current : worst;
+  });
 }
 
 export function getNormalVolume(

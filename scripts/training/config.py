@@ -118,3 +118,52 @@ TEST_MONTHS = 4
 
 MIN_COVERAGE = 50
 MIN_VOLUME = 10
+
+
+# ---------------------------------------------------------------------------
+# Signal stations (external leading indicators, NOT core stations)
+# ---------------------------------------------------------------------------
+
+SIGNAL_STATION_IDS = {
+    "48148V1175464": {"name": "Horten RV19 nord", "corridor": "horten_rv19", "lag_minutes": 60},
+    "37692V1827282": {"name": "Horten RV19 sor", "corridor": "horten_rv19", "lag_minutes": 45},
+    "65271V443150":  {"name": "Vestby syd (E6)", "corridor": "e6_nord", "lag_minutes": 30},
+    "12554V971778":  {"name": "Jonsten (E6 sor)", "corridor": "e6_sor", "lag_minutes": 40},
+    "65179V1209937": {"name": "Solli (E6 sor)", "corridor": "e6_sor", "lag_minutes": 25},
+    "37187V971514":  {"name": "Halmstad sor (Larkollen)", "corridor": "larkollen", "lag_minutes": 20},
+}
+
+HORTEN_IDS = ["48148V1175464", "37692V1827282"]
+E6_NORD_IDS = ["65271V443150"]
+E6_SOR_IDS = ["12554V971778", "65179V1209937"]
+LARKOLLEN_IDS = ["37187V971514"]
+
+# Signal feature names (corridor lags)
+SIGNAL_FEATURE_NAMES = [
+    "horten_lag1h", "horten_lag2h",
+    "e6nord_lag1h", "e6nord_lag2h",
+    "e6sor_lag1h", "e6sor_lag2h",
+    "larkollen_lag1h", "larkollen_lag2h",
+]
+
+# Internal lagged sums (core stations, lagged)
+INTERNAL_LAG_FEATURE_NAMES = [
+    "sum_rv19_lag1h",
+    "sum_e6_lag1h",
+]
+
+# Momentum feature
+MOMENTUM_FEATURE_NAMES = [
+    "momentum_1h",
+]
+
+# Production feature set (baseline + signals, validated via ablation)
+PROD_FEATURE_NAMES = FEATURE_NAMES + SIGNAL_FEATURE_NAMES
+
+# Ablation configurations: name -> feature list
+ABLATION_CONFIGS = {
+    "baseline": FEATURE_NAMES,
+    "+signals": PROD_FEATURE_NAMES,
+    "+signals+internal_lags": PROD_FEATURE_NAMES + INTERNAL_LAG_FEATURE_NAMES,
+    "+all": PROD_FEATURE_NAMES + INTERNAL_LAG_FEATURE_NAMES + MOMENTUM_FEATURE_NAMES,
+}

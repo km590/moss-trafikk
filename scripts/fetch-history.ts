@@ -13,7 +13,8 @@ const WEEKS_BACK = 104;
 const MIN_COVERAGE = 50;
 const DELAY_MS = 500;
 
-const STATION_IDS = [
+// Core Moss stations (used in prod model)
+const CORE_STATION_IDS = [
   "40641V971605", // Kanalbrua
   "39666V971386", // Østre Kanalgate
   "72867V971385", // Rådhusbrua
@@ -26,6 +27,18 @@ const STATION_IDS = [
   "59044V971518", // Fjordveien
 ];
 
+// Signal stations (external leading indicators, ML features only)
+const SIGNAL_STATION_IDS = [
+  "48148V1175464", // Horten RV19 nord
+  "37692V1827282", // Horten RV19 sør
+  "65271V443150",  // Vestby syd (E6 nord)
+  "12554V971778",  // Jonsten (E6 sør)
+  "65179V1209937", // Solli (E6 sør)
+  "37187V971514",  // Halmstad sør (Larkollen)
+];
+
+const STATION_IDS = [...CORE_STATION_IDS, ...SIGNAL_STATION_IDS];
+
 const STATION_NAMES: Record<string, string> = {
   "40641V971605": "Kanalbrua",
   "39666V971386": "Østre Kanalgate",
@@ -37,6 +50,12 @@ const STATION_NAMES: Record<string, string> = {
   "15322V971307": "Storebaug",
   "26266V443149": "E6 Nye Moss Nord",
   "59044V971518": "Fjordveien",
+  "48148V1175464": "Horten RV19 nord",
+  "37692V1827282": "Horten RV19 sør",
+  "65271V443150": "Vestby syd (E6)",
+  "12554V971778": "Jonsten (E6 sør)",
+  "65179V1209937": "Solli (E6 sør)",
+  "37187V971514": "Halmstad sør (Larkollen)",
 };
 
 interface HourRecord {
@@ -244,7 +263,8 @@ async function processStation(stationId: string): Promise<void> {
 
 async function main(): Promise<void> {
   ensureDir(RAW_DIR);
-  console.log(`Henter ${WEEKS_BACK} uker historikk for ${STATION_IDS.length} stasjoner...\n`);
+  console.log(`Henter ${WEEKS_BACK} uker historikk for ${STATION_IDS.length} stasjoner`);
+  console.log(`  (${CORE_STATION_IDS.length} core + ${SIGNAL_STATION_IDS.length} signal)\n`);
   console.log("Rå data lagres i scripts/raw-history/ (gitignored)\n");
 
   for (const stationId of STATION_IDS) {

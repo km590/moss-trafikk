@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 import orjson
 
-from config import CATEGORICAL_FEATURES, FEATURE_NAMES, FULL_DATA_STATIONS
+from config import CATEGORICAL_FEATURES, PROD_FEATURE_NAMES, FULL_DATA_STATIONS
 
 UTC = timezone.utc
 
@@ -78,7 +78,7 @@ def export_model(
     """Export 3 quantile models to single JSON file."""
 
     result: dict[str, Any] = {
-        "version": "2.0.0",
+        "version": "2.1.0",
         "trainedAt": datetime.now(UTC).isoformat(),
         "features": feature_names,
         "categoricalFeatures": CATEGORICAL_FEATURES,

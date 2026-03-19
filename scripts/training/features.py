@@ -22,6 +22,11 @@ from config import (
     MIN_VOLUME,
     TEST_MONTHS,
     FRESHNESS_SIMULATION,
+    SIGNAL_STATION_IDS,
+    HORTEN_IDS,
+    E6_NORD_IDS,
+    E6_SOR_IDS,
+    LARKOLLEN_IDS,
 )
 
 OSLO = ZoneInfo("Europe/Oslo")
@@ -434,3 +439,219 @@ def build_dataset(
 
     print(f"Dataset built: {len(X_train)} train, {len(X_test)} test samples")
     return X_train, y_train, X_test, y_test, FEATURE_NAMES
+
+
+# ---------------------------------------------------------------------------
+# Signal station lag indexes
+# ---------------------------------------------------------------------------
+
+def build_signal_lag_indexes(station_records: dict[str, list[dict]]) -> dict[str, dict[str, float]]:
+    """Build lag indexes for signal stations only."""
+    result = {}
+    for sid in SIGNAL_STATION_IDS:
+        records = station_records.get(sid, [])
+        result[sid] = build_lag_index(records)
+    return result
+
+
+def _corridor_sum_at_lag(
+    signal_lag_indexes: dict[str, dict[str, float]],
+    corridor_ids: list[str],
+    timestamp: str,
+    lag_hours: int,
+) -> float:
+    """Sum of corridor station volumes at lag_hours before timestamp."""
+    target_ts = _hour_before(timestamp, lag_hours)
+    vals = []
+    for sid in corridor_ids:
+        idx = signal_lag_indexes.get(sid, {})
+        v = idx.get(target_ts)
+        if v is not None:
+            vals.append(v)
+    return float(sum(vals)) if vals else -1.0
+
+
+# ---------------------------------------------------------------------------
+# Extended feature row (adds signal + internal lag + momentum)
+# ---------------------------------------------------------------------------
+
+def build_feature_row_extended(
+    station_id: str,
+    record: dict,
+    baseline: float,
+    station_records: dict[str, list[dict]],
+    weights: dict,
+    ts_lookup: dict[str, dict[str, float]],
+    lag_indexes: dict[str, dict[str, float]],
+    signal_lag_indexes: dict[str, dict[str, float]],
+    freshness: float = 0.0,
+    mask_lags: bool = False,
+    mask_latest: bool = False,
+) -> dict:
+    """Build feature row with all features (base + signal + internal lag + momentum)."""
+    row = build_feature_row(
+        station_id, record, baseline,
+        station_records, weights, ts_lookup, lag_indexes,
+        freshness=freshness, mask_lags=mask_lags, mask_latest=mask_latest,
+    )
+
+    ts = record["from"]
+
+    # Signal corridor lags
+    if mask_lags:
+        row["horten_lag1h"] = -1.0
+        row["horten_lag2h"] = -1.0
+        row["e6nord_lag1h"] = -1.0
+        row["e6nord_lag2h"] = -1.0
+        row["e6sor_lag1h"] = -1.0
+        row["e6sor_lag2h"] = -1.0
+        row["larkollen_lag1h"] = -1.0
+        row["larkollen_lag2h"] = -1.0
+    else:
+        row["horten_lag1h"] = _corridor_sum_at_lag(signal_lag_indexes, HORTEN_IDS, ts, 1)
+        row["horten_lag2h"] = _corridor_sum_at_lag(signal_lag_indexes, HORTEN_IDS, ts, 2)
+        row["e6nord_lag1h"] = _corridor_sum_at_lag(signal_lag_indexes, E6_NORD_IDS, ts, 1)
+        row["e6nord_lag2h"] = _corridor_sum_at_lag(signal_lag_indexes, E6_NORD_IDS, ts, 2)
+        row["e6sor_lag1h"] = _corridor_sum_at_lag(signal_lag_indexes, E6_SOR_IDS, ts, 1)
+        row["e6sor_lag2h"] = _corridor_sum_at_lag(signal_lag_indexes, E6_SOR_IDS, ts, 2)
+        row["larkollen_lag1h"] = _corridor_sum_at_lag(signal_lag_indexes, LARKOLLEN_IDS, ts, 1)
+        row["larkollen_lag2h"] = _corridor_sum_at_lag(signal_lag_indexes, LARKOLLEN_IDS, ts, 2)
+
+    # Internal lagged sums (core RV19/E6 groups, 1h back)
+    if mask_lags:
+        row["sum_rv19_lag1h"] = -1.0
+        row["sum_e6_lag1h"] = -1.0
+    else:
+        ts_1h = _hour_before(ts, 1)
+        row["sum_rv19_lag1h"] = _sum_of_ids(ts_lookup, ts_1h, RV19_IDS, station_id)
+        row["sum_e6_lag1h"] = _sum_of_ids(ts_lookup, ts_1h, E6_IDS, station_id)
+
+    # Momentum: (lag_1h - lag_2h) / lag_2h
+    lag_1h = row["lag_1h"]
+    lag_2h = row["lag_2h"]
+    if lag_1h >= 0 and lag_2h > 0:
+        row["momentum_1h"] = (lag_1h - lag_2h) / lag_2h
+    else:
+        row["momentum_1h"] = -1.0
+
+    return row
+
+
+# ---------------------------------------------------------------------------
+# Ablation dataset builder
+# ---------------------------------------------------------------------------
+
+def build_dataset_ablation(
+    raw_dir: str,
+    weights_path: str,
+    feature_names: list[str],
+    test_months: int = TEST_MONTHS,
+) -> tuple:
+    """
+    Build train/test dataset with extended features, then select only the
+    requested feature_names columns.
+    Returns (X_train, y_train, X_test, y_test, feature_names).
+    """
+    print("Loading station data...")
+    station_records = load_all_stations(raw_dir)
+    weights = load_model_weights(weights_path)
+
+    for sid in station_records:
+        station_records[sid].sort(key=lambda r: r["from"])
+
+    print("Building timestamp lookup...")
+    ts_lookup = build_timestamp_lookup(station_records)
+
+    lag_indexes = {
+        sid: build_lag_index(records)
+        for sid, records in station_records.items()
+    }
+
+    print("Building signal lag indexes...")
+    signal_lag_indexes = build_signal_lag_indexes(station_records)
+
+    now = datetime.now(OSLO)
+    cutoff_dt = now - timedelta(days=test_months * 30)
+    cutoff_iso = cutoff_dt.isoformat()
+    print(f"Test cutoff: {cutoff_iso[:10]}")
+
+    train_rows = []
+    train_targets = []
+    test_rows = []
+    test_targets = []
+
+    rng = random.Random(42)
+
+    for station_id, records in station_records.items():
+        # Skip signal stations (they are features, not targets)
+        if station_id in SIGNAL_STATION_IDS:
+            continue
+
+        n_records = len(records)
+        if n_records < MIN_RECORDS_FOR_TRAINING:
+            print(f"  Skipping {station_id}: only {n_records} records")
+            continue
+
+        print(f"  Processing {station_id}: {n_records} records")
+
+        for rec in records:
+            if rec["coverage"] < MIN_COVERAGE:
+                continue
+            if rec["volume"] < MIN_VOLUME:
+                continue
+
+            t = get_oslo_time(rec["from"])
+            day_type = classify_day_type(t["date_obj"])
+            baseline = compute_baseline(
+                weights, station_id,
+                t["dayOfWeek"], t["hour"], t["month"], day_type
+            )
+            if baseline <= 0:
+                continue
+
+            residual = float(rec["volume"]) - baseline
+            is_test = rec["from"] >= cutoff_iso
+
+            if is_test:
+                row = build_feature_row_extended(
+                    station_id, rec, baseline,
+                    station_records, weights, ts_lookup, lag_indexes,
+                    signal_lag_indexes,
+                    freshness=0.0, mask_lags=False, mask_latest=False,
+                )
+                test_rows.append([row[f] for f in feature_names])
+                test_targets.append(residual)
+            else:
+                r = rng.random()
+                p = FRESHNESS_SIMULATION
+                if r < p["fresh_prob"]:
+                    freshness = 0.0
+                    mask_lags = False
+                    mask_latest = False
+                elif r < p["fresh_prob"] + p["stale_prob"]:
+                    lo, hi = p["stale_range"]
+                    freshness = rng.uniform(lo, hi)
+                    mask_lags = True
+                    mask_latest = False
+                else:
+                    lo, hi = p["missing_range"]
+                    freshness = rng.uniform(lo, hi)
+                    mask_lags = True
+                    mask_latest = True
+
+                row = build_feature_row_extended(
+                    station_id, rec, baseline,
+                    station_records, weights, ts_lookup, lag_indexes,
+                    signal_lag_indexes,
+                    freshness=freshness, mask_lags=mask_lags, mask_latest=mask_latest,
+                )
+                train_rows.append([row[f] for f in feature_names])
+                train_targets.append(residual)
+
+    X_train = np.array(train_rows, dtype=np.float32)
+    y_train = np.array(train_targets, dtype=np.float32)
+    X_test = np.array(test_rows, dtype=np.float32)
+    y_test = np.array(test_targets, dtype=np.float32)
+
+    print(f"Dataset built: {len(X_train)} train, {len(X_test)} test samples")
+    return X_train, y_train, X_test, y_test, feature_names
