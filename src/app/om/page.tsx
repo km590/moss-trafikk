@@ -145,14 +145,22 @@ export default function OmPage() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Datakilder</h2>
-        <p className="text-slate-600">Vi bruker {STATIONS.length} tellepunkter langs korridoren:</p>
+        <p className="text-slate-600">
+          Moss Trafikk bygger på {STATIONS.length} sentrale tellepunkter gjennom korridoren fra E6 og
+          Mosseporten til Kanalbrua og Jeløya:
+        </p>
         <ul className="list-disc list-inside space-y-1">
           {STATIONS.map((s) => (
             <li key={s.id} className="text-sm text-slate-600">
-              <span className="font-medium">{s.name}</span> ({s.road}) - {s.role}
+              <span className="font-medium">{s.name}</span> - {s.role}
             </li>
           ))}
         </ul>
+        <p className="text-slate-600 mt-3">
+          For å gjøre anslagene bedre bruker modellen også ekstra signalstasjoner utenfor disse{" "}
+          {STATIONS.length} punktene. De vises ikke i grensesnittet, men hjelper oss å fange trafikk
+          som er på vei inn mot Moss fra blant annet E6, Horten-siden og Larkollen.
+        </p>
         <p className="text-sm text-slate-500 mt-2">
           Trafikkdata:{" "}
           <a
@@ -163,7 +171,7 @@ export default function OmPage() {
           >
             Statens vegvesen Trafikkdata API
           </a>
-          . Fergeavganger:{" "}
+          . Fergeinfo:{" "}
           <a
             href="https://developer.entur.org"
             className="underline text-blue-600"
