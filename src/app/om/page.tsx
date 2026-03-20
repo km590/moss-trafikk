@@ -82,6 +82,11 @@ export default function OmPage() {
           Usikkerheten i anslaget vises som et konfidensanslag. Ved høy usikkerhet (gammel data,
           uvanlig trafikkmønster) gir vi mildere anbefalinger.
         </p>
+        <p className="text-slate-600">
+          Moss Trafikk bygger hovedsakelig på telledata fra Statens vegvesen. Det betyr at vi
+          estimerer trafikkbelastning og sannsynlig framkommelighet, ikke direkte hastighet eller
+          reisetid.
+        </p>
       </section>
 
       <section className="space-y-3">
@@ -122,7 +127,7 @@ export default function OmPage() {
                   <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
                   Rød
                 </td>
-                <td className="px-4 py-2">Kø</td>
+                <td className="px-4 py-2">Kø sannsynlig</td>
                 <td className="px-4 py-2">Kø sannsynlig</td>
               </tr>
             </tbody>

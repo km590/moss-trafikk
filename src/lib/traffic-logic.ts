@@ -307,7 +307,7 @@ export function getCongestionLabel(level: CongestionLevel): string {
     case "yellow":
       return "Travelt";
     case "red":
-      return "Kø";
+      return "Kø sannsynlig";
     case "unknown":
       return "Ukjent";
   }
