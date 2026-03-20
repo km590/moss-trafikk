@@ -1,5 +1,9 @@
 import { STATIONS, KANALBRUA_ID } from "./stations";
-import { fetchLatestHourForAllStations, fetchHourlyVolume, getRecentHoursRange } from "./vegvesen-client";
+import {
+  fetchLatestHourForAllStations,
+  fetchHourlyVolume,
+  getRecentHoursRange,
+} from "./vegvesen-client";
 import {
   classifyCongestion,
   getNormalVolume,
@@ -33,7 +37,10 @@ import type {
 
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
 
-async function fetchSignalHourlyData(): Promise<{ data: SignalHourlyData; stats: SignalFetchStats }> {
+async function fetchSignalHourlyData(): Promise<{
+  data: SignalHourlyData;
+  stats: SignalFetchStats;
+}> {
   const { from, to } = getRecentHoursRange();
   const hourlyData: SignalHourlyData = new Map();
   const t0 = Date.now();

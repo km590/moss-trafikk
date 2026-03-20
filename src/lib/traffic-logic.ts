@@ -167,8 +167,9 @@ export function getCorridorWorstPoint(statuses: StationStatus[]): StationStatus 
     const currentVuln = getStationVulnerability(current.station.id);
 
     // Pressure = how close to capacity, weighted by friction
-    const worstPressure = worst.currentVolume! * worstVuln.friction / worstVuln.yellowAbsolute;
-    const currentPressure = current.currentVolume! * currentVuln.friction / currentVuln.yellowAbsolute;
+    const worstPressure = (worst.currentVolume! * worstVuln.friction) / worstVuln.yellowAbsolute;
+    const currentPressure =
+      (current.currentVolume! * currentVuln.friction) / currentVuln.yellowAbsolute;
 
     return currentPressure > worstPressure ? current : worst;
   });

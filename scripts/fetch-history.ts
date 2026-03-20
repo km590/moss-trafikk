@@ -31,10 +31,10 @@ const CORE_STATION_IDS = [
 const SIGNAL_STATION_IDS = [
   "48148V1175464", // Horten RV19 nord
   "37692V1827282", // Horten RV19 sør
-  "65271V443150",  // Vestby syd (E6 nord)
-  "12554V971778",  // Jonsten (E6 sør)
+  "65271V443150", // Vestby syd (E6 nord)
+  "12554V971778", // Jonsten (E6 sør)
   "65179V1209937", // Solli (E6 sør)
-  "37187V971514",  // Halmstad sør (Larkollen)
+  "37187V971514", // Halmstad sør (Larkollen)
 ];
 
 const STATION_IDS = [...CORE_STATION_IDS, ...SIGNAL_STATION_IDS];

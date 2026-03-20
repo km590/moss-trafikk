@@ -20,9 +20,16 @@ const SIGNAL_IDS: Record<string, { name: string; corridor: string }> = {
 
 // Also check core stations for comparison
 const CORE_IDS = [
-  "40641V971605", "39666V971386", "72867V971385", "69994V971384",
-  "76208V971383", "28495V971383", "40488V971307", "15322V971307",
-  "26266V443149", "59044V971518",
+  "40641V971605",
+  "39666V971386",
+  "72867V971385",
+  "69994V971384",
+  "76208V971383",
+  "28495V971383",
+  "40488V971307",
+  "15322V971307",
+  "26266V443149",
+  "59044V971518",
 ];
 
 interface HourRecord {
@@ -63,7 +70,10 @@ function loadStation(stationId: string): StationHistory | null {
   return JSON.parse(fs.readFileSync(filePath, "utf-8"));
 }
 
-function analyzeStation(stationId: string, meta: { name: string; corridor: string }): StationReport {
+function analyzeStation(
+  stationId: string,
+  meta: { name: string; corridor: string }
+): StationReport {
   const data = loadStation(stationId);
   const issues: string[] = [];
 
@@ -118,7 +128,8 @@ function analyzeStation(stationId: string, meta: { name: string; corridor: strin
   // Gap analysis: how many days in the range have zero records?
   const firstDate = new Date(first);
   const lastDate = new Date(last);
-  const totalDaysInRange = Math.ceil((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const totalDaysInRange =
+    Math.ceil((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const gapDays = totalDaysInRange - daySet.size;
 
   // Coverage stats
@@ -132,7 +143,10 @@ function analyzeStation(stationId: string, meta: { name: string; corridor: strin
   // Usability checks
   if (records.length < 1000) issues.push(`LOW_RECORDS: ${records.length} (need 1000+)`);
   if (coverageAvg < 70) issues.push(`LOW_COVERAGE: avg ${coverageAvg.toFixed(1)}%`);
-  if (gapDays / totalDaysInRange > 0.3) issues.push(`HIGH_GAPS: ${gapDays}/${totalDaysInRange} days missing (${((gapDays / totalDaysInRange) * 100).toFixed(0)}%)`);
+  if (gapDays / totalDaysInRange > 0.3)
+    issues.push(
+      `HIGH_GAPS: ${gapDays}/${totalDaysInRange} days missing (${((gapDays / totalDaysInRange) * 100).toFixed(0)}%)`
+    );
 
   // Check seasonal balance: every month should have some data
   const emptyMonths = Array.from({ length: 12 }, (_, i) => i).filter((m) => !monthDist[m]);
@@ -174,12 +188,31 @@ function printReport(report: StationReport): void {
 
   console.log(`   Records: ${report.totalRecords} | Weeks: ${report.weeksCompleted}/104`);
   console.log(`   Range: ${report.dateRange?.first} - ${report.dateRange?.last}`);
-  console.log(`   Coverage: avg ${report.coverageAvg.toFixed(1)}% | <80%: ${report.coverageSub80.toFixed(1)}%`);
-  console.log(`   Volume: min=${report.volumeStats.min} max=${report.volumeStats.max} mean=${Math.round(report.volumeStats.mean)} median=${report.volumeStats.median}`);
-  console.log(`   Gap days: ${report.gapDays} (${report.dateRange ? ((report.gapDays / (Math.ceil((new Date(report.dateRange.last).getTime() - new Date(report.dateRange.first).getTime()) / (1000 * 60 * 60 * 24)) + 1)) * 100).toFixed(0) : 0}%)`);
+  console.log(
+    `   Coverage: avg ${report.coverageAvg.toFixed(1)}% | <80%: ${report.coverageSub80.toFixed(1)}%`
+  );
+  console.log(
+    `   Volume: min=${report.volumeStats.min} max=${report.volumeStats.max} mean=${Math.round(report.volumeStats.mean)} median=${report.volumeStats.median}`
+  );
+  console.log(
+    `   Gap days: ${report.gapDays} (${report.dateRange ? ((report.gapDays / (Math.ceil((new Date(report.dateRange.last).getTime() - new Date(report.dateRange.first).getTime()) / (1000 * 60 * 60 * 24)) + 1)) * 100).toFixed(0) : 0}%)`
+  );
 
   // Month histogram (compact)
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const monthLine = months.map((m, i) => `${m}:${report.monthDistribution[i] || 0}`).join(" ");
   console.log(`   Months: ${monthLine}`);
 

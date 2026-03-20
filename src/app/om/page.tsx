@@ -151,8 +151,8 @@ export default function OmPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Datakilder</h2>
         <p className="text-slate-600">
-          Moss Trafikk bygger på {STATIONS.length} sentrale tellepunkter gjennom korridoren fra E6 og
-          Mosseporten til Kanalbrua og Jeløya:
+          Moss Trafikk bygger på {STATIONS.length} sentrale tellepunkter gjennom korridoren fra E6
+          og Mosseporten til Kanalbrua og Jeløya:
         </p>
         <ul className="list-disc list-inside space-y-1">
           {STATIONS.map((s) => (
