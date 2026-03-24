@@ -103,7 +103,9 @@ export interface PredictionResult {
 export interface HourlyPredictionV2 extends HourlyPrediction {
   predictedLow: number; // p10 (baseline + residual_p10)
   predictedHigh: number; // p90 (baseline + residual_p90)
-  residual: number; // p50 residual from tree-walker
+  residual: number; // p50 residual applied (0 if gated)
+  residualRaw?: number; // raw p50 residual before gating
+  finalPolicy?: "baseline_only" | "v2_residual"; // which policy was used
   modelVersion: "v1" | "v2";
   explanation?: string; // signal-based explanation
   confidenceBucket: "high" | "medium" | "low"; // from band width

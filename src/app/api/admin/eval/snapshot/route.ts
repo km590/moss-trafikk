@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { predictVolume } from "@/lib/prediction-engine";
+import { predictResidual } from "@/lib/tree-walker";
+import { buildFeatures } from "@/lib/feature-builder";
 import { getFerrySignal, isFerryAffectedStation } from "@/lib/ferry-signal";
 import { classifyDate } from "@/lib/norwegian-calendar";
 import { getNorwayTime } from "@/lib/traffic-logic";
@@ -8,6 +10,26 @@ import { KANALBRUA_ID, RV19_STATION_IDS } from "@/lib/stations";
 
 // Stations to track: Kanalbrua + RV19
 const EVAL_STATIONS = [KANALBRUA_ID, ...RV19_STATION_IDS];
+
+// Mirror residual policy from prediction-engine-v2
+type ResidualPolicy = "off" | "time_window" | "full";
+const RESIDUAL_POLICY: ResidualPolicy =
+  (process.env.PREDICTION_RESIDUAL_POLICY as ResidualPolicy) ?? "time_window";
+
+function shouldApplyResidual(hour: number): boolean {
+  if (RESIDUAL_POLICY === "off") return false;
+  if (RESIDUAL_POLICY === "full") return true;
+  return hour < 7 || hour >= 18;
+}
+
+// Try to load residual model for raw residual logging
+let residualModel: import("@/lib/tree-walker").ResidualModel | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  residualModel = require("@/data/residual-model.json");
+} catch {
+  // Model not available
+}
 
 /**
  * POST /api/admin/eval/snapshot
@@ -38,6 +60,36 @@ export async function POST(request: Request) {
 
   for (const stationId of EVAL_STATIONS) {
     const pred = predictVolume(stationId, now, hour);
+    const applyResidual = shouldApplyResidual(hour);
+
+    // Compute raw residual for diagnostics (even when gated)
+    let rawResidualP50: number | null = null;
+    if (residualModel) {
+      try {
+        const features = buildFeatures(
+          stationId,
+          pred.predicted,
+          now,
+          hour,
+          new Map(),
+          residualModel,
+          undefined
+        );
+        const residual = predictResidual(residualModel, features);
+        rawResidualP50 = residual.p50;
+      } catch {
+        // Residual computation optional
+      }
+    }
+
+    // Determine final predicted volume based on policy
+    let finalPredicted = pred.predicted;
+    let finalPolicy: "baseline_only" | "v2_residual" = "baseline_only";
+
+    if (applyResidual && rawResidualP50 !== null) {
+      finalPredicted = Math.max(0, Math.round(pred.predicted + rawResidualP50));
+      finalPolicy = "v2_residual";
+    }
 
     // Ferry signal for affected stations
     let ferryFactor = 1.0;
@@ -52,13 +104,17 @@ export async function POST(request: Request) {
       }
     }
 
-    const boostedVolume = ferryActive ? Math.round(pred.predicted * ferryFactor) : pred.predicted;
+    const boostedVolume = ferryActive
+      ? Math.round(finalPredicted * ferryFactor)
+      : finalPredicted;
 
     snapshots.push({
       station_id: stationId,
       target_hour: targetHour.toISOString(),
       predicted_volume: boostedVolume,
       baseline_volume: pred.predicted,
+      residual_raw_p50: rawResidualP50,
+      final_policy: finalPolicy,
       ferry_boost_factor: ferryFactor,
       ferry_boost_active: ferryActive,
       confidence: pred.confidence,
@@ -79,6 +135,8 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     hour,
+    policy: RESIDUAL_POLICY,
+    applyResidual: shouldApplyResidual(hour),
     stations: snapshots.length,
     rows: data?.length ?? 0,
   });
