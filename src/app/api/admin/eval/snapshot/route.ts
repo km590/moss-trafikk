@@ -63,7 +63,6 @@ export async function POST(request: Request) {
 }
 
 async function runSnapshot() {
-
   if (!supabase) {
     return NextResponse.json({ error: "supabase not configured" }, { status: 503 });
   }
@@ -124,9 +123,7 @@ async function runSnapshot() {
       }
     }
 
-    const boostedVolume = ferryActive
-      ? Math.round(finalPredicted * ferryFactor)
-      : finalPredicted;
+    const boostedVolume = ferryActive ? Math.round(finalPredicted * ferryFactor) : finalPredicted;
 
     snapshots.push({
       station_id: stationId,

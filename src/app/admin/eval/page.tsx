@@ -79,23 +79,40 @@ export default async function EvalPage() {
   // --- Core metrics ---
   const totalPredicted = withActuals.reduce((s, r) => s + r.predicted_volume, 0);
   const totalActual = withActuals.reduce((s, r) => s + (r.actual_volume ?? 0), 0);
-  const wape = totalActual > 0
-    ? (withActuals.reduce((s, r) => s + Math.abs(r.predicted_volume - (r.actual_volume ?? 0)), 0) / totalActual * 100).toFixed(1)
-    : "n/a";
-  const mape = withActuals.length > 0
-    ? (withActuals.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / withActuals.length).toFixed(1)
-    : "n/a";
-  const totalBias = withActuals.length > 0
-    ? (withActuals.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / withActuals.length).toFixed(1)
-    : "n/a";
+  const wape =
+    totalActual > 0
+      ? (
+          (withActuals.reduce(
+            (s, r) => s + Math.abs(r.predicted_volume - (r.actual_volume ?? 0)),
+            0
+          ) /
+            totalActual) *
+          100
+        ).toFixed(1)
+      : "n/a";
+  const mape =
+    withActuals.length > 0
+      ? (
+          withActuals.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / withActuals.length
+        ).toFixed(1)
+      : "n/a";
+  const totalBias =
+    withActuals.length > 0
+      ? (
+          withActuals.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / withActuals.length
+        ).toFixed(1)
+      : "n/a";
 
   // --- Baseline-only MAPE (from baseline_volume vs actual) ---
-  const baselineOnlyMape = withActuals.length > 0
-    ? (withActuals.reduce((s, r) => {
-        const actual = r.actual_volume ?? 0;
-        return actual > 0 ? s + Math.abs(r.baseline_volume - actual) / actual * 100 : s;
-      }, 0) / withActuals.length).toFixed(1)
-    : "n/a";
+  const baselineOnlyMape =
+    withActuals.length > 0
+      ? (
+          withActuals.reduce((s, r) => {
+            const actual = r.actual_volume ?? 0;
+            return actual > 0 ? s + (Math.abs(r.baseline_volume - actual) / actual) * 100 : s;
+          }, 0) / withActuals.length
+        ).toFixed(1)
+      : "n/a";
 
   // --- Per-period breakdown ---
   const periodMap = new Map<string, EvalRow[]>();
@@ -108,17 +125,26 @@ export default async function EvalPage() {
   const periodOrder = ["morgen-rush", "midt-dag", "ettermiddag-rush", "kveld", "natt"];
   const periodStats = periodOrder.map((period) => {
     const pRows = periodMap.get(period) ?? [];
-    if (pRows.length === 0) return { period, n: 0, mape: "n/a", bias: "n/a", baselineMape: "n/a", baselineBias: "n/a" };
-    const mape = (pRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / pRows.length).toFixed(1);
-    const bias = (pRows.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / pRows.length).toFixed(1);
-    const blMape = (pRows.reduce((s, r) => {
-      const a = r.actual_volume ?? 0;
-      return a > 0 ? s + Math.abs(r.baseline_volume - a) / a * 100 : s;
-    }, 0) / pRows.length).toFixed(1);
-    const blBias = (pRows.reduce((s, r) => {
-      const a = r.actual_volume ?? 0;
-      return a > 0 ? s + (r.baseline_volume - a) / a * 100 : s;
-    }, 0) / pRows.length).toFixed(1);
+    if (pRows.length === 0)
+      return { period, n: 0, mape: "n/a", bias: "n/a", baselineMape: "n/a", baselineBias: "n/a" };
+    const mape = (pRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / pRows.length).toFixed(
+      1
+    );
+    const bias = (pRows.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / pRows.length).toFixed(
+      1
+    );
+    const blMape = (
+      pRows.reduce((s, r) => {
+        const a = r.actual_volume ?? 0;
+        return a > 0 ? s + (Math.abs(r.baseline_volume - a) / a) * 100 : s;
+      }, 0) / pRows.length
+    ).toFixed(1);
+    const blBias = (
+      pRows.reduce((s, r) => {
+        const a = r.actual_volume ?? 0;
+        return a > 0 ? s + ((r.baseline_volume - a) / a) * 100 : s;
+      }, 0) / pRows.length
+    ).toFixed(1);
     return { period, n: pRows.length, mape, bias, baselineMape: blMape, baselineBias: blBias };
   });
 
@@ -129,9 +155,15 @@ export default async function EvalPage() {
     stationMap.get(row.station_id)!.push(row);
   }
   const stationStats = [...stationMap.entries()].map(([sid, sRows]) => {
-    const mae = (sRows.reduce((s, r) => s + Math.abs(r.error_abs ?? 0), 0) / sRows.length).toFixed(0);
-    const mape = (sRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / sRows.length).toFixed(1);
-    const bias = (sRows.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / sRows.length).toFixed(1);
+    const mae = (sRows.reduce((s, r) => s + Math.abs(r.error_abs ?? 0), 0) / sRows.length).toFixed(
+      0
+    );
+    const mape = (sRows.reduce((s, r) => s + Math.abs(r.error_pct ?? 0), 0) / sRows.length).toFixed(
+      1
+    );
+    const bias = (sRows.reduce((s, r) => s + (r.signed_error_pct ?? 0), 0) / sRows.length).toFixed(
+      1
+    );
     return { sid, name: stationName(sid), n: sRows.length, mae, mape, bias };
   });
 
@@ -160,7 +192,8 @@ export default async function EvalPage() {
         <div className="bg-slate-50 rounded-lg p-3">
           <p className="text-xs text-slate-400">Bias (MPE)</p>
           <p className={`text-lg font-bold ${biasColor(parseFloat(totalBias as string))}`}>
-            {totalBias !== "n/a" && parseFloat(totalBias as string) > 0 ? "+" : ""}{totalBias}%
+            {totalBias !== "n/a" && parseFloat(totalBias as string) > 0 ? "+" : ""}
+            {totalBias}%
           </p>
         </div>
         <div className="bg-slate-50 rounded-lg p-3">
@@ -188,13 +221,19 @@ export default async function EvalPage() {
               <tr key={p.period} className="border-b border-slate-100">
                 <td className="py-1.5 pr-3 font-medium">{p.period}</td>
                 <td className="py-1.5 pr-2 text-right text-slate-400">{p.n}</td>
-                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(p.mape))}`}>{p.mape}%</td>
-                <td className={`py-1.5 pr-2 text-right ${biasColor(parseFloat(p.bias))}`}>
-                  {parseFloat(p.bias) > 0 ? "+" : ""}{p.bias}%
+                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(p.mape))}`}>
+                  {p.mape}%
                 </td>
-                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(p.baselineMape))}`}>{p.baselineMape}%</td>
+                <td className={`py-1.5 pr-2 text-right ${biasColor(parseFloat(p.bias))}`}>
+                  {parseFloat(p.bias) > 0 ? "+" : ""}
+                  {p.bias}%
+                </td>
+                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(p.baselineMape))}`}>
+                  {p.baselineMape}%
+                </td>
                 <td className={`py-1.5 pr-2 text-right ${biasColor(parseFloat(p.baselineBias))}`}>
-                  {parseFloat(p.baselineBias) > 0 ? "+" : ""}{p.baselineBias}%
+                  {parseFloat(p.baselineBias) > 0 ? "+" : ""}
+                  {p.baselineBias}%
                 </td>
               </tr>
             ))}
@@ -221,9 +260,12 @@ export default async function EvalPage() {
                 <td className="py-1.5 pr-3">{s.name}</td>
                 <td className="py-1.5 pr-2 text-right text-slate-400">{s.n}</td>
                 <td className="py-1.5 pr-2 text-right">{s.mae}</td>
-                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(s.mape))}`}>{s.mape}%</td>
+                <td className={`py-1.5 pr-2 text-right ${errorColor(parseFloat(s.mape))}`}>
+                  {s.mape}%
+                </td>
                 <td className={`py-1.5 pr-2 text-right ${biasColor(parseFloat(s.bias))}`}>
-                  {parseFloat(s.bias) > 0 ? "+" : ""}{s.bias}%
+                  {parseFloat(s.bias) > 0 ? "+" : ""}
+                  {s.bias}%
                 </td>
               </tr>
             ))}
