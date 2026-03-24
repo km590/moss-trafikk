@@ -3,9 +3,21 @@ import { supabase } from "@/lib/supabase";
 import { fetchHourlyVolume } from "@/lib/vegvesen-client";
 
 /**
+ * GET /api/admin/eval/backfill
+ * Vercel cron entry point. Authenticated via CRON_SECRET.
+ */
+export async function GET(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  return runBackfill();
+}
+
+/**
  * POST /api/admin/eval/backfill
- * Matches pending snapshots with actual Vegvesen data.
- * Call this periodically (e.g. every 4 hours) to fill in actuals.
+ * Manual trigger. Authenticated via ADMIN_API_KEY.
  */
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -13,7 +25,10 @@ export async function POST(request: Request) {
   if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  return runBackfill();
+}
 
+async function runBackfill() {
   if (!supabase) {
     return NextResponse.json({ error: "supabase not configured" }, { status: 503 });
   }

@@ -8,8 +8,13 @@ import { classifyDate } from "@/lib/norwegian-calendar";
 import { getNorwayTime } from "@/lib/traffic-logic";
 import { KANALBRUA_ID, RV19_STATION_IDS } from "@/lib/stations";
 
-// Stations to track: Kanalbrua + RV19
-const EVAL_STATIONS = [KANALBRUA_ID, ...RV19_STATION_IDS];
+// Stations to track: Kanalbrua + RV19 stations with confirmed data availability
+// Excluded: 39666V971386 (Østre Kanalgate) and 76208V971383 (Mosseelva) - 0 edges from Vegvesen API
+const EVAL_STATIONS = [
+  KANALBRUA_ID,
+  "72867V971385", // Rådhusbrua
+  "69994V971384", // Vogts gate
+];
 
 // Mirror residual policy from prediction-engine-v2
 type ResidualPolicy = "off" | "time_window" | "full";
@@ -32,17 +37,32 @@ try {
 }
 
 /**
+ * GET /api/admin/eval/snapshot
+ * Vercel cron entry point. Authenticated via CRON_SECRET.
+ */
+export async function GET(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  return runSnapshot();
+}
+
+/**
  * POST /api/admin/eval/snapshot
- * Saves current predictions for eval stations.
- * Call this hourly via cron or manual trigger.
+ * Manual trigger. Authenticated via ADMIN_API_KEY.
  */
 export async function POST(request: Request) {
-  // Simple auth check
   const authHeader = request.headers.get("authorization");
   const expectedKey = process.env.ADMIN_API_KEY?.trim();
   if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  return runSnapshot();
+}
+
+async function runSnapshot() {
 
   if (!supabase) {
     return NextResponse.json({ error: "supabase not configured" }, { status: 503 });
