@@ -60,16 +60,27 @@ function buildQuery(stationId: string, from: string, to: string): string {
   });
 }
 
+const FETCH_TIMEOUT_MS = 5000;
+
 export async function fetchHourlyVolume(
   stationId: string,
   from: string,
   to: string
 ): Promise<HourlyVolume[]> {
-  const response = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: buildQuery(stationId, from, to),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: buildQuery(stationId, from, to),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     throw new Error(`Vegvesen API error: ${response.status} ${response.statusText}`);

@@ -37,6 +37,8 @@ import type {
 
 import { STALE_THRESHOLD_MS } from "./constants";
 
+const SIGNAL_FETCH_TIMEOUT_MS = 8000;
+
 async function fetchSignalHourlyData(): Promise<{
   data: SignalHourlyData;
   stats: SignalFetchStats;
@@ -47,7 +49,7 @@ async function fetchSignalHourlyData(): Promise<{
   let fetched = 0;
   let failed = 0;
 
-  await Promise.all(
+  const fetchAll = Promise.all(
     SIGNAL_STATION_IDS.map(async (stationId) => {
       try {
         const volumes = await fetchHourlyVolume(stationId, from, to);
@@ -65,6 +67,18 @@ async function fetchSignalHourlyData(): Promise<{
       }
     })
   );
+
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Signal fetch timeout")), SIGNAL_FETCH_TIMEOUT_MS)
+  );
+
+  try {
+    await Promise.race([fetchAll, timeoutPromise]);
+  } catch {
+    console.log(
+      `[v2.1] signal fetch: timeout after ${SIGNAL_FETCH_TIMEOUT_MS}ms (${fetched} fetched, ${failed} failed)`
+    );
+  }
 
   const durationMs = Date.now() - t0;
   const stats: SignalFetchStats = {

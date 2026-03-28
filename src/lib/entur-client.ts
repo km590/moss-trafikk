@@ -8,7 +8,12 @@ export interface FerryDeparture {
   minutesUntil: number;
 }
 
+const FETCH_TIMEOUT_MS = 5000;
+
 export async function fetchFerryDepartures(count = 3): Promise<FerryDeparture[]> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
   try {
     const response = await fetch(ENDPOINT, {
       method: "POST",
@@ -26,6 +31,7 @@ export async function fetchFerryDepartures(count = 3): Promise<FerryDeparture[]>
           }
         }`,
       }),
+      signal: controller.signal,
     });
 
     if (!response.ok) return [];
@@ -47,5 +53,7 @@ export async function fetchFerryDepartures(count = 3): Promise<FerryDeparture[]>
     );
   } catch {
     return [];
+  } finally {
+    clearTimeout(timeout);
   }
 }
