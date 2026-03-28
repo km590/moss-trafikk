@@ -18,7 +18,7 @@ Moss Trafikk er bygget med åpne data, åpne API-er og prediksjonsmodeller for �
 
 ## Hva
 
-Avviksbasert trengselsanalyse og prediksjoner for 10 tellepunkter langs korridoren fra Våler/E6 til Kanalbrua/Jeløya. To-lags prediksjonsmodell med 2 års historikk (89 000 timer), fergekontekst fra Entur, og estimert korridorstatus når Vegvesen-data er forsinket.
+Avviksbasert trengselsanalyse og prediksjoner for 10 tellepunkter langs korridoren fra Valer/E6 til Kanalbrua/Jeloya. To-lags prediksjonsmodell med 2 ars historikk (89 000 timer), fergekontekst fra Entur, og estimert korridorstatus nar Vegvesen-data er forsinket. Alle eksterne API-kall har 5s timeout for a sikre at siden alltid laster.
 
 ## Prediksjonsmodell
 
@@ -30,25 +30,34 @@ Median per (stasjon, ukedag, time) justert med sesong- og helligdagsfaktorer. Ro
 
 Quantile regression (p10/p50/p90) trent på residualer fra baseline. 26 features inkludert sanntidsvolum, korridorsignaler fra 6 eksterne stasjoner, og temporale features. Custom tree-walker i TypeScript for edge-inference (0 avhengigheter, ~200 KB modell).
 
-V2 forbedrer kveld/natt, men har en kjent positiv bias i dagtimer (mars 2026). Gating-policy styrer når residualen brukes:
+V2 forbedrer kveld/natt, men har en kjent positiv bias i dagtimer (mars 2026). Bias-analyse (Fase A, 543 eval-rader) viser at midt-dag og ettermiddag har sterkest overpredikering. Volumkorreksjon er validert offline (-9pp MAPE) og planlegges som shadow i eval-systemet (Fase B).
+
+Gating-policy styrer når residualen brukes:
 
 | Policy        | Beskrivelse                                 |
 | ------------- | ------------------------------------------- |
 | `off`         | Kun baseline                                |
 | `time_window` | Baseline 07-17, v2 18-06 **(aktiv i prod)** |
-| `full`        | V2 residual alltid på                       |
+| `full`        | V2 residual alltid pa                       |
+
+### Congestion-klassifisering
+
+Tre uavhengige signaler (absolutt volum, relativ posisjon, friksjonsbasert) bestemmer om en stasjon vises som gronn, gul eller rod. Predicted congestion bruker samme terskler som measured (2-av-3 for rod, 3-av-3 i dempede timer, 1-av-3 for gul med lean-green guard).
+
+Validert mot 272 holdout-rader: accuracy 79%, rod recall 97%, rod precision 83%.
 
 ### Treffsikkerhet
 
-Modellen evalueres fortløpende mot faktiske målinger fra Statens vegvesen.
+Modellen evalueres fortlopende mot faktiske malinger fra Statens vegvesen.
 
-| Metode         | MAPE      | Bias | Merknad                 |
-| -------------- | --------- | ---- | ----------------------- |
-| Baseline (v1)  | ~10%      | -7%  | Underpredikerer litt    |
-| V2 full        | ~16%      | +13% | Overpredikerer dagtimer |
-| V2 time_window | Evalueres | -    | Deployet 2026-03-24     |
+| Metode         | MAPE | Bias | Merknad                          |
+| -------------- | ---- | ---- | -------------------------------- |
+| Baseline (v1)  | ~10% | -7%  | Underpredikerer litt             |
+| V2 full        | ~16% | +13% | Overpredikerer dagtimer          |
+| V2 time_window | ~12% | -    | Deployet 2026-03-24              |
+| Bias-korrigert | ~15% | -    | Midt-dag/ettermiddag -9pp (eval) |
 
-Eval-data samles automatisk via GitHub Actions (snapshot + backfill, hver time).
+Eval-data samles automatisk via GitHub Actions (snapshot + backfill, daglig).
 
 ## Arkitektur
 
@@ -76,6 +85,8 @@ scripts/
     compute-model.ts         # Beregn baseline-profiler fra rådata
     validate-model.ts        # Segmentert MAPE-validering
     golden-test.ts           # Snapshot-tester for kjente scenarier
+    compute-bias-corrections.ts  # Offline bias-analyse med tidsmessig holdout
+    eval-congestion-hitrate.ts   # Congestion confusion matrix + rad-inspeksjon
     training/                # V2 treningspipeline (Python/LightGBM)
       train.py               # Tren 3 quantile-modeller (p10/p50/p90)
       features.py            # Feature engineering + datasett
@@ -88,8 +99,8 @@ scripts/
 
 Prediksjoner evalueres automatisk mot Vegvesen-actuals:
 
-1. **Snapshot** (hver time): lagrer predicted, baseline, residual og policy-valg
-2. **Backfill** (hver time): matcher snapshots med faktisk trafikk fra Vegvesen
+1. **Snapshot** (hver time via GitHub Actions): lagrer predicted, baseline, residual og policy-valg
+2. **Backfill** (daglig via Vercel cron): matcher snapshots med faktisk trafikk fra Vegvesen
 3. **Dashboard** (`/admin/eval`): WAPE, MAPE, bias per periode, MAE per stasjon
 
 GitHub Actions ([`eval-collect.yml`](.github/workflows/eval-collect.yml)) kjører begge steg automatisk.
@@ -102,7 +113,7 @@ GitHub Actions ([`eval-collect.yml`](.github/workflows/eval-collect.yml)) kjøre
 
 ## Tech
 
-- Next.js 15 (App Router, ISR 5 min)
+- Next.js 16 (App Router, ISR 5 min)
 - TypeScript
 - Tailwind CSS + shadcn/ui + Recharts
 - Supabase (eval-data og kalibrering)
