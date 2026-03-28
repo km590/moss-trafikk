@@ -50,12 +50,17 @@ Validert mot 272 holdout-rader: accuracy 79%, rod recall 97%, rod precision 83%.
 
 Modellen evalueres fortlopende mot faktiske malinger fra Statens vegvesen.
 
-| Metode         | MAPE | Bias | Merknad                          |
-| -------------- | ---- | ---- | -------------------------------- |
-| Baseline (v1)  | ~10% | -7%  | Underpredikerer litt             |
-| V2 full        | ~16% | +13% | Overpredikerer dagtimer          |
-| V2 time_window | ~12% | -    | Deployet 2026-03-24              |
-| Bias-korrigert | ~15% | -    | Midt-dag/ettermiddag -9pp (eval) |
+Basert pa 543 eval-rader med tidsmessig holdout (mars 2026):
+
+| Metode             | MAPE  | Bias  | Merknad                                  |
+| ------------------ | ----- | ----- | ---------------------------------------- |
+| Predicted (v1+v2)  | 17.2% | +7.5% | Overpredikerer, spesielt midt-dag        |
+| Bias-korrigert     | 14.9% | -     | Kun midt-dag/ettermiddag (-9pp pa disse) |
+| Midt-dag korrigert | 7.0%  | -     | Faktor 0.897                             |
+| Ettermiddag korr.  | 7.4%  | -     | Faktor 0.825                             |
+| Kveld/natt         | -     | -     | Ustabilt, ingen korreksjon (faktor 1.0)  |
+
+Bias-korreksjon er validert offline. Planlagt som shadow i eval-system (Fase B).
 
 Eval-data samles automatisk via GitHub Actions (snapshot + backfill, daglig).
 
