@@ -37,7 +37,6 @@ import type {
 
 import { STALE_THRESHOLD_MS } from "./constants";
 
-
 async function fetchSignalHourlyData(): Promise<{
   data: SignalHourlyData;
   stats: SignalFetchStats;

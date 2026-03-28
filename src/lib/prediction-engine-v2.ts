@@ -177,7 +177,12 @@ export function getV2Predictions(
     // Green only if predictedHigh is also green
     // Red only if predictedLow is also red
     const congestionP50 = classifyPredictedCongestion(predicted, stationId, effectiveDow, hour);
-    const congestionHigh = classifyPredictedCongestion(predictedHigh, stationId, effectiveDow, hour);
+    const congestionHigh = classifyPredictedCongestion(
+      predictedHigh,
+      stationId,
+      effectiveDow,
+      hour
+    );
     const congestionLow = classifyPredictedCongestion(predictedLow, stationId, effectiveDow, hour);
 
     let congestion: CongestionLevel;

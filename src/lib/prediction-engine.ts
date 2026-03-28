@@ -259,7 +259,8 @@ export function classifyPredictedCongestion(
   const hourMedian = dayData?.[hour]?.median ?? 0;
   if (yellowSignals >= 1 && hourMedian > 0) {
     const ratio = predicted / hourMedian;
-    if (ratio < 1.2 && predicted < vuln.yellowAbsolute * 1.05) { // CALIBRATION: matches LEAN_GREEN constants
+    if (ratio < 1.2 && predicted < vuln.yellowAbsolute * 1.05) {
+      // CALIBRATION: matches LEAN_GREEN constants
       return "green";
     }
   }
