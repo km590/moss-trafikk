@@ -52,13 +52,14 @@ Modellen evalueres fortlopende mot faktiske malinger fra Statens vegvesen.
 
 Basert pa 543 eval-rader med tidsmessig holdout (mars 2026):
 
-| Metode             | MAPE  | Bias  | Merknad                                  |
-| ------------------ | ----- | ----- | ---------------------------------------- |
-| Predicted (v1+v2)  | 17.2% | +7.5% | Overpredikerer, spesielt midt-dag        |
-| Bias-korrigert     | 14.9% | -     | Kun midt-dag/ettermiddag (-9pp pa disse) |
-| Midt-dag korrigert | 7.0%  | -     | Faktor 0.897                             |
-| Ettermiddag korr.  | 7.4%  | -     | Faktor 0.825                             |
-| Kveld/natt         | -     | -     | Ustabilt, ingen korreksjon (faktor 1.0)  |
+| Metode             | MAPE  | Bias  | Merknad                                 |
+| ------------------ | ----- | ----- | --------------------------------------- |
+| Baseline (v1)      | 11.1% | -     | Robust, lav feil                        |
+| Predicted (v1+v2)  | 17.2% | +7.5% | V2 overpredikerer dagtimer              |
+| Bias-korrigert     | 14.9% | -     | Kun midt-dag/ettermiddag (-9pp)         |
+| Midt-dag korrigert | 7.0%  | -     | Faktor 0.897                            |
+| Ettermiddag korr.  | 7.4%  | -     | Faktor 0.825                            |
+| Kveld/natt         | -     | -     | Ustabilt, ingen korreksjon (faktor 1.0) |
 
 Bias-korreksjon er validert offline. Planlagt som shadow i eval-system (Fase B).
 
