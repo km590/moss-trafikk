@@ -108,6 +108,15 @@ export const KANALBRUA_ABSOLUTE_GUARDRAIL = 1800;
 
 export const RV19_STATION_IDS = ["39666V971386", "72867V971385", "69994V971384", "76208V971383"];
 
+// Stations tracked in the prediction eval system (snapshot + backfill).
+// Only stations with confirmed hourly data availability from Vegvesen.
+// Excluded: 39666V971386 (Østre Kanalgate), 76208V971383 (Mosseelva) — 0 edges from Vegvesen API.
+export const EVAL_STATION_IDS = [
+  "40641V971605", // Kanalbrua
+  "72867V971385", // Rådhusbrua
+  "69994V971384", // Vogts gate
+];
+
 export const E6_STATION_IDS = ["40488V971307", "15322V971307", "26266V443149"];
 
 // --- Station vulnerability config (CALIBRATION V1) ---

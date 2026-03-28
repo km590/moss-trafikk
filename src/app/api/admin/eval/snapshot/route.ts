@@ -7,15 +7,7 @@ import { getFerrySignal, isFerryAffectedStation } from "@/lib/ferry-signal";
 import { classifyDate } from "@/lib/norwegian-calendar";
 import { getNorwayTime } from "@/lib/traffic-logic";
 import { getV2Status } from "@/lib/prediction-engine-v2";
-import { KANALBRUA_ID, RV19_STATION_IDS } from "@/lib/stations";
-
-// Stations to track: Kanalbrua + RV19 stations with confirmed data availability
-// Excluded: 39666V971386 (Østre Kanalgate) and 76208V971383 (Mosseelva) - 0 edges from Vegvesen API
-const EVAL_STATIONS = [
-  KANALBRUA_ID,
-  "72867V971385", // Rådhusbrua
-  "69994V971384", // Vogts gate
-];
+import { EVAL_STATION_IDS } from "@/lib/stations";
 
 // Mirror residual policy from prediction-engine-v2
 type ResidualPolicy = "off" | "time_window" | "full";
@@ -78,7 +70,7 @@ async function runSnapshot() {
 
   const snapshots = [];
 
-  for (const stationId of EVAL_STATIONS) {
+  for (const stationId of EVAL_STATION_IDS) {
     const pred = predictVolume(stationId, now, hour);
     const applyResidual = shouldApplyResidual(hour);
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { fetchHourlyVolume } from "@/lib/vegvesen-client";
+import { EVAL_STATION_IDS } from "@/lib/stations";
 
 /**
  * GET /api/admin/eval/backfill
@@ -39,6 +40,7 @@ async function runBackfill() {
     .from("prediction_eval")
     .select("id, station_id, target_hour")
     .is("actual_volume", null)
+    .in("station_id", EVAL_STATION_IDS)
     .lt("target_hour", twoHoursAgo)
     .order("target_hour", { ascending: true })
     .limit(50);
