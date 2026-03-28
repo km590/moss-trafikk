@@ -5,6 +5,7 @@
 
 import type { ResidualModel } from "./tree-walker";
 import { classifyDate } from "./norwegian-calendar";
+import { LAG_MASK_HOURS, LATEST_MASK_HOURS, CROSS_STATION_MAX_AGE_HOURS } from "./constants";
 
 // Station groupings (must match Python training config)
 const RV19_IDS = ["39666V971386", "72867V971385", "69994V971384", "76208V971383"];
@@ -62,14 +63,14 @@ export function buildFeatures(
   const stationData = latestVolumes.get(stationId);
   const freshness = stationData?.ageHours ?? 8; // default to very stale
 
-  // Lag features: -1 when stale (freshness > 3) or unavailable
-  const maskLags = freshness > 3;
+  // Lag features: -1 when stale or unavailable
+  const maskLags = freshness > LAG_MASK_HOURS;
   const lag1h = maskLags ? -1 : (stationData?.lag1h ?? -1);
   const lag2h = maskLags ? -1 : (stationData?.lag2h ?? -1);
   const lag3h = maskLags ? -1 : (stationData?.lag3h ?? -1);
 
   // Latest measured volume: -1 when very stale
-  const maskLatest = freshness > 6;
+  const maskLatest = freshness > LATEST_MASK_HOURS;
   const latestMeasured = maskLatest ? -1 : (stationData?.volume ?? -1);
 
   // Cross-station features
@@ -175,7 +176,7 @@ function sumStationVolumes(
   let count = 0;
   for (const id of stationIds) {
     const data = latestVolumes.get(id);
-    if (data && data.ageHours < 4 && data.volume > 0) {
+    if (data && data.ageHours < CROSS_STATION_MAX_AGE_HOURS && data.volume > 0) {
       sum += data.volume;
       count++;
     }
@@ -191,7 +192,7 @@ function avgStationVolumes(
   let count = 0;
   for (const id of stationIds) {
     const data = latestVolumes.get(id);
-    if (data && data.ageHours < 4 && data.volume > 0) {
+    if (data && data.ageHours < CROSS_STATION_MAX_AGE_HOURS && data.volume > 0) {
       sum += data.volume;
       count++;
     }

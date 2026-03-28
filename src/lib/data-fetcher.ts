@@ -35,7 +35,8 @@ import type {
   TravelDecision,
 } from "./types";
 
-const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2 hours
+import { STALE_THRESHOLD_MS } from "./constants";
+
 
 async function fetchSignalHourlyData(): Promise<{
   data: SignalHourlyData;

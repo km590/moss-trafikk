@@ -11,6 +11,7 @@
 import { predictVolume, classifyPredictedCongestion } from "./prediction-engine";
 import { predictResidual, type ResidualModel } from "./tree-walker";
 import { buildFeatures, type StationLiveData, type SignalHourlyData } from "./feature-builder";
+import { LAG_MASK_HOURS } from "./constants";
 import type { HourlyPredictionV2, CongestionLevel } from "./types";
 
 // --- Residual gating policy ---
@@ -34,12 +35,23 @@ try {
   console.log(
     `[v2] residual model loaded: v${residualModel.version}, ${residualModel.features.length} features, trained ${residualModel.trainedAt.slice(0, 10)}`
   );
-} catch {
-  // Model not yet trained - v2 falls back to v1
+} catch (e) {
+  console.warn(
+    "[v2] Failed to load residual model, falling back to v1:",
+    e instanceof Error ? e.message : e
+  );
 }
 
 export function isV2Enabled(): boolean {
   return process.env.PREDICTION_MODEL === "v2" && residualModel !== null;
+}
+
+export type V2Status = "v2_active" | "v2_fallback_to_v1" | "v2_disabled";
+
+export function getV2Status(): V2Status {
+  if (process.env.PREDICTION_MODEL !== "v2") return "v2_disabled";
+  if (residualModel === null) return "v2_fallback_to_v1";
+  return "v2_active";
 }
 
 export function getV2Predictions(
@@ -50,14 +62,16 @@ export function getV2Predictions(
   latestVolumes: Map<string, StationLiveData>,
   signalHourly?: SignalHourlyData
 ): HourlyPredictionV2[] {
-  const dayOfWeek = date.getDay();
   const predictions: HourlyPredictionV2[] = [];
 
   for (let i = 0; i < hoursAhead; i++) {
-    const hour = (currentHour + i) % 24;
+    const effectiveDate = new Date(date);
+    effectiveDate.setHours(date.getHours() + i);
+    const hour = effectiveDate.getHours();
+    const effectiveDow = effectiveDate.getDay();
 
     // Step 1: Baseline prediction
-    const baseline = predictVolume(stationId, date, hour);
+    const baseline = predictVolume(stationId, effectiveDate, hour);
 
     // Step 2: Check if station has residual model
     const hasResidual = residualModel?.stationsWithResidual.includes(stationId) ?? false;
@@ -67,7 +81,7 @@ export function getV2Predictions(
       const congestion = classifyPredictedCongestion(
         baseline.predicted,
         stationId,
-        dayOfWeek,
+        effectiveDow,
         hour
       );
       predictions.push({
@@ -93,7 +107,7 @@ export function getV2Predictions(
       const congestion = classifyPredictedCongestion(
         baseline.predicted,
         stationId,
-        dayOfWeek,
+        effectiveDow,
         hour
       );
 
@@ -101,7 +115,7 @@ export function getV2Predictions(
       const features = buildFeatures(
         stationId,
         baseline.predicted,
-        date,
+        effectiveDate,
         hour,
         latestVolumes,
         residualModel,
@@ -134,7 +148,7 @@ export function getV2Predictions(
     const features = buildFeatures(
       stationId,
       baseline.predicted,
-      date,
+      effectiveDate,
       hour,
       latestVolumes,
       residualModel,
@@ -162,9 +176,9 @@ export function getV2Predictions(
     // Step 8: Uncertainty-informed congestion classification
     // Green only if predictedHigh is also green
     // Red only if predictedLow is also red
-    const congestionP50 = classifyPredictedCongestion(predicted, stationId, dayOfWeek, hour);
-    const congestionHigh = classifyPredictedCongestion(predictedHigh, stationId, dayOfWeek, hour);
-    const congestionLow = classifyPredictedCongestion(predictedLow, stationId, dayOfWeek, hour);
+    const congestionP50 = classifyPredictedCongestion(predicted, stationId, effectiveDow, hour);
+    const congestionHigh = classifyPredictedCongestion(predictedHigh, stationId, effectiveDow, hour);
+    const congestionLow = classifyPredictedCongestion(predictedLow, stationId, effectiveDow, hour);
 
     let congestion: CongestionLevel;
     if (congestionP50 === "green" && congestionHigh === "green") {
@@ -214,7 +228,7 @@ function generateExplanation(
   // CALIBRATION: < 5% residual = no explanation needed
   if (Math.abs(residual) < baseline * 0.05) return undefined;
 
-  if (features.freshness > 3) {
+  if (features.freshness > LAG_MASK_HOURS) {
     const hours = Math.round(features.freshness);
     return `Bygger mest på historisk mønster (data er ${hours} timer gammelt)`;
   }

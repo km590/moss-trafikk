@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { STATIONS } from "@/lib/stations";
+import { getV2Status } from "@/lib/prediction-engine-v2";
 
 export const revalidate = 0; // Always fresh
 export const dynamic = "force-dynamic";
@@ -169,7 +170,23 @@ export default async function EvalPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 font-mono text-sm">
-      <h1 className="text-xl font-bold mb-1">Prediction Eval</h1>
+      <div className="flex items-center gap-3 mb-1">
+        <h1 className="text-xl font-bold">Prediction Eval</h1>
+        {(() => {
+          const v2Status = getV2Status();
+          const color =
+            v2Status === "v2_active"
+              ? "text-violet-600 bg-violet-50"
+              : v2Status === "v2_fallback_to_v1"
+                ? "text-amber-600 bg-amber-50"
+                : "text-slate-400 bg-slate-50";
+          return (
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>
+              {v2Status}
+            </span>
+          );
+        })()}
+      </div>
       <p className="text-xs text-slate-400 mb-6">
         Intern kalibrering. Predicted vs actual for Kanalbrua + RV19.
       </p>

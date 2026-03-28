@@ -290,11 +290,14 @@ export function getPredictions(
     predicted: number;
     confidence: "high" | "medium" | "low";
     insufficientData: boolean;
+    effectiveDow: number;
   }[] = [];
 
   for (let i = 0; i < hoursAhead; i++) {
-    const hour = (currentHour + i) % 24;
-    const result = predictVolume(stationId, date, hour);
+    const effectiveDate = new Date(date);
+    effectiveDate.setHours(date.getHours() + i);
+    const hour = effectiveDate.getHours();
+    const result = predictVolume(stationId, effectiveDate, hour);
 
     // Ferry boost: only apply to current hour (i === 0)
     // Future hours use pure baseline - ferry schedule changes too fast to forecast
@@ -317,9 +320,10 @@ export function getPredictions(
         predicted: clamped,
         confidence: result.confidence,
         insufficientData: result.insufficientData,
+        effectiveDow: effectiveDate.getDay(),
       });
     } else {
-      rawPredictions.push({ hour, ...result });
+      rawPredictions.push({ hour, ...result, effectiveDow: effectiveDate.getDay() });
     }
   }
 
@@ -338,8 +342,8 @@ export function getPredictions(
   }
 
   const predictions: HourlyPrediction[] = rawPredictions.map(
-    ({ hour, predicted, confidence, insufficientData }) => {
-      const congestion = classifyPredictedCongestion(predicted, stationId, dayOfWeek, hour);
+    ({ hour, predicted, confidence, insufficientData, effectiveDow }) => {
+      const congestion = classifyPredictedCongestion(predicted, stationId, effectiveDow, hour);
       const finalConfidence = insufficientData ? "low" : confidence;
 
       return {

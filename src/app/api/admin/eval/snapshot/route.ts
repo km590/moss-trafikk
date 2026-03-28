@@ -6,6 +6,7 @@ import { buildFeatures } from "@/lib/feature-builder";
 import { getFerrySignal, isFerryAffectedStation } from "@/lib/ferry-signal";
 import { classifyDate } from "@/lib/norwegian-calendar";
 import { getNorwayTime } from "@/lib/traffic-logic";
+import { getV2Status } from "@/lib/prediction-engine-v2";
 import { KANALBRUA_ID, RV19_STATION_IDS } from "@/lib/stations";
 
 // Stations to track: Kanalbrua + RV19 stations with confirmed data availability
@@ -154,6 +155,7 @@ async function runSnapshot() {
     hour,
     policy: RESIDUAL_POLICY,
     applyResidual: shouldApplyResidual(hour),
+    v2_status: getV2Status(),
     stations: snapshots.length,
     rows: data?.length ?? 0,
   });
