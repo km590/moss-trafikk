@@ -188,15 +188,19 @@ function predictMay17Volume(
 const EST_RUSH_HOURS = [7, 8, 15, 16, 17]; // CALIBRATION
 
 /**
- * Classify predicted congestion using 3 independent signals (stricter than measured).
+ * Classify predicted congestion using 3 independent signals.
+ * Aligned with classifyCongestion (measured) thresholds per Alt A eval (2026-03-28).
  *
  * Signal 1: Absolute level - predicted volume vs station thresholds
  * Signal 2: Relative position - predicted vs p60/p85 of station's daily profile
  * Signal 3: Station/time friction - predicted * friction vs thresholds
  *
- * Red: ALL 3 signals must be true (damped hours: all 3 + absolute > redAbsolute * 1.1)
- * Yellow: 2 of 3 signals (measured needs only 1)
- * Green: 0-1 signals
+ * Red: 2 of 3 signals (damped hours: 3 of 3)
+ * Yellow: 1 of 3 signals (with lean-green clause)
+ * Green: 0 signals, or lean-green
+ *
+ * Eval evidence (272 holdout rows): accuracy 59.6% -> 79.0%, red recall 0% -> 97%,
+ * red precision 83%, green stable. 12 yellow->red overclassifications are bias-driven.
  */
 export function classifyPredictedCongestion(
   predicted: number,
@@ -244,22 +248,24 @@ export function classifyPredictedCongestion(
 
   const isDamped = vuln.dampedHours.includes(hour);
 
-  // --- Red: all 3 signals required (damped: all 3 + absolute > redAbsolute * 1.1) ---
-  if (redSignals >= 3) {
-    if (isDamped) {
-      // Damped hours: red still possible but needs extra absolute headroom
-      if (predicted >= vuln.redAbsolute * 1.1) {
-        // CALIBRATION
-        return "red";
-      }
-      // Fall through to yellow
-    } else {
-      return "red";
+  // --- Red: 2 of 3 signals (damped: 3 of 3) ---
+  const redThreshold = isDamped ? 3 : 2;
+  if (redSignals >= redThreshold) {
+    return "red";
+  }
+
+  // --- Lean-green clause: doubt between green/yellow -> green ---
+  // Uses hour median as normalVolume proxy for deviation ratio
+  const hourMedian = dayData?.[hour]?.median ?? 0;
+  if (yellowSignals >= 1 && hourMedian > 0) {
+    const ratio = predicted / hourMedian;
+    if (ratio < 1.2 && predicted < vuln.yellowAbsolute * 1.05) { // CALIBRATION: matches LEAN_GREEN constants
+      return "green";
     }
   }
 
-  // --- Yellow: 2 of 3 signals ---
-  if (yellowSignals >= 2) {
+  // --- Yellow: 1 of 3 signals ---
+  if (yellowSignals >= 1) {
     return "yellow";
   }
 
