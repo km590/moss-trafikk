@@ -228,7 +228,11 @@ function getOsloHour(utcIso: string): number {
 }
 
 // Normal volume lookup from model-weights.json
-let modelWeights: any;
+interface ModelWeights {
+  basePatterns?: Record<string, Record<number, Record<number, { median?: number }>>>;
+  [key: string]: unknown;
+}
+let modelWeights: ModelWeights;
 function getNormalVolume(stationId: string, dow: number, hour: number): number {
   if (!modelWeights) {
     const weightsPath = path.join(
@@ -336,7 +340,7 @@ async function main() {
   const biasData = JSON.parse(fs.readFileSync(correctionsPath, "utf-8"));
   const corrections = new Map<Period, number>();
   for (const [period, data] of Object.entries(biasData.corrections)) {
-    corrections.set(period as Period, (data as any).factor);
+    corrections.set(period as Period, (data as { factor: number }).factor);
   }
 
   const allRows = await fetchEvalRows();
