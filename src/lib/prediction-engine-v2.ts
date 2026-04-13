@@ -65,10 +65,27 @@ export function getV2Predictions(
   const predictions: HourlyPredictionV2[] = [];
 
   for (let i = 0; i < hoursAhead; i++) {
+    const hour = (currentHour + i) % 24;
+    // Advance the date if we cross midnight (use a copy to avoid mutating)
     const effectiveDate = new Date(date);
-    effectiveDate.setHours(date.getHours() + i);
-    const hour = effectiveDate.getHours();
-    const effectiveDow = effectiveDate.getDay();
+    if (currentHour + i >= 24) {
+      effectiveDate.setDate(effectiveDate.getDate() + 1);
+    }
+    // Get day-of-week in Oslo timezone (not UTC)
+    const dowParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Europe/Oslo",
+      weekday: "short",
+    }).formatToParts(effectiveDate);
+    const dowMap: Record<string, number> = {
+      Sun: 0,
+      Mon: 1,
+      Tue: 2,
+      Wed: 3,
+      Thu: 4,
+      Fri: 5,
+      Sat: 6,
+    };
+    const effectiveDow = dowMap[dowParts.find((p) => p.type === "weekday")?.value ?? "Mon"] ?? 1;
 
     // Step 1: Baseline prediction
     const baseline = predictVolume(stationId, effectiveDate, hour);
