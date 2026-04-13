@@ -290,7 +290,21 @@ export function getPredictions(
   hoursAhead: number = 4,
   ferrySignal?: { factor: number; nextDepartureMin: number | null; reason: string }
 ): PredictionResult {
-  const dayOfWeek = date.getDay();
+  // Use Oslo timezone for day-of-week (server may run in UTC)
+  const dowPartsInit = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Oslo",
+    weekday: "short",
+  }).formatToParts(date);
+  const dowMapInit: Record<string, number> = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+  };
+  const dayOfWeek = dowMapInit[dowPartsInit.find((p) => p.type === "weekday")?.value ?? "Mon"] ?? 1;
   const dayType = classifyDate(date);
   const rawPredictions: {
     hour: number;
@@ -301,9 +315,26 @@ export function getPredictions(
   }[] = [];
 
   for (let i = 0; i < hoursAhead; i++) {
+    const hour = (currentHour + i) % 24;
     const effectiveDate = new Date(date);
-    effectiveDate.setHours(date.getHours() + i);
-    const hour = effectiveDate.getHours();
+    if (currentHour + i >= 24) {
+      effectiveDate.setDate(effectiveDate.getDate() + 1);
+    }
+    // Get day-of-week in Oslo timezone (not UTC)
+    const dowParts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Europe/Oslo",
+      weekday: "short",
+    }).formatToParts(effectiveDate);
+    const dowMap: Record<string, number> = {
+      Sun: 0,
+      Mon: 1,
+      Tue: 2,
+      Wed: 3,
+      Thu: 4,
+      Fri: 5,
+      Sat: 6,
+    };
+    const osloDow = dowMap[dowParts.find((p) => p.type === "weekday")?.value ?? "Mon"] ?? 1;
     const result = predictVolume(stationId, effectiveDate, hour);
 
     // Ferry boost: only apply to current hour (i === 0)
@@ -327,10 +358,10 @@ export function getPredictions(
         predicted: clamped,
         confidence: result.confidence,
         insufficientData: result.insufficientData,
-        effectiveDow: effectiveDate.getDay(),
+        effectiveDow: osloDow,
       });
     } else {
-      rawPredictions.push({ hour, ...result, effectiveDow: effectiveDate.getDay() });
+      rawPredictions.push({ hour, ...result, effectiveDow: osloDow });
     }
   }
 
